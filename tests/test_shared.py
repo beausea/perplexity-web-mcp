@@ -140,6 +140,7 @@ class TestAsk:
         mock_conv = MagicMock()
         mock_conv.answer = "The answer is 42"
         mock_conv.search_results = []
+        mock_conv.uuid = None
         mock_client = MagicMock()
         mock_client.create_conversation.return_value = mock_conv
         mock_client_fn.return_value = mock_client
@@ -180,6 +181,7 @@ class TestAsk:
         mock_conv = MagicMock()
         mock_conv.answer = None
         mock_conv.search_results = []
+        mock_conv.uuid = None
         mock_client = MagicMock()
         mock_client.create_conversation.return_value = mock_conv
         mock_client_fn.return_value = mock_client
@@ -212,6 +214,7 @@ class TestAsk:
         mock_conv = MagicMock()
         mock_conv.answer = "Model-only answer"
         mock_conv.search_results = []
+        mock_conv.uuid = None
         mock_client = MagicMock()
         mock_client.create_conversation.return_value = mock_conv
         mock_client_fn.return_value = mock_client
@@ -234,6 +237,7 @@ class TestAsk:
         mock_conv = MagicMock()
         mock_conv.answer = "Web answer"
         mock_conv.search_results = []
+        mock_conv.uuid = None
         mock_client = MagicMock()
         mock_client.create_conversation.return_value = mock_conv
         mock_client_fn.return_value = mock_client
@@ -487,6 +491,7 @@ class TestTokenRetryOnAuthError:
         mock_conv_ok.ask.return_value = None
         mock_conv_ok.answer = "Retried answer"
         mock_conv_ok.search_results = []
+        mock_conv_ok.uuid = None
 
         mock_client = MagicMock()
         mock_client.create_conversation.side_effect = [mock_conv_fail, mock_conv_ok]

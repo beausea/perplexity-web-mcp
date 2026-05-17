@@ -230,7 +230,7 @@ def _cmd_research_impl(query, source, json_output):
 
 # ── Council ────────────────────────────────────────────────────────────────
 
-COUNCIL_MODEL_NAMES = ("gpt54", "gpt55", "claude_sonnet", "claude_opus", "gemini_pro", "nemotron")
+COUNCIL_MODEL_NAMES = tuple(n for n in MODEL_NAMES if n not in {"auto", "sonar", "deep_research"})
 
 
 @cli.command()
