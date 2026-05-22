@@ -16,6 +16,7 @@ from .config import ConversationConfig
 from .enums import CitationMode, SearchFocus, SourceFocus
 from .logging import get_logger
 from .models import Model, Models
+from .shared import COUNCIL_DEFAULT_MODEL_NAMES, build_council_model_list
 
 
 if TYPE_CHECKING:
@@ -29,19 +30,14 @@ logger = get_logger(__name__)
 # Default council composition
 # ---------------------------------------------------------------------------
 
-COUNCIL_DEFAULT_MODELS: list[tuple[str, Model]] = [
-    ("GPT-5.4", Models.GPT_54),
-    ("Claude Opus 4.7", Models.CLAUDE_47_OPUS),
-    ("Gemini 3.1 Pro", Models.GEMINI_31_PRO_THINKING),
-]
-"""Default models for the council (3 diverse providers)."""
+COUNCIL_DEFAULT_MODELS: list[tuple[str, Model]] = build_council_model_list(COUNCIL_DEFAULT_MODEL_NAMES)
+"""Default Pro-compatible models for the council (3 diverse providers)."""
 
-COUNCIL_DEFAULT_MODELS_THINKING: list[tuple[str, Model]] = [
-    ("GPT-5.4 Thinking", Models.GPT_54_THINKING),
-    ("Claude Opus 4.7 Thinking", Models.CLAUDE_47_OPUS_THINKING),
-    ("Gemini 3.1 Pro", Models.GEMINI_31_PRO_THINKING),
-]
-"""Default models for the council with extended thinking enabled."""
+COUNCIL_DEFAULT_MODELS_THINKING: list[tuple[str, Model]] = build_council_model_list(
+    COUNCIL_DEFAULT_MODEL_NAMES,
+    thinking=True,
+)
+"""Default Pro-compatible models for the council with extended thinking enabled."""
 
 
 # ---------------------------------------------------------------------------
@@ -220,7 +216,7 @@ def council_ask(
     Args:
         query: The question to ask all models.
         models: List of (display_name, Model) tuples. Defaults to
-                COUNCIL_DEFAULT_MODELS (GPT-5.4, Claude Opus, Gemini Pro).
+                COUNCIL_DEFAULT_MODELS (GPT-5.4, Claude Sonnet, Gemini Pro).
         source_focus: Source focus for all queries (none/web/academic/social/finance/all).
         synthesize: Whether to produce a synthesized consensus (adds 1 Sonar 2 synthesis query by default).
         thinking: Use thinking model variants for default council members.

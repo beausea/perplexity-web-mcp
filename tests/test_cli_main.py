@@ -175,9 +175,20 @@ class TestCmdUsage:
         assert "NOT AUTHENTICATED" in capsys.readouterr().out
 
     @patch("perplexity_web_mcp.cli.main.get_limit_cache")
+    @patch("perplexity_web_mcp.cli.auth.get_user_info")
     @patch("perplexity_web_mcp.cli.main.load_token", return_value="valid-token")
-    def test_with_limits(self, mock_token: MagicMock, mock_cache_fn: MagicMock, capsys: pytest.CaptureFixture) -> None:
+    def test_with_limits(
+        self,
+        mock_token: MagicMock,
+        mock_user_info_fn: MagicMock,
+        mock_cache_fn: MagicMock,
+        capsys: pytest.CaptureFixture,
+    ) -> None:
         from perplexity_web_mcp.rate_limits import RateLimits
+
+        mock_user_info = MagicMock()
+        mock_user_info.tier_display = "Pro ($20/mo)"
+        mock_user_info_fn.return_value = mock_user_info
 
         mock_cache = MagicMock()
         mock_cache.get_rate_limits.return_value = RateLimits(remaining_pro=100, remaining_research=5)
@@ -190,6 +201,40 @@ class TestCmdUsage:
         out = capsys.readouterr().out
         assert "Rate Limits" in out
         assert "100" in out
+        assert "Pro ($20/mo)" in out
+
+    @patch("perplexity_web_mcp.cli.main.get_limit_cache")
+    @patch("perplexity_web_mcp.cli.auth.get_user_info")
+    @patch("perplexity_web_mcp.cli.main.load_token", return_value="valid-token")
+    def test_usage_labels_settings_subscription_as_billing_detail(
+        self,
+        mock_token: MagicMock,
+        mock_user_info_fn: MagicMock,
+        mock_cache_fn: MagicMock,
+        capsys: pytest.CaptureFixture,
+    ) -> None:
+        from perplexity_web_mcp.rate_limits import UserSettings
+
+        mock_user_info = MagicMock()
+        mock_user_info.tier_display = "Pro ($20/mo)"
+        mock_user_info_fn.return_value = mock_user_info
+
+        mock_cache = MagicMock()
+        mock_cache.get_rate_limits.return_value = None
+        mock_cache.get_user_settings.return_value = UserSettings(
+            subscription_tier="yearly",
+            subscription_status="active",
+        )
+        mock_cache.get_credits.return_value = None
+        mock_cache_fn.return_value = mock_cache
+
+        code = _cmd_usage([])
+        assert code == 0
+        out = capsys.readouterr().out
+        assert "Subscription" in out
+        assert "Pro ($20/mo)" in out
+        assert "Billing" in out
+        assert "yearly" in out
 
 
 # ============================================================================
@@ -333,6 +378,24 @@ class TestCmdCouncil:
         _cmd_council(["query", "--no-synthesis"])
         call_kwargs = mock_council.call_args
         assert call_kwargs[1]["synthesize"] is False or call_kwargs.kwargs.get("synthesize") is False
+
+    @patch("perplexity_web_mcp.council.council_ask")
+    def test_sonar_can_be_custom_council_member(self, mock_council: MagicMock) -> None:
+        from perplexity_web_mcp.council import CouncilMemberResult, CouncilResponse
+        from perplexity_web_mcp.models import Models
+
+        mock_council.return_value = CouncilResponse(
+            individual_results=[CouncilMemberResult(model_name="Sonar 2", answer="A")],
+            synthesis="",
+            query="test",
+            model_names=["Sonar 2"],
+        )
+
+        code = _cmd_council(["query", "--models", "sonar,gpt54", "--no-synthesis"])
+
+        assert code == 0
+        model_list = mock_council.call_args.kwargs["models"]
+        assert model_list == [("Sonar 2", Models.SONAR), ("GPT-5.4", Models.GPT_54)]
 
     @patch("perplexity_web_mcp.council.council_ask")
     def test_thinking_flag(self, mock_council: MagicMock) -> None:

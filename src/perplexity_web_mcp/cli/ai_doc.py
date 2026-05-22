@@ -66,7 +66,7 @@ MODEL COUNCIL
   pwm council "query" --json                  Output as JSON
 
   Each model in the council costs 1 Pro Search, plus 1 for synthesis. Default = 4 Pro Searches.
-  Available models: gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+  Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
   Thinking toggle: -t / --thinking (gpt54, gpt55, claude_sonnet, claude_opus, kimi_k26 support toggle;
     gemini_pro and nemotron are always thinking)
 
@@ -168,12 +168,13 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   pplx_ask(query, source_focus="web")
       Auto-selects best model. 1 PRO SEARCH per call.
 
-  pplx_council(query, source_focus="web", models="gpt54,claude_opus,gemini_pro",
+  pplx_council(query, source_focus="web", models="gpt54,claude_sonnet,gemini_pro",
                synthesize=True, thinking=False, chairman="sonar")
       Model Council — N PRO SEARCHES (1 per model selected).
       BEFORE CALLING: You MUST ask the user which models and how many.
-      Available: gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26.
-      Default: 3 models (GPT-5.4, Claude Opus, Gemini Pro) + synthesis = 4 Pro Searches.
+      Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26.
+      Max-only: gpt55, claude_opus. Exclude these when Subscription is Pro.
+      Default: 3 Pro-compatible models (GPT-5.4, Claude Sonnet, Gemini Pro) + synthesis = 4 Pro Searches.
       Synthesis uses Sonar 2 by default. Set chairman to override.
       Non-sonar chairman costs 1 extra Pro Search.
       Set synthesize=False to skip synthesis entirely.
@@ -200,9 +201,9 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   All query tools accept source_focus: "none", "web", "academic", "social",
   "finance", "all". Use "none" for model-only queries without web search.
 
-  All query tools also accept an optional `conversation_id` (str) parameter. 
-  The server returns `[Conversation ID: <uuid>]` at the end of each response. 
-  Extract this UUID and pass it to the next query to maintain context across 
+  All query tools also accept an optional `conversation_id` (str) parameter.
+  The server returns `[Conversation ID: <uuid>]` at the end of each response.
+  Extract this UUID and pass it to the next query to maintain context across
   multiple turns. State is retained in memory for 1 hour.
 
 USAGE TOOL (1):
@@ -287,7 +288,9 @@ MANDATORY PROTOCOL:
   3. ESCALATE ONLY WHEN NEEDED: Use 'standard' for multi-source synthesis,
      'detailed' for complex analysis, 'research' only when user requests it.
   4. NEVER USE DEEP RESEARCH AUTONOMOUSLY — always ask the user first.
-  5. COUNCIL: Before calling pplx_council, ASK the user which models and how
+  5. SUBSCRIPTION-AWARE MODELS: Read the Subscription line from pplx_usage().
+     If it is Pro, exclude Max-only models: gpt55 and claude_opus.
+  6. COUNCIL: Before calling pplx_council, ASK the user which models and how
      many. Each model = 1 Pro Search. List available models for them to choose.
 
 WHEN TO USE EACH INTENT:

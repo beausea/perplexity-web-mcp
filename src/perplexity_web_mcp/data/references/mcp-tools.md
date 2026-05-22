@@ -120,7 +120,7 @@ Returns a summary including:
 - Deep Research remaining (monthly)
 - Create Files & Apps remaining (monthly)
 - Browser Agent remaining (monthly)
-- Subscription tier and account info
+- Subscription tier, billing detail, and account info
 
 ## Authentication Tools
 

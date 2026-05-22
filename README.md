@@ -196,7 +196,7 @@ pwm research "NVIDIA competitive landscape" -s finance --json
 Query multiple models in parallel and get a synthesized consensus. Each model costs 1 Pro Search. Default synthesis uses Sonar 2 (also 1 Pro Search).
 
 ```bash
-# Default: GPT-5.4, Claude Opus, Gemini Pro + Sonar 2 synthesis (4 Pro Searches)
+# Default: GPT-5.4, Claude Sonnet, Gemini Pro + Sonar 2 synthesis (4 Pro Searches)
 pwm council "What are best practices for microservices?"
 ```
 

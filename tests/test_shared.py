@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from perplexity_web_mcp import shared
 from perplexity_web_mcp.exceptions import AuthenticationError, RateLimitError
 from perplexity_web_mcp.models import Model, Models
 from perplexity_web_mcp.rate_limits import RateLimits
@@ -67,6 +68,41 @@ class TestMappings:
 
     def test_none_source_focus_has_empty_list(self) -> None:
         assert SOURCE_FOCUS_MAP["none"] == []
+
+    def test_model_metadata_matches_model_map(self) -> None:
+        assert hasattr(shared, "MODEL_METADATA")
+        assert set(shared.MODEL_METADATA) == set(MODEL_MAP)
+
+    def test_default_council_is_pro_compatible(self) -> None:
+        assert getattr(shared, "COUNCIL_DEFAULT_MODEL_NAMES", None) == ("gpt54", "claude_sonnet", "gemini_pro")
+        assert getattr(shared, "COUNCIL_DEFAULT_MODELS_STR", None) == "gpt54,claude_sonnet,gemini_pro"
+        assert not set(shared.COUNCIL_DEFAULT_MODEL_NAMES) & shared.MAX_ONLY_MODEL_NAMES
+
+    def test_max_only_model_names_come_from_metadata(self) -> None:
+        assert getattr(shared, "MAX_ONLY_MODEL_NAMES", None) == {"gpt55", "claude_opus"}
+        assert all(shared.MODEL_METADATA[name].minimum_tier == "max" for name in shared.MAX_ONLY_MODEL_NAMES)
+
+    def test_council_eligible_models_are_derived_from_metadata(self) -> None:
+        assert getattr(shared, "COUNCIL_ELIGIBLE_MODEL_NAMES", None) == (
+            "sonar",
+            "gpt54",
+            "gpt55",
+            "claude_sonnet",
+            "claude_opus",
+            "gemini_pro",
+            "nemotron",
+            "kimi_k26",
+        )
+
+    def test_build_council_model_list_uses_metadata_display_names(self) -> None:
+        assert hasattr(shared, "build_council_model_list")
+        models = shared.build_council_model_list(("sonar", "gpt54", "claude_sonnet"))
+        assert [name for name, _ in models] == ["Sonar 2", "GPT-5.4", "Claude Sonnet 4.6"]
+        assert [model for _, model in models] == [
+            Models.SONAR,
+            Models.GPT_54,
+            Models.CLAUDE_46_SONNET,
+        ]
 
 
 # ============================================================================

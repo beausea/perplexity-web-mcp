@@ -15,11 +15,11 @@ from fastmcp import FastMCP
 
 from perplexity_web_mcp.models import Models
 from perplexity_web_mcp.shared import (
-    COUNCIL_DISPLAY_NAMES,
-    THINKING_TOGGLEABLE,
+    COUNCIL_DEFAULT_MODELS_STR,
     ModelName,
     SourceFocusName,
     ask,
+    build_council_model_list,
     council_ask,
     get_limit_cache,
     resolve_model,
@@ -39,6 +39,7 @@ mcp = FastMCP(
         "- pplx_deep_research: 1 DEEP RESEARCH each (small monthly pool, ~5-10 total)\n\n"
         "MANDATORY PROTOCOL:\n"
         "1. On your FIRST query of the session, call pplx_usage() to check remaining quotas.\n"
+        "   Read the Subscription line: Pro users must avoid Max-only models.\n"
         "2. DEFAULT to pplx_smart_query(intent='quick') for most lookups — it prefers Sonar 2 "
         "before premium models when that fits the question.\n"
         "3. Only use 'standard' or 'detailed' intent when the question requires synthesis, "
@@ -288,7 +289,7 @@ def pplx_smart_query(
 def pplx_council(
     query: str,
     source_focus: SourceFocusName = "web",
-    models: str = "gpt54,claude_opus,gemini_pro",
+    models: str = COUNCIL_DEFAULT_MODELS_STR,
     synthesize: bool = True,
     thinking: bool = False,
     chairman: ModelName = "sonar",
@@ -296,20 +297,22 @@ def pplx_council(
     """Model Council — query multiple models in parallel, get synthesized consensus.
 
     IMPORTANT — BEFORE calling this tool, you MUST:
-    1. Tell the user the available models: gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
-    2. Ask the user WHICH models they want in their council and HOW MANY
-    3. Inform them of the cost: each council model = 1 Pro Search query, plus synthesis
+    1. Tell the user the available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+    2. Check pplx_usage() first. If Subscription is Pro, do not include Max-only models: gpt55, claude_opus
+    3. Ask the user WHICH models they want in their council and HOW MANY
+    4. Inform them of the cost: each council model = 1 Pro Search query, plus synthesis
        (default chairman sonar = Sonar 2 pass — still counts as a normal query toward limits)
-    4. Get explicit confirmation before executing
+    5. Get explicit confirmation before executing
 
-    Default council: GPT-5.4, Claude Opus 4.7, Gemini 3.1 Pro (3 diverse providers).
+    Default council: GPT-5.4, Claude Sonnet 4.6, Gemini 3.1 Pro (Pro-compatible, 3 diverse providers).
 
     Args:
         query: The question to ask all council models
         source_focus: Source type for all models (none/web/academic/social/finance/all)
         models: Comma-separated model names to use as council members.
-                Available: gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26.
-                Default: "gpt54,claude_opus,gemini_pro" (3 models + synthesis = 4 Pro Searches)
+                Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26.
+                Default: "gpt54,claude_sonnet,gemini_pro" (3 models + synthesis = 4 Pro Searches)
+                Max-only: gpt55, claude_opus. Exclude these when pplx_usage shows a Pro subscription.
         synthesize: Whether to synthesize a consensus from all responses.
                     Set false to get only individual responses (saves 1 Sonar 2 call).
         thinking: Enable extended thinking for council models (gpt54, gpt55, claude_sonnet,
@@ -319,15 +322,9 @@ def pplx_council(
     """
     # Parse custom model list if provided
     model_list = None
-    if models != "gpt54,claude_opus,gemini_pro":
-        model_list = []
-        for name in models.split(","):
-            name = name.strip()
-            resolved = resolve_model(name, thinking=thinking)
-            display = COUNCIL_DISPLAY_NAMES.get(name, name)
-            if thinking and name in THINKING_TOGGLEABLE:
-                display += " Thinking"
-            model_list.append((display, resolved))
+    if models != COUNCIL_DEFAULT_MODELS_STR:
+        model_names = [name.strip() for name in models.split(",") if name.strip()]
+        model_list = build_council_model_list(model_names, thinking=thinking)
 
     synthesis_model = resolve_model(chairman) if chairman != "sonar" else None
 
@@ -376,12 +373,26 @@ def pplx_usage(refresh: bool = False) -> str:
     else:
         parts.append("WARNING: Could not fetch rate limits (network error or token issue).")
 
+    from perplexity_web_mcp.cli.auth import get_user_info
+
+    user_info = get_user_info(token)
     settings = cache.get_user_settings(force_refresh=refresh)
-    if settings:
+    if settings or user_info:
         parts.append("")
         parts.append("ACCOUNT INFO")
         parts.append("=" * 40)
-        parts.append(settings.format_summary())
+        if user_info:
+            parts.append(f"Subscription: {user_info.tier_display}")
+        if settings:
+            parts.append(f"Billing: {settings.subscription_tier} ({settings.subscription_status})")
+            parts.append(f"Total queries: {settings.query_count:,}")
+            parts.append(f"Pro queries: {settings.query_count_copilot:,}")
+            parts.append(f"Upload limit: {settings.upload_limit} files")
+            parts.append(f"Create limit: {settings.create_limit}")
+            parts.append(f"Pages limit: {settings.pages_limit}")
+            parts.append(f"Max files/user: {settings.max_files_per_user:,}")
+            parts.append(f"Max file size: {settings.connector_limits.max_file_size_mb} MB")
+            parts.append(f"Daily attachments: {settings.connector_limits.daily_attachment_limit}")
 
     credits = cache.get_credits(force_refresh=refresh)
     if credits:

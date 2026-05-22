@@ -126,11 +126,19 @@ class TestDefaultModels:
         assert any("Thinking" in n for n in names if "Claude" in n)
 
     def test_thinking_defaults_use_thinking_model_ids(self) -> None:
-        models_by_name = {name: model for name, model in COUNCIL_DEFAULT_MODELS_THINKING}
+        models_by_name = dict(COUNCIL_DEFAULT_MODELS_THINKING)
         gpt_model = next(m for n, m in COUNCIL_DEFAULT_MODELS_THINKING if "GPT" in n)
         claude_model = next(m for n, m in COUNCIL_DEFAULT_MODELS_THINKING if "Claude" in n)
         assert gpt_model is Models.GPT_54_THINKING
-        assert claude_model is Models.CLAUDE_47_OPUS_THINKING
+        assert claude_model is Models.CLAUDE_46_SONNET_THINKING
+        assert Models.CLAUDE_47_OPUS_THINKING not in models_by_name.values()
+
+    def test_default_models_exclude_max_only_models(self) -> None:
+        model_ids = {model for _, model in COUNCIL_DEFAULT_MODELS}
+        assert Models.SONAR not in model_ids
+        assert Models.GPT_55 not in model_ids
+        assert Models.CLAUDE_47_OPUS not in model_ids
+        assert Models.CLAUDE_46_SONNET in model_ids
 
     def test_thinking_defaults_are_valid_model_instances(self) -> None:
         for name, model in COUNCIL_DEFAULT_MODELS_THINKING:

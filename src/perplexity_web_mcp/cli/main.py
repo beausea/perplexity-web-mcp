@@ -27,14 +27,16 @@ import rich_click as click
 
 from perplexity_web_mcp.exceptions import AuthenticationError, RateLimitError
 from perplexity_web_mcp.shared import (
+    COUNCIL_DEFAULT_MODELS_STR,
     COUNCIL_DISPLAY_NAMES,
+    COUNCIL_ELIGIBLE_MODEL_NAMES,
     MODEL_MAP,
     MODEL_NAMES,
     SOURCE_FOCUS_NAMES,
-    THINKING_TOGGLEABLE,
     Models,
     SourceFocusName,
     ask,
+    build_council_model_list,
     get_limit_cache,
     resolve_model,
 )
@@ -230,7 +232,7 @@ def _cmd_research_impl(query, source, json_output):
 
 # ── Council ────────────────────────────────────────────────────────────────
 
-COUNCIL_MODEL_NAMES = tuple(n for n in MODEL_NAMES if n not in {"auto", "sonar", "deep_research"})
+COUNCIL_MODEL_NAMES = COUNCIL_ELIGIBLE_MODEL_NAMES
 
 
 @cli.command()
@@ -239,7 +241,7 @@ COUNCIL_MODEL_NAMES = tuple(n for n in MODEL_NAMES if n not in {"auto", "sonar",
     "-m",
     "--models",
     "models_str",
-    default="gpt54,claude_opus,gemini_pro",
+    default=COUNCIL_DEFAULT_MODELS_STR,
     help=f"Comma-separated models ({', '.join(COUNCIL_MODEL_NAMES)}).",
 )
 @click.option("-t", "--thinking", is_flag=True, help="Enable extended thinking mode.")
@@ -301,14 +303,8 @@ def _cmd_council_impl(query, models_str, source, synthesize, json_output, thinki
 
         # Build model list (None = use defaults)
         model_list = None
-        if models_str != "gpt54,claude_opus,gemini_pro":
-            model_list = []
-            for name in model_names:
-                resolved = resolve_model(name, thinking=thinking)
-                display = COUNCIL_DISPLAY_NAMES.get(name, name)
-                if thinking and name in THINKING_TOGGLEABLE:
-                    display += " Thinking"
-                model_list.append((display, resolved))
+        if models_str != COUNCIL_DEFAULT_MODELS_STR:
+            model_list = build_council_model_list(model_names, thinking=thinking)
 
         synthesis_model = resolve_model(chairman) if chairman != "sonar" else None
 
@@ -454,16 +450,23 @@ def _cmd_usage_impl(refresh):
 
     # ── Account Info ───────────────────────────────────────────────────────
     settings = cache.get_user_settings(force_refresh=refresh)
-    if settings:
+    from perplexity_web_mcp.cli.auth import get_user_info
+
+    user_info = get_user_info(token)
+    if settings or user_info:
         table = Table(title="👤 Account", show_header=True, header_style="bold cyan")
         table.add_column("Field", style="bold")
         table.add_column("Value", justify="right")
 
-        tier = (settings.subscription_tier or "unknown").title()
-        status = settings.subscription_status
-        table.add_row("Subscription", f"[bold]{tier}[/] ({status})")
-        table.add_row("Total Queries", f"{settings.query_count:,}")
-        table.add_row("Pro Queries", f"{settings.query_count_copilot:,}")
+        if user_info:
+            table.add_row("Subscription", f"[bold]{user_info.tier_display}[/]")
+
+        if settings:
+            billing = settings.subscription_tier or "unknown"
+            status = settings.subscription_status
+            table.add_row("Billing", f"[bold]{billing}[/] ({status})")
+            table.add_row("Total Queries", f"{settings.query_count:,}")
+            table.add_row("Pro Queries", f"{settings.query_count_copilot:,}")
 
         console.print(table)
 
@@ -732,7 +735,7 @@ def _cmd_council(args: list[str]) -> int:
         return 1
 
     query = args[0]
-    models_str = "gpt54,claude_opus,gemini_pro"
+    models_str = COUNCIL_DEFAULT_MODELS_STR
     source: SourceFocusName = "web"
     synthesize = True
     json_output = False

@@ -46,8 +46,9 @@ the weekly pool fast, leaving nothing for questions that actually need it.
 ### Before Every Session
 
 1. **Check quota first**: Call `pplx_usage()` (MCP) or `pwm usage` (CLI) before your first query.
-2. Review the remaining Pro and Research counts.
-3. If Pro < 20% remaining, restrict yourself to quick/Sonar 2 for everything except user-requested Pro queries.
+2. Review the remaining Pro and Research counts and the `Subscription` line.
+3. If Subscription is Pro, exclude Max-only models (`gpt55`, `claude_opus`) from model selection and councils.
+4. If Pro < 20% remaining, restrict yourself to quick/Sonar 2 for everything except user-requested Pro queries.
 
 ### Before Every Query: Choose the Lowest Sufficient Tier
 
@@ -83,8 +84,9 @@ Ask yourself: **"Can Sonar 2 answer this?"** If yes, use `quick`. Only escalate 
 - The user needs high-confidence answers validated across multiple AI providers
 - Important decisions, fact-checking, or complex analysis
 - BEFORE calling: ASK the user which models and how many (each = 1 Pro Search)
-- Available models: gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
-- Default: 3 models (GPT-5.4, Claude Opus, Gemini Pro) + synthesis = 4 Pro Searches
+- Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+- Max-only models: gpt55, claude_opus. Do not use these for Pro subscriptions.
+- Default: 3 Pro-compatible models (GPT-5.4, Claude Sonnet, Gemini Pro) + synthesis = 4 Pro Searches
 
 ### Decision Flowchart
 
@@ -237,7 +239,8 @@ pwm ask "protein folding advances" -m gemini_pro -s academic --json
 ### Model Council
 
 Query multiple models in parallel and get a synthesized consensus.
-Each model in the council costs 1 Pro Search, plus 1 for Sonar 2 synthesis. Default: 3 models + synthesis = 4 Pro Searches.
+Each model in the council costs 1 Pro Search, plus 1 for Sonar 2 synthesis. Default: 3 Pro-compatible models + synthesis = 4 Pro Searches.
+Before selecting models, check `pplx_usage()` or `pwm usage`. If the subscription is Pro, exclude Max-only models (`gpt55`, `claude_opus`).
 
 ```bash
 pwm council "What are the best practices for microservices?"           # default 3 models
@@ -283,7 +286,7 @@ pwm usage --refresh         # Force-refresh from server
 | `pplx_sonar` | 1 Pro Search | Perplexity Sonar 2 |
 | `pplx_query` | 1 Pro | Explicit model selection with thinking toggle |
 | `pplx_ask` | 1 Pro | Quick Q&A (auto model) |
-| `pplx_council` | **N+1 Pro** (1 per model + 1 synthesis) | Model Council — **ASK USER which models first!** Supports `thinking=True` and `chairman` for synthesis model. |
+| `pplx_council` | **N+1 Pro** (1 per model + 1 synthesis) | Model Council — **ASK USER which models first!** Check subscription first; exclude Max-only `gpt55`/`claude_opus` on Pro. Supports `thinking=True` and `chairman` for synthesis model. |
 | `pplx_gpt54` / `_thinking` | 1 Pro | OpenAI GPT-5.4 (versatile) |
 | `pplx_gpt55` / `_thinking` | 1 Pro | OpenAI GPT-5.5 (latest, Max tier) |
 | `pplx_claude_sonnet` / `_think` | 1 Pro | Anthropic Claude 4.6 Sonnet |

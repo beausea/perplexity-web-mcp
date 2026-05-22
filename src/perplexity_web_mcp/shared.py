@@ -7,6 +7,7 @@ Both the MCP server (mcp/server.py) and CLI (cli/main.py) import from here.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from threading import Lock
 from typing import TYPE_CHECKING, Literal
 from uuid import uuid4
@@ -22,12 +23,27 @@ from .token_store import get_token_or_raise, load_token
 
 
 if TYPE_CHECKING:
+    from .council import CouncilResponse
     from .types import SearchResultItem
 
 
 # ---------------------------------------------------------------------------
 # Model and source focus mappings (single source of truth)
 # ---------------------------------------------------------------------------
+
+SubscriptionMinimumTier = Literal["free", "pro", "max"]
+
+
+@dataclass(frozen=True, slots=True)
+class ModelDefinition:
+    """Metadata and model instances for one user-facing model key."""
+
+    base_model: Model
+    thinking_model: Model | None
+    display_name: str
+    provider: str
+    minimum_tier: SubscriptionMinimumTier = "pro"
+    council_eligible: bool = True
 
 SOURCE_FOCUS_MAP: dict[str, list[SourceFocus]] = {
     "none": [],
@@ -38,18 +54,49 @@ SOURCE_FOCUS_MAP: dict[str, list[SourceFocus]] = {
     "all": [SourceFocus.WEB, SourceFocus.ACADEMIC, SourceFocus.SOCIAL],
 }
 
+MODEL_METADATA: dict[str, ModelDefinition] = {
+    "auto": ModelDefinition(Models.BEST, None, "Auto (Best)", "Perplexity", council_eligible=False),
+    "sonar": ModelDefinition(Models.SONAR, None, "Sonar 2", "Perplexity"),
+    "deep_research": ModelDefinition(
+        Models.DEEP_RESEARCH,
+        None,
+        "Deep Research",
+        "Perplexity",
+        council_eligible=False,
+    ),
+    "gpt54": ModelDefinition(Models.GPT_54, Models.GPT_54_THINKING, "GPT-5.4", "OpenAI"),
+    "gpt55": ModelDefinition(Models.GPT_55, Models.GPT_55_THINKING, "GPT-5.5", "OpenAI", minimum_tier="max"),
+    "claude_sonnet": ModelDefinition(
+        Models.CLAUDE_46_SONNET,
+        Models.CLAUDE_46_SONNET_THINKING,
+        "Claude Sonnet 4.6",
+        "Anthropic",
+    ),
+    "claude_opus": ModelDefinition(
+        Models.CLAUDE_47_OPUS,
+        Models.CLAUDE_47_OPUS_THINKING,
+        "Claude Opus 4.7",
+        "Anthropic",
+        minimum_tier="max",
+    ),
+    "gemini_pro": ModelDefinition(
+        Models.GEMINI_31_PRO_THINKING,
+        Models.GEMINI_31_PRO_THINKING,
+        "Gemini 3.1 Pro",
+        "Google",
+    ),
+    "nemotron": ModelDefinition(
+        Models.NEMOTRON_3_SUPER,
+        Models.NEMOTRON_3_SUPER,
+        "Nemotron 3 Super",
+        "NVIDIA",
+    ),
+    "kimi_k26": ModelDefinition(Models.KIMI_K2_6, Models.KIMI_K2_6_THINKING, "Kimi K2.6", "Moonshot"),
+}
+"""User-facing model metadata. Update this table when model names or tier availability changes."""
+
 MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
-    # (base_model, thinking_model) - None if no thinking variant
-    "auto": (Models.BEST, None),
-    "sonar": (Models.SONAR, None),
-    "deep_research": (Models.DEEP_RESEARCH, None),
-    "gpt54": (Models.GPT_54, Models.GPT_54_THINKING),
-    "gpt55": (Models.GPT_55, Models.GPT_55_THINKING),
-    "claude_sonnet": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude_opus": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "gemini_pro": (Models.GEMINI_31_PRO_THINKING, Models.GEMINI_31_PRO_THINKING),
-    "nemotron": (Models.NEMOTRON_3_SUPER, Models.NEMOTRON_3_SUPER),
-    "kimi_k26": (Models.KIMI_K2_6, Models.KIMI_K2_6_THINKING),
+    name: (definition.base_model, definition.thinking_model) for name, definition in MODEL_METADATA.items()
 }
 
 SourceFocusName = Literal["none", "web", "academic", "social", "finance", "all"]
@@ -70,20 +117,38 @@ MODEL_NAMES: list[str] = list(MODEL_MAP.keys())
 SOURCE_FOCUS_NAMES: list[str] = list(SOURCE_FOCUS_MAP.keys())
 
 COUNCIL_DISPLAY_NAMES: dict[str, str] = {
-    "auto": "Auto (Best)",
-    "sonar": "Sonar 2",
-    "gpt54": "GPT-5.4",
-    "gpt55": "GPT-5.5",
-    "claude_sonnet": "Claude Sonnet 4.6",
-    "claude_opus": "Claude Opus 4.7",
-    "gemini_pro": "Gemini 3.1 Pro",
-    "nemotron": "Nemotron 3 Super",
-    "kimi_k26": "Kimi K2.6",
+    name: definition.display_name for name, definition in MODEL_METADATA.items()
 }
 
 THINKING_TOGGLEABLE: frozenset[str] = frozenset(
     name for name, (base, thinking) in MODEL_MAP.items() if thinking is not None and thinking is not base
 )
+
+MAX_ONLY_MODEL_NAMES: frozenset[str] = frozenset(
+    name for name, definition in MODEL_METADATA.items() if definition.minimum_tier == "max"
+)
+
+COUNCIL_ELIGIBLE_MODEL_NAMES: tuple[str, ...] = tuple(
+    name for name, definition in MODEL_METADATA.items() if definition.council_eligible
+)
+
+COUNCIL_DEFAULT_MODEL_NAMES: tuple[str, ...] = ("gpt54", "claude_sonnet", "gemini_pro")
+COUNCIL_DEFAULT_MODELS_STR = ",".join(COUNCIL_DEFAULT_MODEL_NAMES)
+
+
+def build_council_model_list(
+    model_names: tuple[str, ...] | list[str],
+    thinking: bool = False,
+) -> list[tuple[str, Model]]:
+    """Build display/model pairs for council execution from model metadata."""
+    model_list: list[tuple[str, Model]] = []
+    for name in model_names:
+        resolved = resolve_model(name, thinking=thinking)
+        display = COUNCIL_DISPLAY_NAMES.get(name, name)
+        if thinking and name in THINKING_TOGGLEABLE:
+            display += " Thinking"
+        model_list.append((display, resolved))
+    return model_list
 
 
 def resolve_model(name: str, thinking: bool = False) -> Model:

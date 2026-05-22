@@ -381,6 +381,39 @@ class TestUserSettingsFormatting:
         assert "Total queries: 0" in summary
 
 
+class TestMcpUsageFormatting:
+    """Test pplx_usage account formatting."""
+
+    @patch("perplexity_web_mcp.mcp.server.get_limit_cache")
+    @patch("perplexity_web_mcp.cli.auth.get_user_info")
+    @patch("perplexity_web_mcp.mcp.server.load_token", return_value="valid-token")
+    def test_pplx_usage_prefers_real_subscription_tier(
+        self,
+        mock_token: MagicMock,
+        mock_user_info_fn: MagicMock,
+        mock_cache_fn: MagicMock,
+    ) -> None:
+        from perplexity_web_mcp.mcp.server import pplx_usage
+
+        mock_user_info = MagicMock()
+        mock_user_info.tier_display = "Pro ($20/mo)"
+        mock_user_info_fn.return_value = mock_user_info
+
+        mock_cache = MagicMock()
+        mock_cache.get_rate_limits.return_value = RateLimits(remaining_pro=100)
+        mock_cache.get_user_settings.return_value = UserSettings(
+            subscription_tier="yearly",
+            subscription_status="active",
+        )
+        mock_cache.get_credits.return_value = None
+        mock_cache_fn.return_value = mock_cache
+
+        summary = pplx_usage.fn()
+
+        assert "Subscription: Pro ($20/mo)" in summary
+        assert "Billing: yearly (active)" in summary
+
+
 # ============================================================================
 # 5. ConnectorLimits
 # ============================================================================

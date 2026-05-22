@@ -4,6 +4,22 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.12.1] - 2026-05-22
+
+### Changed
+
+- **Subscription-aware council defaults** — Changed the default Model Council roster from `gpt54,claude_opus,gemini_pro` to the Pro-compatible `gpt54,claude_sonnet,gemini_pro`. The default chairman remains Sonar 2 (`sonar`).
+- **Centralized model metadata** — Added a shared model metadata table that tracks display names, providers, council eligibility, thinking support, and minimum subscription tier. Future model/tier changes now update in one place instead of drifting across CLI, MCP, docs, and tests.
+- **Clearer usage subscription display** — `pwm usage` and `pplx_usage` now prefer the real account tier from the same `/api/user` path used by `pwm login --check`, and label `/rest/user/settings` subscription data as billing detail.
+
+### Added
+
+- **Sonar 2 as an optional council member** — `sonar` can now be selected as a council member when users explicitly request it, while the default council roster remains premium/provider-diverse.
+- **Subscription-aware AI guidance** — MCP tool descriptions, `pwm --ai`, skill docs, and references now instruct agents to check `pplx_usage()` first and avoid Max-only `gpt55` and `claude_opus` on Pro subscriptions.
+- **Regression coverage** — Added tests for Pro-compatible defaults, Max-only metadata, Sonar council membership, and subscription/billing display.
+
+---
+
 ## [0.11.3] - 2026-05-11
 
 ### Fixed
