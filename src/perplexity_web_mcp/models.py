@@ -25,7 +25,7 @@ class Models:
     BEST = Model(identifier="pplx_pro")
     """Best - Automatically selects the best model based on the query."""
 
-    SONAR = Model(identifier="experimental")
+    SONAR = Model(identifier="experimental", mode="concise")
     """Sonar 2 — Perplexity's latest in-house model (backend id: experimental)."""
 
     GEMINI_31_PRO_THINKING = Model(identifier="gemini31pro_high")

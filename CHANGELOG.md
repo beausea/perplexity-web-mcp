@@ -4,6 +4,19 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.12.2] - 2026-06-10
+
+### Fixed
+
+- **Sonar 2 Fallback Grounding** — Changed the `Models.SONAR` definition to use standard non-Pro search (`mode="concise"`) instead of defaulting to `"copilot"`. This forces the Perplexity backend to inject search results and citations into the prompt context, generating fully grounded responses instead of returning ungrounded answers on Free-tier accounts or when Pro quota is exhausted.
+
+### Changed
+
+- **Documentation & Skills Update** — Updated `SKILL.md` (project and package data levels), `models.md` reference files, and embedded CLI docs (`ai_doc.py`) to detail Sonar 2's concise mode and the fallback citation grounding mechanism.
+- **Version Bump** — Bumped version to `0.12.2` in `pyproject.toml` and `desktop-extension/manifest.json`.
+
+---
+
 ## [0.12.1] - 2026-05-22
 
 ### Changed

@@ -110,7 +110,7 @@ MODELS
 Name            Identifier              Thinking   Notes
 -----------     ----------------------  ---------  ---------------------------
 auto            pplx_pro                No         Auto-selects best model
-sonar           experimental            No         Sonar 2 (latest in-house)
+sonar           experimental            No         Sonar 2 (concise search mode for grounded responses)
 deep_research   pplx_alpha              No         In-depth reports (monthly quota)
 gpt54           gpt54                   Yes        OpenAI GPT-5.4 (versatile)
 gpt55           gpt55                   Yes        OpenAI GPT-5.5 (latest, Max tier)
@@ -272,8 +272,8 @@ weekly pool (~300). Deep Research draws from a tiny monthly pool (~5-10).
 Wasting Pro queries on simple lookups means nothing left for real questions.
 
 COST MODEL:
-  Sonar 2 (pplx_sonar,     In-house model; still uses your session and Perplexity
-    quick intent)         counters — check pplx_usage() / pwm usage.
+  Sonar 2 (pplx_sonar,     In-house model; uses concise search mode to guarantee responses
+    quick intent)         are grounded. Decrements Perplexity session counters.
   Pro Search (standard,   Typically 1 from weekly Pro Search pool (~300/week
     detailed, pplx_ask,   on Pro/Max; exact rules are enforced by Perplexity).
     pplx_query, premium
@@ -284,7 +284,7 @@ COST MODEL:
 MANDATORY PROTOCOL:
   1. CHECK QUOTA FIRST: Call pplx_usage() before your first query each session.
   2. DEFAULT TO QUICK: Use pplx_smart_query(intent='quick') for most lookups.
-     It prefers Sonar 2 first and only escalates when the query needs a premium model.
+      It prefers Sonar 2 first (using concise mode to guarantee grounding) and only escalates when the query needs a premium model.
   3. ESCALATE ONLY WHEN NEEDED: Use 'standard' for multi-source synthesis,
      'detailed' for complex analysis, 'research' only when user requests it.
   4. NEVER USE DEEP RESEARCH AUTONOMOUSLY — always ask the user first.
@@ -299,7 +299,7 @@ WHEN TO USE EACH INTENT:
   detailed  Complex analysis, deep reasoning, premium model       → 1 Pro
   research  Comprehensive reports (user must request explicitly)  → 1 Research
 
-DECISION RULE: Ask "Can Sonar 2 answer this?" If yes → quick. If no → standard.
+DECISION RULE: Ask "Can Sonar 2 answer this?" If yes → quick (grounded on concise search). If no → standard.
 Only use detailed/research when the complexity genuinely demands it.
 When in doubt, start with quick and escalate if the answer is insufficient.
 

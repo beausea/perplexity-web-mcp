@@ -16,7 +16,7 @@ Complete list of models available through Perplexity Web MCP.
 - **Thinking:** No
 - **CLI:** `pwm ask "query" -m sonar`
 - **MCP:** `pplx_sonar(query)` or `pplx_query(query, model="sonar")`
-- **Notes:** Perplexity's latest in-house model.
+- **Notes:** Perplexity's latest in-house model. Settings default to concise search mode (`mode="concise"`), which bypasses interactive copilot to guarantee responses are grounded on retrieved search citations on all accounts (including Free tier fallback).
 
 ### deep_research (Deep Research)
 - **Identifier:** `pplx_alpha`

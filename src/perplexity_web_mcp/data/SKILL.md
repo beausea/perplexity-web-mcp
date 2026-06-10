@@ -2,7 +2,7 @@
 name: perplexity-web-mcp
 description: "Search the web and query AI models via Perplexity AI using perplexity-web-mcp-cli. Supports CLI commands (pwm ask, pwm research), MCP tools (pplx_*), and Anthropic/OpenAI-compatible API server. Use when the user mentions \"perplexity\", \"pplx\", \"pwm\", \"web search with AI\", \"deep research\", \"search the internet\", or wants to query premium models like GPT-5.4, GPT-5.5, Claude, Gemini, Nemotron through Perplexity's web interface."
 metadata:
-  version: "0.10.7"
+  version: "0.12.2"
   author: "Jacob BD"
 ---
 
@@ -129,7 +129,7 @@ The smart router automatically protects you:
 - **Healthy quota**: Uses the ideal model for your intent
 - **Low quota (<20% pro remaining)**: Response footer warns you to conserve
 - **Critical quota (<10% pro remaining)**: Downgrades detailed→auto to conserve
-- **Exhausted quota**: Falls back to Sonar 2 for everything except research
+- **Exhausted quota**: Falls back to Sonar 2 for everything except research (Sonar 2 is forced to concise mode to ensure grounded responses using search results)
 - **Research exhausted**: Falls back to premium Pro Search
 - Response metadata shows what model was used, why, and remaining quota
 
@@ -312,7 +312,7 @@ For full MCP tool parameters: See [references/mcp-tools.md](references/mcp-tools
 | CLI Name | Provider | Thinking | Notes |
 |----------|----------|----------|-------|
 | auto | Perplexity | No | Auto-selects best |
-| sonar | Perplexity | No | Sonar 2 (API id `experimental`) |
+| sonar | Perplexity | No | Sonar 2 (API id `experimental`). Uses `mode="concise"` to ensure grounded answers. |
 | deep_research | Perplexity | No | Monthly quota |
 | gpt54 | OpenAI | Toggle | GPT-5.4 (versatile) |
 | gpt55 | OpenAI | Toggle | GPT-5.5 (latest, Max tier) |
