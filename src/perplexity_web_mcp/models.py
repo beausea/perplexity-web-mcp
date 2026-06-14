@@ -55,6 +55,12 @@ class Models:
     CLAUDE_47_OPUS_THINKING = Model(identifier="claude47opusthinking")
     """Claude Opus 4.7 Thinking - Anthropic's most advanced reasoning model (thinking)."""
 
+    CLAUDE_48_OPUS = Model(identifier="claude48opus")
+    """Claude Opus 4.8 - Anthropic's most advanced reasoning model."""
+
+    CLAUDE_48_OPUS_THINKING = Model(identifier="claude48opusthinking")
+    """Claude Opus 4.8 Thinking - Anthropic's most advanced reasoning model (thinking)."""
+
     NEMOTRON_3_SUPER = Model(identifier="nv_nemotron_3_super")
     """Nemotron 3 Super - NVIDIA's Nemotron 3 Super 120B model (thinking)."""
 

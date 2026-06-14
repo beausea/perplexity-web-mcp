@@ -4,6 +4,30 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.12.3] - 2026-06-14
+
+### Added
+
+- **Claude Opus 4.8** — Updated `claude_opus` to use `claude48opus` and `claude48opusthinking` identifiers, matching Perplexity's latest model roster. Claude Opus 4.7 identifiers are retained in `models.py` for reference.
+
+### Fixed
+
+- **`pwm ask` command name** — Added explicit `name="ask"` to the CLI command decorator. `rich_click>=1.9.8` stopped stripping the `_cmd` suffix from function names, causing `pwm ask` to appear as `pwm ask-cmd` on fresh installs.
+
+---
+
+## [0.12.3] - 2026-06-14
+
+### Added
+
+- **Claude Opus 4.8** — Updated `claude_opus` to use `claude48opus` and `claude48opusthinking` identifiers, matching Perplexity's latest model roster. Claude Opus 4.7 identifiers are retained in `models.py` for reference.
+
+### Fixed
+
+- **`pwm ask` command name** — Added explicit `name="ask"` to the CLI command decorator. `rich_click>=1.9.8` stopped stripping the `_cmd` suffix from function names, causing `pwm ask` to appear as `pwm ask-cmd` on fresh installs.
+
+---
+
 ## [0.12.2] - 2026-06-10
 
 ### Fixed

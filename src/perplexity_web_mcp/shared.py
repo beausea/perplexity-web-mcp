@@ -73,9 +73,9 @@ MODEL_METADATA: dict[str, ModelDefinition] = {
         "Anthropic",
     ),
     "claude_opus": ModelDefinition(
-        Models.CLAUDE_47_OPUS,
-        Models.CLAUDE_47_OPUS_THINKING,
-        "Claude Opus 4.7",
+        Models.CLAUDE_48_OPUS,
+        Models.CLAUDE_48_OPUS_THINKING,
+        "Claude Opus 4.8",
         "Anthropic",
         minimum_tier="max",
     ),
