@@ -86,9 +86,9 @@ MODEL_METADATA: dict[str, ModelDefinition] = {
         "Google",
     ),
     "nemotron": ModelDefinition(
-        Models.NEMOTRON_3_SUPER,
-        Models.NEMOTRON_3_SUPER,
-        "Nemotron 3 Super",
+        Models.NEMOTRON_3_ULTRA,
+        Models.NEMOTRON_3_ULTRA,
+        "Nemotron 3 Ultra",
         "NVIDIA",
     ),
     "kimi_k26": ModelDefinition(Models.KIMI_K2_6, Models.KIMI_K2_6_THINKING, "Kimi K2.6", "Moonshot"),

@@ -25,14 +25,14 @@
 
 MCP server, CLI, and API-compatible interface for Perplexity AI's web interface.
 
-Use your Perplexity Pro/Max subscription to access premium models (GPT-5.4, Claude 4.6 Opus, Claude 4.6 Sonnet, Gemini 3.1 Pro, Nemotron 3 Super) from the terminal, through MCP tools, or as an API endpoint.
+Use your Perplexity Pro/Max subscription to access premium models (GPT-5.4, Claude 4.6 Opus, Claude 4.6 Sonnet, Gemini 3.1 Pro, Nemotron 3 Ultra) from the terminal, through MCP tools, or as an API endpoint.
 
 ## Features
 
 - **CLI**: Query Perplexity models directly from the terminal (`pwm ask`, `pwm council`, `pwm research`, `pwm chat`)
 - **MCP Server**: 17 MCP tools for AI agents with citations, rate limit checking, and multi-turn context
 - **API Server**: Drop-in Anthropic Messages API and OpenAI Chat Completions API
-- **6 Models**: GPT-5.4, Claude 4.6 Opus, Claude 4.6 Sonnet, Gemini 3.1 Pro, Nemotron 3 Super, Sonar 2
+- **6 Models**: GPT-5.4, Claude 4.6 Opus, Claude 4.6 Sonnet, Gemini 3.1 Pro, Nemotron 3 Ultra, Sonar 2
 - **Thinking Mode**: Extended thinking support for all compatible models
 - **Deep Research**: Full support for Perplexity's Deep Research mode
 - **Multi-Turn Conversations**: State-preserved threaded conversations for both MCP and CLI REPL
@@ -300,7 +300,7 @@ pwm --ai                   # Print comprehensive AI-optimized reference
 | `claude_sonnet` | Anthropic | Toggle | Claude 4.6 Sonnet |
 | `claude_opus` | Anthropic | Toggle | Claude 4.6 Opus (Max tier required) |
 | `gemini_pro` | Google | Always | Gemini 3.1 Pro |
-| `nemotron` | NVIDIA | Always | Nemotron 3 Super 120B |
+| `nemotron` | NVIDIA | Always | Nemotron 3 Ultra 550B |
 
 ### Source Focus
 
@@ -369,7 +369,7 @@ claude mcp add perplexity pwm-mcp
 | `pplx_claude_sonnet` / `pplx_claude_sonnet_think` | Claude 4.6 Sonnet |
 | `pplx_claude_opus` / `pplx_claude_opus_think` | Claude 4.6 Opus (Max tier) |
 | `pplx_gemini_pro_think` | Gemini 3.1 Pro (thinking always on) |
-| `pplx_nemotron_thinking` | Nemotron 3 Super (thinking always on) |
+| `pplx_nemotron_thinking` | Nemotron 3 Ultra (thinking always on) |
 
 **Smart routing (1):**
 
@@ -451,7 +451,7 @@ Our server's `MODEL_MAP` will seamlessly intercept `sonar` (or any other mapped 
 | `claude-sonnet-4-6` | Claude 4.6 Sonnet | Toggle |
 | `claude-opus-4-6` | Claude 4.6 Opus | Toggle |
 | `gemini-3.1-pro` | Gemini 3.1 Pro | Always |
-| `nemotron-3-super` / `nemotron` | Nemotron 3 Super | Always |
+| `nemotron-3-ultra` / `nemotron` | Nemotron 3 Ultra | Always |
 
 Legacy aliases (`claude-3-5-sonnet`, `claude-3-opus`) are supported for compatibility.
 

@@ -59,12 +59,12 @@ Complete list of models available through Perplexity Web MCP.
 - **MCP:** `pplx_gemini_pro_think(query)` or `pplx_query(query, model="gemini_pro")`
 - **Notes:** Thinking is permanently enabled. The `-t` flag has no effect.
 
-### nemotron (NVIDIA Nemotron 3 Super)
-- **Identifier:** `nv_nemotron_3_super`
+### nemotron (NVIDIA Nemotron 3 Ultra)
+- **Identifier:** `nv_nemotron_3_ultra`
 - **Thinking:** Always on (no non-thinking variant)
 - **CLI:** `pwm ask "query" -m nemotron`
 - **MCP:** `pplx_nemotron_thinking(query)` or `pplx_query(query, model="nemotron")`
-- **Notes:** NVIDIA's Nemotron 3 Super 120B model. Thinking is permanently enabled.
+- **Notes:** NVIDIA's Nemotron 3 Ultra 550B model. Thinking is permanently enabled.
 
 ### kimi_k26 (Moonshot Kimi K2.6)
 - **Identifier:** `kimik26instant` / `kimik26thinking`

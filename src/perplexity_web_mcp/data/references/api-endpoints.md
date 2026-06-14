@@ -68,7 +68,7 @@ The API server accepts many model name variants:
 | `gpt-5.4`, `gpt-54`, `gpt54` | GPT-5.4 (versatile) |
 | `gpt-5.5`, `gpt-5-5`, `gpt-55`, `gpt55` | GPT-5.5 (latest, Max tier) |
 | `gemini-3.1-pro`, `gemini-3-pro`, `gemini-pro` | Gemini 3.1 Pro |
-| `nemotron-3-super`, `nemotron` | Nemotron 3 Super |
+| `nemotron-3-ultra`, `nemotron` | Nemotron 3 Ultra |
 
 Unknown model names fall back to `perplexity-auto`.
 

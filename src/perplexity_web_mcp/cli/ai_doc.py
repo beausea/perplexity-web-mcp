@@ -117,7 +117,7 @@ gpt55           gpt55                   Yes        OpenAI GPT-5.5 (latest, Max t
 claude_sonnet   claude46sonnet          Yes        Anthropic Claude 4.6 Sonnet
 claude_opus     claude48opus            Yes        Anthropic Claude 4.8 Opus (Max tier)
 gemini_pro      gemini31pro_high        Always     Google Gemini 3.1 Pro (thinking only)
-nemotron        nv_nemotron_3_super     Always     NVIDIA Nemotron 3 Super 120B (thinking only)
+nemotron        nv_nemotron_3_ultra     Always     NVIDIA Nemotron 3 Ultra 550B (thinking only)
 kimi_k26        kimi_k26                Yes        Moonshot Kimi K2.6
 
 "Thinking" = extended reasoning mode. Models marked "Always" have thinking
@@ -194,7 +194,7 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   pplx_claude_opus(query, source_focus="web")     Claude 4.8 Opus — 1 Pro (Max tier)
   pplx_claude_opus_think(query, source_focus)     Claude 4.8 Opus + thinking — 1 Pro (Max tier)
   pplx_gemini_pro_think(query, source_focus)      Gemini 3.1 Pro (thinking) — 1 Pro
-  pplx_nemotron_thinking(query, source_focus)     Nemotron 3 Super (thinking) — 1 Pro
+  pplx_nemotron_thinking(query, source_focus)     Nemotron 3 Ultra (thinking) — 1 Pro
   pplx_kimi_k26(query, source_focus="web")        Kimi K2.6 — 1 Pro
   pplx_kimi_k26_thinking(query, source_focus)     Kimi K2.6 + thinking — 1 Pro
 

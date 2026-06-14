@@ -235,8 +235,8 @@ def pplx_gemini_pro_think(query: str, source_focus: SourceFocusName = "web", con
 def pplx_nemotron_thinking(
     query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None
 ) -> str:
-    """Nemotron 3 Super — NVIDIA's Nemotron 3 Super 120B model with extended thinking. COSTS 1 PRO SEARCH QUERY."""
-    return ask(query, Models.NEMOTRON_3_SUPER, source_focus, conversation_id)
+    """Nemotron 3 Ultra — NVIDIA's Nemotron 3 Ultra 550B model with extended thinking. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.NEMOTRON_3_ULTRA, source_focus, conversation_id)
 
 
 @mcp.tool

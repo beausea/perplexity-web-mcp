@@ -292,7 +292,7 @@ pwm usage --refresh         # Force-refresh from server
 | `pplx_claude_sonnet` / `_think` | 1 Pro | Anthropic Claude 4.6 Sonnet |
 | `pplx_claude_opus` / `_think` | 1 Pro | Anthropic Claude 4.8 Opus |
 | `pplx_gemini_pro_think` | 1 Pro | Google Gemini 3.1 Pro (thinking always on) |
-| `pplx_nemotron_thinking` | 1 Pro | NVIDIA Nemotron 3 Super (thinking always on) |
+| `pplx_nemotron_thinking` | 1 Pro | NVIDIA Nemotron 3 Ultra (thinking always on) |
 | `pplx_kimi_k26` / `_thinking` | 1 Pro | Moonshot Kimi K2.6 |
 | `pplx_deep_research` | 1 Research | In-depth reports (**scarce monthly quota**) |
 | `pplx_usage` | FREE | Check remaining quotas |
@@ -319,7 +319,7 @@ For full MCP tool parameters: See [references/mcp-tools.md](references/mcp-tools
 | claude_sonnet | Anthropic | Toggle | Claude 4.6 Sonnet |
 | claude_opus | Anthropic | Toggle | Claude 4.8 Opus (Max tier) |
 | gemini_pro | Google | Always | Gemini 3.1 Pro |
-| nemotron | NVIDIA | Always | Nemotron 3 Super 120B |
+| nemotron | NVIDIA | Always | Nemotron 3 Ultra 550B |
 | kimi_k26 | Moonshot | Toggle | Kimi K2.6 |
 
 For full model details: See [references/models.md](references/models.md)

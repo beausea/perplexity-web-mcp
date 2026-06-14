@@ -169,12 +169,12 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     "gemini-3-pro": (Models.GEMINI_31_PRO_THINKING, Models.GEMINI_31_PRO_THINKING),
     "gemini-pro": (Models.GEMINI_31_PRO_THINKING, Models.GEMINI_31_PRO_THINKING),
     # ==========================================================================
-    # NVIDIA Nemotron 3 Super (via Perplexity)
+    # NVIDIA Nemotron 3 Ultra (via Perplexity)
     # Thinking ALWAYS enabled (no toggle in UI) - reasoning only
     # ==========================================================================
-    "nemotron-3-super": (Models.NEMOTRON_3_SUPER, Models.NEMOTRON_3_SUPER),
-    "nemotron-3": (Models.NEMOTRON_3_SUPER, Models.NEMOTRON_3_SUPER),
-    "nemotron": (Models.NEMOTRON_3_SUPER, Models.NEMOTRON_3_SUPER),
+    "nemotron-3-ultra": (Models.NEMOTRON_3_ULTRA, Models.NEMOTRON_3_ULTRA),
+    "nemotron-3": (Models.NEMOTRON_3_ULTRA, Models.NEMOTRON_3_ULTRA),
+    "nemotron": (Models.NEMOTRON_3_ULTRA, Models.NEMOTRON_3_ULTRA),
     # ==========================================================================
     # Moonshot Kimi Models (via Perplexity)
     # Kimi K2.6 - supports thinking toggle
@@ -200,7 +200,7 @@ AVAILABLE_MODELS = [
     {"id": "claude-sonnet-4-6", "description": "Claude Sonnet 4.6 - Fast, thinking toggle available"},
     {"id": "claude-opus-4-8", "description": "Claude Opus 4.8 - Advanced reasoning, Max tier required"},
     # NVIDIA
-    {"id": "nemotron-3-super", "description": "Nemotron 3 Super - NVIDIA 120B, thinking always on"},
+    {"id": "nemotron-3-ultra", "description": "Nemotron 3 Ultra - NVIDIA 120B, thinking always on"},
     # Moonshot
     {"id": "kimi-k2.6", "description": "Kimi K2.6 - Advanced, thinking toggle available"},
 ]

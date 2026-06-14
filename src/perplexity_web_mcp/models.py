@@ -64,6 +64,9 @@ class Models:
     NEMOTRON_3_SUPER = Model(identifier="nv_nemotron_3_super")
     """Nemotron 3 Super - NVIDIA's Nemotron 3 Super 120B model (thinking)."""
 
+    NEMOTRON_3_ULTRA = Model(identifier="nv_nemotron_3_ultra")
+    """Nemotron 3 Ultra - NVIDIA's Nemotron 3 Ultra 550B model (thinking)."""
+
     KIMI_K2_6 = Model(identifier="kimik26instant")
     """Kimi K2.6 - Moonshot AI's latest model."""
 
