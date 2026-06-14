@@ -96,8 +96,8 @@ pplx_<model>(
 | `pplx_gpt55_thinking` | GPT-5.5 (latest, Max tier) | Yes | 1 Pro |
 | `pplx_claude_sonnet` | Claude 4.6 Sonnet | No | 1 Pro |
 | `pplx_claude_sonnet_think` | Claude 4.6 Sonnet | Yes | 1 Pro |
-| `pplx_claude_opus` | Claude 4.7 Opus (Max tier) | No | 1 Pro |
-| `pplx_claude_opus_think` | Claude 4.7 Opus (Max tier) | Yes | 1 Pro |
+| `pplx_claude_opus` | Claude 4.8 Opus (Max tier) | No | 1 Pro |
+| `pplx_claude_opus_think` | Claude 4.8 Opus (Max tier) | Yes | 1 Pro |
 | `pplx_gemini_pro_think` | Gemini 3.1 Pro | Yes (always) | 1 Pro |
 | `pplx_nemotron_thinking` | Nemotron 3 Super | Yes (always) | 1 Pro |
 | `pplx_kimi_k26` | Kimi K2.6 | No | 1 Pro |

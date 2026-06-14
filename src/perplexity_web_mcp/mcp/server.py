@@ -213,16 +213,16 @@ def pplx_claude_sonnet_think(
 
 @mcp.tool
 def pplx_claude_opus(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """Claude Opus 4.7 — Anthropic's most advanced reasoning model. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
-    return ask(query, Models.CLAUDE_47_OPUS, source_focus, conversation_id)
+    """Claude Opus 4.8 — Anthropic's most advanced reasoning model. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
+    return ask(query, Models.CLAUDE_48_OPUS, source_focus, conversation_id)
 
 
 @mcp.tool
 def pplx_claude_opus_think(
     query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None
 ) -> str:
-    """Claude Opus 4.7 Thinking — Anthropic's most advanced reasoning model with extended thinking. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
-    return ask(query, Models.CLAUDE_47_OPUS_THINKING, source_focus, conversation_id)
+    """Claude Opus 4.8 Thinking — Anthropic's most advanced reasoning model with extended thinking. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
+    return ask(query, Models.CLAUDE_48_OPUS_THINKING, source_focus, conversation_id)
 
 
 @mcp.tool

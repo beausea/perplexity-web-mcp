@@ -198,7 +198,7 @@ AVAILABLE_MODELS = [
     {"id": "gpt-5.5", "description": "GPT-5.5 - OpenAI's latest, Max tier required, thinking toggle available"},
     # Anthropic Claude
     {"id": "claude-sonnet-4-6", "description": "Claude Sonnet 4.6 - Fast, thinking toggle available"},
-    {"id": "claude-opus-4-7", "description": "Claude Opus 4.7 - Advanced reasoning, Max tier required"},
+    {"id": "claude-opus-4-8", "description": "Claude Opus 4.8 - Advanced reasoning, Max tier required"},
     # NVIDIA
     {"id": "nemotron-3-super", "description": "Nemotron 3 Super - NVIDIA 120B, thinking always on"},
     # Moonshot

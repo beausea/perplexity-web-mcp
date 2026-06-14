@@ -45,8 +45,8 @@ Complete list of models available through Perplexity Web MCP.
 - **CLI:** `pwm ask "query" -m claude_sonnet` or `pwm ask "query" -m claude_sonnet -t`
 - **MCP:** `pplx_claude_sonnet(query)` or `pplx_claude_sonnet_think(query)`
 
-### claude_opus (Anthropic Claude 4.7 Opus)
-- **Identifier:** `claude47opus` / `claude47opusthinking`
+### claude_opus (Anthropic Claude 4.8 Opus)
+- **Identifier:** `claude48opus` / `claude48opusthinking`
 - **Thinking:** Toggle
 - **CLI:** `pwm ask "query" -m claude_opus` or `pwm ask "query" -m claude_opus -t`
 - **MCP:** `pplx_claude_opus(query)` or `pplx_claude_opus_think(query)`

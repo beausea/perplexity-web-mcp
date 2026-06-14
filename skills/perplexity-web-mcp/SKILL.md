@@ -290,7 +290,7 @@ pwm usage --refresh         # Force-refresh from server
 | `pplx_gpt54` / `_thinking` | 1 Pro | OpenAI GPT-5.4 (versatile) |
 | `pplx_gpt55` / `_thinking` | 1 Pro | OpenAI GPT-5.5 (latest, Max tier) |
 | `pplx_claude_sonnet` / `_think` | 1 Pro | Anthropic Claude 4.6 Sonnet |
-| `pplx_claude_opus` / `_think` | 1 Pro | Anthropic Claude 4.7 Opus |
+| `pplx_claude_opus` / `_think` | 1 Pro | Anthropic Claude 4.8 Opus |
 | `pplx_gemini_pro_think` | 1 Pro | Google Gemini 3.1 Pro (thinking always on) |
 | `pplx_nemotron_thinking` | 1 Pro | NVIDIA Nemotron 3 Super (thinking always on) |
 | `pplx_kimi_k26` / `_thinking` | 1 Pro | Moonshot Kimi K2.6 |
@@ -317,7 +317,7 @@ For full MCP tool parameters: See [references/mcp-tools.md](references/mcp-tools
 | gpt54 | OpenAI | Toggle | GPT-5.4 (versatile) |
 | gpt55 | OpenAI | Toggle | GPT-5.5 (latest, Max tier) |
 | claude_sonnet | Anthropic | Toggle | Claude 4.6 Sonnet |
-| claude_opus | Anthropic | Toggle | Claude 4.7 Opus (Max tier) |
+| claude_opus | Anthropic | Toggle | Claude 4.8 Opus (Max tier) |
 | gemini_pro | Google | Always | Gemini 3.1 Pro |
 | nemotron | NVIDIA | Always | Nemotron 3 Super 120B |
 | kimi_k26 | Moonshot | Toggle | Kimi K2.6 |

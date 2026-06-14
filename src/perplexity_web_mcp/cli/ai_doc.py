@@ -115,7 +115,7 @@ deep_research   pplx_alpha              No         In-depth reports (monthly quo
 gpt54           gpt54                   Yes        OpenAI GPT-5.4 (versatile)
 gpt55           gpt55                   Yes        OpenAI GPT-5.5 (latest, Max tier)
 claude_sonnet   claude46sonnet          Yes        Anthropic Claude 4.6 Sonnet
-claude_opus     claude47opus            Yes        Anthropic Claude 4.7 Opus (Max tier)
+claude_opus     claude48opus            Yes        Anthropic Claude 4.8 Opus (Max tier)
 gemini_pro      gemini31pro_high        Always     Google Gemini 3.1 Pro (thinking only)
 nemotron        nv_nemotron_3_super     Always     NVIDIA Nemotron 3 Super 120B (thinking only)
 kimi_k26        kimi_k26                Yes        Moonshot Kimi K2.6
@@ -191,8 +191,8 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   pplx_gpt55_thinking(query, source_focus="web") GPT-5.5 + thinking — 1 Pro (Max tier)
   pplx_claude_sonnet(query, source_focus="web")   Claude 4.6 Sonnet — 1 Pro
   pplx_claude_sonnet_think(query, source_focus)   Claude 4.6 Sonnet + thinking — 1 Pro
-  pplx_claude_opus(query, source_focus="web")     Claude 4.7 Opus — 1 Pro (Max tier)
-  pplx_claude_opus_think(query, source_focus)     Claude 4.7 Opus + thinking — 1 Pro (Max tier)
+  pplx_claude_opus(query, source_focus="web")     Claude 4.8 Opus — 1 Pro (Max tier)
+  pplx_claude_opus_think(query, source_focus)     Claude 4.8 Opus + thinking — 1 Pro (Max tier)
   pplx_gemini_pro_think(query, source_focus)      Gemini 3.1 Pro (thinking) — 1 Pro
   pplx_nemotron_thinking(query, source_focus)     Nemotron 3 Super (thinking) — 1 Pro
   pplx_kimi_k26(query, source_focus="web")        Kimi K2.6 — 1 Pro

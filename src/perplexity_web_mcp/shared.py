@@ -535,7 +535,7 @@ def council_ask(
     Args:
         query: The question to ask all models.
         models: List of (display_name, Model) tuples. Defaults to
-                GPT-5.4, Claude Opus 4.7, and Gemini 3.1 Pro.
+                GPT-5.4, Claude Opus 4.8, and Gemini 3.1 Pro.
         source_focus: Source focus for all queries.
         synthesize: Whether to run Sonar 2 synthesis (default chairman; still a web query).
         thinking: Use thinking model variants for default council members.

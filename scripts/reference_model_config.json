@@ -187,6 +187,24 @@
       "mode": "search",
       "provider": "GOOGLE"
     },
+    "gemini35flash": {
+      "label": "Gemini 3.5 Flash",
+      "description": "Google's fast model",
+      "mode": "search",
+      "provider": "GOOGLE"
+    },
+    "gemini35flash_medium": {
+      "label": "Gemini 3.5 Flash Medium Thinking",
+      "description": "Google's fast model with medium thinking",
+      "mode": "search",
+      "provider": "GOOGLE"
+    },
+    "gemini35flash_high": {
+      "label": "Gemini 3.5 Flash Thinking",
+      "description": "Google's fast model with thinking",
+      "mode": "search",
+      "provider": "GOOGLE"
+    },
     "grok": {
       "label": "Grok 3 Beta",
       "description": "xAI's Grok 3 model",
@@ -249,6 +267,18 @@
     },
     "claude47opusthinking": {
       "label": "Claude Opus 4.7 Thinking",
+      "description": "Anthropic's most advanced model with thinking",
+      "mode": "search",
+      "provider": "ANTHROPIC"
+    },
+    "claude48opus": {
+      "label": "Claude Opus 4.8",
+      "description": "Anthropic's most advanced model",
+      "mode": "search",
+      "provider": "ANTHROPIC"
+    },
+    "claude48opusthinking": {
+      "label": "Claude Opus 4.8 Thinking",
       "description": "Anthropic's most advanced model with thinking",
       "mode": "search",
       "provider": "ANTHROPIC"
@@ -343,6 +373,12 @@
       "mode": "search",
       "provider": "NVIDIA"
     },
+    "nv_nemotron_3_ultra": {
+      "label": "Nemotron 3 Ultra",
+      "description": "NVIDIA's Nemotron 3 Ultra 550B model",
+      "mode": "search",
+      "provider": "NVIDIA"
+    },
     "o4mini": {
       "label": "o4-mini",
       "description": "OpenAI's latest reasoning model",
@@ -398,14 +434,20 @@
       "provider": "ANTHROPIC"
     },
     "pplx_asi_opus": {
-      "label": "Claude Opus 4.7",
-      "description": "Computer powered by Claude 4.7 Opus",
+      "label": "Claude Opus 4.8",
+      "description": "Computer powered by Claude Opus 4.8",
+      "mode": "asi",
+      "provider": "ANTHROPIC"
+    },
+    "pplx_asi_fable_5": {
+      "label": "Claude Fable 5",
+      "description": "Computer powered by Claude Fable 5",
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
     "pplx_asi_opus_thinking": {
-      "label": "Claude Opus 4.7 Thinking",
-      "description": "Computer powered by Claude 4.7 Opus with thinking",
+      "label": "Claude Opus 4.8 Thinking",
+      "description": "Computer powered by Claude Opus 4.8 with thinking",
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
@@ -416,8 +458,8 @@
       "provider": "OPENAI"
     },
     "pplx_asi_gpt_55": {
-      "label": "GPT 5.5",
-      "description": "Computer powered by GPT 5.5",
+      "label": "GPT-5.5",
+      "description": "Computer powered by GPT-5.5",
       "mode": "asi",
       "provider": "OPENAI"
     },
@@ -435,13 +477,13 @@
     },
     "pplx_asi_sonnet": {
       "label": "Claude Sonnet 4.6",
-      "description": "Computer powered by Claude 4.6 Sonnet",
+      "description": "Computer powered by Claude Sonnet 4.6",
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
     "pplx_asi_sonnet_thinking": {
       "label": "Claude Sonnet 4.6 Thinking",
-      "description": "Computer powered by Claude 4.6 Sonnet with thinking",
+      "description": "Computer powered by Claude Sonnet 4.6 with thinking",
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
@@ -457,15 +499,21 @@
       "mode": "document_review",
       "provider": "PERPLEXITY"
     },
+    "comet_browser_agent": {
+      "label": "Best",
+      "description": "Selects the best available browser agent model",
+      "mode": "browser_agent",
+      "provider": null
+    },
     "comet_browser_agent_sonnet": {
       "label": "Claude Sonnet 4.6",
-      "description": "Browser agent powered by Claude 4.6 Sonnet",
+      "description": "Browser agent powered by Claude Sonnet 4.6",
       "mode": "browser_agent",
       "provider": "ANTHROPIC"
     },
     "comet_browser_agent_opus": {
       "label": "Claude Opus 4.7",
-      "description": "Browser agent powered by Claude 4.7 Opus",
+      "description": "Browser agent powered by Claude Opus 4.7",
       "mode": "browser_agent",
       "provider": "ANTHROPIC"
     },
@@ -539,7 +587,7 @@
     },
     {
       "label": "Claude Sonnet 4.6",
-      "description": "Browser agent powered by Claude 4.6 Sonnet",
+      "description": "Browser agent powered by Claude Sonnet 4.6",
       "subheading": null,
       "has_new_tag": false,
       "subscription_tier": "pro",
@@ -550,8 +598,8 @@
       "is_default": false
     },
     {
-      "label": "Claude Opus 4.7",
-      "description": "Browser agent powered by Claude 4.7 Opus",
+      "label": "Claude Opus 4.8",
+      "description": "Browser agent powered by Claude Opus 4.8",
       "subheading": null,
       "has_new_tag": false,
       "subscription_tier": "max",
@@ -610,13 +658,13 @@
       "is_default": false
     },
     {
-      "label": "Claude Opus 4.7",
+      "label": "Claude Opus 4.8",
       "description": "Anthropic's most advanced model",
       "subheading": null,
       "has_new_tag": true,
       "subscription_tier": "max",
-      "non_reasoning_model": "claude47opus",
-      "reasoning_model": "claude47opusthinking",
+      "non_reasoning_model": "claude48opus",
+      "reasoning_model": "claude48opusthinking",
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -634,13 +682,13 @@
       "is_default": false
     },
     {
-      "label": "Nemotron 3 Super",
-      "description": "NVIDIA's Nemotron 3 Super 120B model",
+      "label": "Nemotron 3 Ultra",
+      "description": "NVIDIA's Nemotron 3 Ultra 550B model",
       "subheading": null,
-      "has_new_tag": false,
+      "has_new_tag": true,
       "subscription_tier": "pro",
       "non_reasoning_model": null,
-      "reasoning_model": "nv_nemotron_3_super",
+      "reasoning_model": "nv_nemotron_3_ultra",
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -648,35 +696,35 @@
     {
       "label": "GPT-5.5",
       "description": "Computer powered by GPT-5.5",
-      "subheading": "Newest model for complex tasks.",
-      "has_new_tag": true,
+      "subheading": "OpenAI's newest model for complex tasks.",
+      "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_gpt_55",
       "reasoning_model": null,
       "text_only_model": false,
       "audience": null,
-      "is_default": true
+      "is_default": false
     },
     {
-      "label": "Claude Opus 4.7",
-      "description": "Computer powered by Claude 4.7 Opus",
+      "label": "Claude Opus 4.8",
+      "description": "Computer powered by Claude Opus 4.8",
       "subheading": "Powerful model for complex tasks.",
       "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_opus",
-      "reasoning_model": "pplx_asi_opus_thinking",
+      "reasoning_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
     },
     {
       "label": "Claude Sonnet 4.6",
-      "description": "Computer powered by Claude 4.6 Sonnet",
+      "description": "Computer powered by Claude Sonnet 4.6",
       "subheading": "Great for most everyday tasks. Uses fewer credits.",
       "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_sonnet",
-      "reasoning_model": "pplx_asi_sonnet_thinking",
+      "reasoning_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -688,12 +736,12 @@
     "agentic_research": "pplx_agentic_research",
     "study": "pplx_study",
     "document_review": "pplx_document_review",
-    "browser_agent": "comet_browser_agent_sonnet",
+    "browser_agent": "comet_browser_agent",
     "asi": "pplx_asi"
   },
   "agentic_research_compare_models": [
     "gpt55_thinking",
-    "claude47opusthinking",
+    "claude48opusthinking",
     "gemini31pro_high"
   ]
 }
