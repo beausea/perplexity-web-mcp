@@ -91,7 +91,7 @@ def cli(ctx):
 # ── Ask ────────────────────────────────────────────────────────────────────
 
 
-@cli.command()
+@cli.command(name="ask")
 @click.argument("query")
 @click.option("-m", "--model", "model_name", default="auto", help=f"Model to use ({', '.join(MODEL_NAMES)}).")
 @click.option("-t", "--thinking", is_flag=True, help="Enable extended thinking mode.")
