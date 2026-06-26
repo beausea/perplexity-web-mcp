@@ -218,7 +218,6 @@ class TestBuildPayload:
         assert payload["params"]["sources"] == ["web", "scholar"]
 
     def test_followup_includes_uuid_and_token(self) -> None:
-
         conv = self._conv()
         conv._backend_uuid = "uuid-123"
         conv._read_write_token = "token-456"

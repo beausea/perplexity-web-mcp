@@ -13,6 +13,7 @@
 ### Task 1: Endpoint-Aware HTTP Errors
 
 **Files:**
+
 - Modify: `src/perplexity_web_mcp/exceptions.py`
 - Modify: `src/perplexity_web_mcp/http.py`
 - Test: `tests/test_http.py`
@@ -24,6 +25,7 @@
 ### Task 2: CLI Debug Env Support
 
 **Files:**
+
 - Modify: `src/perplexity_web_mcp/shared.py`
 - Test: `tests/test_shared.py`
 
@@ -34,6 +36,7 @@
 ### Task 3: Better 403 Formatting
 
 **Files:**
+
 - Modify: `src/perplexity_web_mcp/shared.py`
 - Test: `tests/test_shared.py`
 
@@ -44,6 +47,7 @@
 ### Task 4: Doctor Verbose Diagnostics
 
 **Files:**
+
 - Modify: `src/perplexity_web_mcp/cli/doctor.py`
 - Test: `tests/test_doctor.py`
 

@@ -4,7 +4,17 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
-## [0.12.3] - 2026-06-14
+## [0.12.5] - 2026-06-25
+
+### Fixed
+
+- **Antigravity MCP config path** — Corrected the Antigravity `setup.py` path to properly configure the server in the global `~/.gemini/config/mcp_config.json` location instead of `~/.gemini/antigravity/mcp_config.json`.
+- **Model tests** — Updated the `nemotron` model resolution in the test suite to expect the new `nv_nemotron_3_ultra` identifier.
+- **Connection error diagnostics** — Improved HTTP error formatting to clearly mention blocked endpoints and network issues, making token debugging easier.
+
+---
+
+## [0.12.4] - 2026-06-14
 
 ### Added
 
@@ -61,7 +71,7 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ### Fixed
 
-- **Skill install tool detection** — The `pwm skill install all` detection logic was checking whether the `skills/` subdirectory existed inside a tool's config folder, which only gets created *after* the first skill install. This falsely concluded tools like Claude Code or Cursor weren't installed even when they were. Replaced `_is_tool_detected()` with `_is_tool_installed()` which checks two independent signals (either sufficient): binary on PATH via `shutil.which()`, or the tool's root config directory existing (e.g. `~/.claude`, `~/.cursor`). Each tool now declares its `binary` name and `root_dirs` in the `SkillTarget` dataclass.
+- **Skill install tool detection** — The `pwm skill install all` detection logic was checking whether the `skills/` subdirectory existed inside a tool's config folder, which only gets created _after_ the first skill install. This falsely concluded tools like Claude Code or Cursor weren't installed even when they were. Replaced `_is_tool_detected()` with `_is_tool_installed()` which checks two independent signals (either sufficient): binary on PATH via `shutil.which()`, or the tool's root config directory existing (e.g. `~/.claude`, `~/.cursor`). Each tool now declares its `binary` name and `root_dirs` in the `SkillTarget` dataclass.
 - **Clearer detection warning** — "No supported tools detected" message now explains what was checked ("No binary on PATH and no config directory found") instead of the old confusing output.
 
 ### Added
@@ -356,7 +366,6 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 - MCP tool count updated to 21 across all documentation surfaces.
 
 ---
-
 
 ## [0.8.2] - 2026-03-05
 

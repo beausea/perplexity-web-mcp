@@ -46,6 +46,7 @@ class ModelDefinition:
     minimum_tier: SubscriptionMinimumTier = "pro"
     council_eligible: bool = True
 
+
 SOURCE_FOCUS_MAP: dict[str, list[SourceFocus]] = {
     "none": [],
     "web": [SourceFocus.WEB],
@@ -117,9 +118,7 @@ ModelName = Literal[
 MODEL_NAMES: list[str] = list(MODEL_MAP.keys())
 SOURCE_FOCUS_NAMES: list[str] = list(SOURCE_FOCUS_MAP.keys())
 
-COUNCIL_DISPLAY_NAMES: dict[str, str] = {
-    name: definition.display_name for name, definition in MODEL_METADATA.items()
-}
+COUNCIL_DISPLAY_NAMES: dict[str, str] = {name: definition.display_name for name, definition in MODEL_METADATA.items()}
 
 THINKING_TOGGLEABLE: frozenset[str] = frozenset(
     name for name, (base, thinking) in MODEL_MAP.items() if thinking is not None and thinking is not base

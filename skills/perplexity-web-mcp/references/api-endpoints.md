@@ -13,6 +13,7 @@ pwm api
 Default: `http://localhost:8080`
 
 Environment variables:
+
 - `HOST` -- Bind address (default: `0.0.0.0`)
 - `PORT` -- Port number (default: `8080`)
 - `LOG_LEVEL` -- Logging level (default: `INFO`)
@@ -26,6 +27,7 @@ Environment variables:
 Drop-in replacement for Anthropic's Messages API.
 
 Supports:
+
 - Single and multi-turn conversations
 - System prompts
 - Streaming (SSE) and non-streaming responses
@@ -36,6 +38,7 @@ Supports:
 Drop-in replacement for OpenAI's Chat Completions API.
 
 Supports:
+
 - System, user, and assistant messages
 - Streaming (SSE) and non-streaming responses
 - `reasoning_effort` mapped to thinking models
@@ -56,19 +59,19 @@ Health check with uptime and session stats.
 
 The API server accepts many model name variants:
 
-| API Model Name | Maps To |
-|---------------|---------|
-| `perplexity-auto`, `auto`, `best` | Perplexity Best (auto-select) |
-| `perplexity-sonar`, `sonar` | Perplexity Sonar 2 |
-| `perplexity-research`, `deep-research` | Deep Research |
-| `claude-sonnet-4-6`, `claude-4-6-sonnet`, `claude` | Claude 4.6 Sonnet |
-| `claude-opus-4-7`, `claude-4-7-opus`, `opus` | Claude 4.7 Opus (Max tier) |
-| `claude-3-5-sonnet` (legacy) | Claude 4.6 Sonnet |
-| `claude-3-opus` (legacy) | Claude 4.7 Opus |
-| `gpt-5.4`, `gpt-54`, `gpt54` | GPT-5.4 (versatile) |
-| `gpt-5.5`, `gpt-5-5`, `gpt-55`, `gpt55` | GPT-5.5 (latest, Max tier) |
-| `gemini-3.1-pro`, `gemini-3-pro`, `gemini-pro` | Gemini 3.1 Pro |
-| `nemotron-3-ultra`, `nemotron` | Nemotron 3 Ultra |
+| API Model Name                                     | Maps To                       |
+| -------------------------------------------------- | ----------------------------- |
+| `perplexity-auto`, `auto`, `best`                  | Perplexity Best (auto-select) |
+| `perplexity-sonar`, `sonar`                        | Perplexity Sonar 2            |
+| `perplexity-research`, `deep-research`             | Deep Research                 |
+| `claude-sonnet-4-6`, `claude-4-6-sonnet`, `claude` | Claude 4.6 Sonnet             |
+| `claude-opus-4-7`, `claude-4-7-opus`, `opus`       | Claude 4.7 Opus (Max tier)    |
+| `claude-3-5-sonnet` (legacy)                       | Claude 4.6 Sonnet             |
+| `claude-3-opus` (legacy)                           | Claude 4.7 Opus               |
+| `gpt-5.4`, `gpt-54`, `gpt54`                       | GPT-5.4 (versatile)           |
+| `gpt-5.5`, `gpt-5-5`, `gpt-55`, `gpt55`            | GPT-5.5 (latest, Max tier)    |
+| `gemini-3.1-pro`, `gemini-3-pro`, `gemini-pro`     | Gemini 3.1 Pro                |
+| `nemotron-3-ultra`, `nemotron`                     | Nemotron 3 Ultra              |
 
 Unknown model names fall back to `perplexity-auto`.
 

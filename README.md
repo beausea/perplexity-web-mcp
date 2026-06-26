@@ -291,28 +291,28 @@ pwm --ai                   # Print comprehensive AI-optimized reference
 
 ## Models
 
-| CLI Name | Provider | Thinking | Notes |
-|----------|----------|----------|-------|
-| `auto` | Perplexity | No | Auto-selects best model |
-| `sonar` | Perplexity | No | Sonar 2 (latest in-house; API id `experimental`) |
-| `deep_research` | Perplexity | No | Monthly quota, in-depth reports |
-| `gpt54` | OpenAI | Toggle | GPT-5.4 |
-| `claude_sonnet` | Anthropic | Toggle | Claude 4.6 Sonnet |
-| `claude_opus` | Anthropic | Toggle | Claude 4.6 Opus (Max tier required) |
-| `gemini_pro` | Google | Always | Gemini 3.1 Pro |
-| `nemotron` | NVIDIA | Always | Nemotron 3 Ultra 550B |
+| CLI Name        | Provider   | Thinking | Notes                                            |
+| --------------- | ---------- | -------- | ------------------------------------------------ |
+| `auto`          | Perplexity | No       | Auto-selects best model                          |
+| `sonar`         | Perplexity | No       | Sonar 2 (latest in-house; API id `experimental`) |
+| `deep_research` | Perplexity | No       | Monthly quota, in-depth reports                  |
+| `gpt54`         | OpenAI     | Toggle   | GPT-5.4                                          |
+| `claude_sonnet` | Anthropic  | Toggle   | Claude 4.6 Sonnet                                |
+| `claude_opus`   | Anthropic  | Toggle   | Claude 4.6 Opus (Max tier required)              |
+| `gemini_pro`    | Google     | Always   | Gemini 3.1 Pro                                   |
+| `nemotron`      | NVIDIA     | Always   | Nemotron 3 Ultra 550B                            |
 
 ### Source Focus
 
 Control where Perplexity searches using `-s` (CLI) or `source_focus` (MCP):
 
-| Option | Description | Example Use Case |
-|--------|-------------|------------------|
-| `web` | General web search (default) | News, general questions |
-| `academic` | Academic papers, journals | Research, citations, scientific topics |
-| `social` | Reddit, Twitter, forums | Opinions, recommendations, community sentiment |
-| `finance` | SEC EDGAR filings | Company financials, regulatory filings |
-| `all` | Web + Academic + Social combined | Broad coverage across all sources |
+| Option     | Description                      | Example Use Case                               |
+| ---------- | -------------------------------- | ---------------------------------------------- |
+| `web`      | General web search (default)     | News, general questions                        |
+| `academic` | Academic papers, journals        | Research, citations, scientific topics         |
+| `social`   | Reddit, Twitter, forums          | Opinions, recommendations, community sentiment |
+| `finance`  | SEC EDGAR filings                | Company financials, regulatory filings         |
+| `all`      | Web + Academic + Social combined | Broad coverage across all sources              |
 
 ---
 
@@ -329,11 +329,13 @@ pwm setup add claude-code
 Or configure manually for any MCP client:
 
 **Claude Code CLI:**
+
 ```bash
 claude mcp add perplexity pwm-mcp
 ```
 
 **Claude Desktop** — Download the `.mcpb` extension from the [latest release](https://github.com/jacob-bd/perplexity-web-mcp/releases/latest) and open it with Claude Desktop. Or configure manually:
+
 ```json
 {
   "mcpServers": {
@@ -345,6 +347,7 @@ claude mcp add perplexity pwm-mcp
 ```
 
 **Cursor** (`~/.cursor/mcp.json`):
+
 ```json
 {
   "mcpServers": {
@@ -359,38 +362,38 @@ claude mcp add perplexity pwm-mcp
 
 **Query tools (12):**
 
-| Tool | Description |
-|------|-------------|
-| `pplx_query` | Flexible: model selection + thinking toggle |
-| `pplx_ask` | Quick Q&A (auto-selects best model) |
-| `pplx_deep_research` | In-depth reports with sources |
-| `pplx_sonar` | Perplexity Sonar 2 (1 Pro Search) |
-| `pplx_gpt54` / `pplx_gpt54_thinking` | GPT-5.4 |
-| `pplx_claude_sonnet` / `pplx_claude_sonnet_think` | Claude 4.6 Sonnet |
-| `pplx_claude_opus` / `pplx_claude_opus_think` | Claude 4.6 Opus (Max tier) |
-| `pplx_gemini_pro_think` | Gemini 3.1 Pro (thinking always on) |
-| `pplx_nemotron_thinking` | Nemotron 3 Ultra (thinking always on) |
+| Tool                                              | Description                                 |
+| ------------------------------------------------- | ------------------------------------------- |
+| `pplx_query`                                      | Flexible: model selection + thinking toggle |
+| `pplx_ask`                                        | Quick Q&A (auto-selects best model)         |
+| `pplx_deep_research`                              | In-depth reports with sources               |
+| `pplx_sonar`                                      | Perplexity Sonar 2 (1 Pro Search)           |
+| `pplx_gpt54` / `pplx_gpt54_thinking`              | GPT-5.4                                     |
+| `pplx_claude_sonnet` / `pplx_claude_sonnet_think` | Claude 4.6 Sonnet                           |
+| `pplx_claude_opus` / `pplx_claude_opus_think`     | Claude 4.6 Opus (Max tier)                  |
+| `pplx_gemini_pro_think`                           | Gemini 3.1 Pro (thinking always on)         |
+| `pplx_nemotron_thinking`                          | Nemotron 3 Ultra (thinking always on)       |
 
 **Smart routing (1):**
 
-| Tool | Description |
-|------|-------------|
+| Tool               | Description                                                   |
+| ------------------ | ------------------------------------------------------------- |
 | `pplx_smart_query` | Quota-aware routing — auto-selects best model based on limits |
 
 **Council (1):**
 
-| Tool | Description |
-|------|-------------|
+| Tool           | Description                                               |
+| -------------- | --------------------------------------------------------- |
 | `pplx_council` | Query multiple models in parallel with optional synthesis |
 
 **Usage & auth tools (4):**
 
-| Tool | Description |
-|------|-------------|
-| `pplx_usage` | Check remaining quotas |
-| `pplx_auth_status` | Check authentication status |
+| Tool                     | Description                     |
+| ------------------------ | ------------------------------- |
+| `pplx_usage`             | Check remaining quotas          |
+| `pplx_auth_status`       | Check authentication status     |
 | `pplx_auth_request_code` | Send verification code to email |
-| `pplx_auth_complete` | Complete auth with 6-digit code |
+| `pplx_auth_complete`     | Complete auth with 6-digit code |
 
 All query tools support `source_focus`: `none`, `web`, `academic`, `social`, `finance`, `all`.
 
@@ -444,14 +447,14 @@ Our server's `MODEL_MAP` will seamlessly intercept `sonar` (or any other mapped 
 
 ### API Model Names
 
-| API Name | Perplexity Model | Thinking |
-|----------|------------------|----------|
-| `perplexity-auto` | Best (auto-select) | No |
-| `gpt-5.4` | GPT-5.4 | Toggle |
-| `claude-sonnet-4-6` | Claude 4.6 Sonnet | Toggle |
-| `claude-opus-4-6` | Claude 4.6 Opus | Toggle |
-| `gemini-3.1-pro` | Gemini 3.1 Pro | Always |
-| `nemotron-3-ultra` / `nemotron` | Nemotron 3 Ultra | Always |
+| API Name                        | Perplexity Model   | Thinking |
+| ------------------------------- | ------------------ | -------- |
+| `perplexity-auto`               | Best (auto-select) | No       |
+| `gpt-5.4`                       | GPT-5.4            | Toggle   |
+| `claude-sonnet-4-6`             | Claude 4.6 Sonnet  | Toggle   |
+| `claude-opus-4-6`               | Claude 4.6 Opus    | Toggle   |
+| `gemini-3.1-pro`                | Gemini 3.1 Pro     | Always   |
+| `nemotron-3-ultra` / `nemotron` | Nemotron 3 Ultra   | Always   |
 
 Legacy aliases (`claude-3-5-sonnet`, `claude-3-opus`) are supported for compatibility.
 
@@ -482,11 +485,11 @@ print(conversation.answer)
 
 ## Subscription Tiers & Rate Limits
 
-| Tier | Cost | Pro Search | Deep Research | Labs |
-|------|------|------------|---------------|------|
-| Free | $0 | 3/day | 1/month | No |
-| Pro | $20/mo | Weekly pool | Monthly pool | Monthly pool |
-| Max | $200/mo | Weekly pool | Monthly pool | Monthly pool |
+| Tier | Cost    | Pro Search  | Deep Research | Labs         |
+| ---- | ------- | ----------- | ------------- | ------------ |
+| Free | $0      | 3/day       | 1/month       | No           |
+| Pro  | $20/mo  | Weekly pool | Monthly pool  | Monthly pool |
+| Max  | $200/mo | Weekly pool | Monthly pool  | Monthly pool |
 
 The MCP server checks quotas before each query. Use `pwm usage` or `pplx_usage` to check your limits.
 
@@ -507,6 +510,7 @@ pwm login
 ```bash
 pwm login --email your@email.com
 ```
+
 ```bash
 pwm login --email your@email.com --code 123456
 ```

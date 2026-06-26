@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from click.testing import CliRunner
+from click.testing import CliRunner, Result
 
 from perplexity_web_mcp.cli.setup import (
     CLIENT_REGISTRY,
@@ -216,7 +216,7 @@ class TestSetupJsonClient:
 class TestSetupCommands:
     """Test Click-based setup commands via CliRunner."""
 
-    def _run(self, *args: str) -> object:
+    def _run(self, *args: str) -> Result:
         runner = CliRunner()
         return runner.invoke(setup, list(args))
 

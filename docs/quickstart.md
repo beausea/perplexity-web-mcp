@@ -133,15 +133,15 @@ This verifies your installation, authentication, MCP config, skill status, rate 
 
 ## Available Models
 
-| Name | Provider | Thinking | Tier |
-|------|----------|----------|------|
-| `auto` / `sonar` | Perplexity | No | Pro (1 Pro Search each) |
-| `deep_research` | Perplexity | No | Monthly quota |
-| `gpt54` | OpenAI | Toggle | Pro |
-| `claude_sonnet` | Anthropic | Toggle | Pro |
-| `claude_opus` | Anthropic | Toggle | Max |
-| `gemini_pro` | Google | Always on | Pro |
-| `nemotron` | NVIDIA | Always on | Pro |
+| Name             | Provider   | Thinking  | Tier                    |
+| ---------------- | ---------- | --------- | ----------------------- |
+| `auto` / `sonar` | Perplexity | No        | Pro (1 Pro Search each) |
+| `deep_research`  | Perplexity | No        | Monthly quota           |
+| `gpt54`          | OpenAI     | Toggle    | Pro                     |
+| `claude_sonnet`  | Anthropic  | Toggle    | Pro                     |
+| `claude_opus`    | Anthropic  | Toggle    | Max                     |
+| `gemini_pro`     | Google     | Always on | Pro                     |
+| `nemotron`       | NVIDIA     | Always on | Pro                     |
 
 ## Source Focus
 
