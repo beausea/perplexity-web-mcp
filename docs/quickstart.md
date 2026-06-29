@@ -155,6 +155,26 @@ pwm ask "best keyboard" -s social          # Reddit, forums
 pwm ask "AAPL revenue" -s finance          # SEC filings
 ```
 
+## Thread Library (FREE — no quota)
+
+Browse your past Perplexity conversations, search your history, and export everything
+to JSON. **No Pro quota is consumed** by any thread library operation.
+
+```bash
+pwm threads                         # list recent conversations
+pwm threads --search "quantum"      # search before spending quota
+pwm export                          # export full history to JSON
+```
+
+For AI agents via MCP:
+```
+pplx_list_threads()                          # browse history
+pplx_list_threads(search_term="topic")       # check if already researched
+pplx_get_thread("slug-uuid")                # read full conversation
+```
+
+See the full [Thread Library guide](superpowers/thread-library.md) for resumption patterns and export details.
+
 ## What's Next?
 
 - Run `pwm --help` — see all available commands

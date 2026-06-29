@@ -21,6 +21,8 @@ from .config import ClientConfig, ConversationConfig
 from .constants import (
     API_VERSION,
     CITATION_PATTERN,
+    ENDPOINT_LIST_THREADS,
+    ENDPOINT_THREAD_DETAIL,
     ENDPOINT_UPLOAD,
     JSON_OBJECT_PATTERN,
     PROMPT_SOURCE,
@@ -33,7 +35,7 @@ from .http import HTTPClient
 from .limits import MAX_FILE_SIZE, MAX_FILES
 from .logging import configure_logging, get_logger
 from .models import Model, Models
-from .types import Response, SearchResultItem, _FileInfo
+from .types import Response, SearchResultItem, ThreadDetail, ThreadListEntry, ThreadTurn, _FileInfo
 
 
 logger = get_logger(__name__)
@@ -71,6 +73,140 @@ class Perplexity:
         """Create a new conversation."""
 
         return Conversation(self._http, config or ConversationConfig())
+
+    def list_threads(
+        self,
+        limit: int = 20,
+        offset: int = 0,
+        search_term: str = "",
+    ) -> list[ThreadListEntry]:
+        """List the authenticated user's Perplexity thread history.
+
+        Calls the internal ``/rest/thread/list_ask_threads`` endpoint.
+        This is a read-only operation — no query quota is consumed.
+
+        Args:
+            limit: Maximum number of threads to return (default 20, max 100).
+            offset: Number of threads to skip, for pagination.
+            search_term: Optional keyword filter applied server-side.
+
+        Returns:
+            List of ThreadListEntry domain models.
+        """
+        payload = {
+            "limit": min(limit, 100),
+            "offset": offset,
+            "search_term": search_term or "",
+        }
+        params = {"version": API_VERSION, "source": "default"}
+        response = self._http.post(
+            f"{ENDPOINT_LIST_THREADS}?version={API_VERSION}&source=default",
+            json=payload,
+        )
+        data = loads(response.content)
+        # The endpoint returns a list directly, or a dict with a threads key
+        if isinstance(data, list):
+            items = data
+        else:
+            items = data.get("threads") or data.get("data") or []
+
+        result = []
+        for t in items:
+            if not isinstance(t, dict):
+                continue
+            slug = t.get("slug") or t.get("uuid") or "unknown"
+            title = t.get("title") or t.get("query_str") or "(untitled)"
+            model = t.get("display_model") or t.get("model") or ""
+            count = t.get("query_count", 1)
+            ts = str(t.get("last_query_datetime") or t.get("created_at") or "")
+            preview = str(t.get("answer_preview") or t.get("first_answer") or "")
+            result.append(
+                ThreadListEntry(
+                    slug=slug,
+                    title=title,
+                    query_str=str(t.get("query_str", "")),
+                    answer_preview=preview,
+                    display_model=model,
+                    query_count=count,
+                    last_query_datetime=ts,
+                )
+            )
+        return result
+
+    def get_thread(self, slug: str) -> ThreadDetail:
+        """Fetch the full conversation history for a specific Perplexity thread.
+
+        Calls the internal ``/rest/thread/{slug}`` endpoint.
+        This is a read-only operation — no query quota is consumed.
+
+        Args:
+            slug: The thread UUID / slug.  Obtain from :meth:`list_threads`
+                or from the ``[Conversation ID: ...]`` footer of any query response.
+
+        Returns:
+            ThreadDetail domain model representing the conversation history.
+        """
+        endpoint = f"{ENDPOINT_THREAD_DETAIL}/{slug}?version={API_VERSION}&source=default&limit=100&from_first=true"
+        response = self._http.get(endpoint)
+        thread_data = loads(response.content)
+
+        entries = thread_data.get("entries") or []
+        meta = thread_data.get("thread_metadata") or {}
+
+        title = meta.get("title") or (entries[0].get("thread_title") if entries else None) or "Perplexity Thread"
+        real_slug = meta.get("uuid") or meta.get("slug") or slug
+        created = str(meta.get("created_at") or "")
+
+        turns = []
+        for entry in entries:
+            question = str(entry.get("query_str") or "")
+            model = str(entry.get("display_model") or "")
+            ts = str(entry.get("created_at") or "")
+
+            # Extract answer text
+            answer_text = ""
+            blocks = entry.get("blocks") or []
+            if blocks:
+                parts = []
+                for block in blocks:
+                    if isinstance(block, dict):
+                        chunk = block.get("content") or block.get("text") or block.get("answer") or ""
+                        if chunk:
+                            parts.append(str(chunk))
+                answer_text = "\n".join(parts)
+            if not answer_text:
+                answer_text = str(entry.get("answer") or entry.get("text") or "")
+
+            # Extract sources
+            sources = []
+            for widget in entry.get("widget_data") or []:
+                if isinstance(widget, dict):
+                    url = str(widget.get("url") or widget.get("link") or "")
+                    src_title = str(widget.get("title") or widget.get("name") or url)
+                    if url:
+                        sources.append(SearchResultItem(url=url, title=src_title))
+
+            # Extract related queries
+            related = []
+            for rq in entry.get("related_queries") or []:
+                if isinstance(rq, str):
+                    related.append(rq)
+                elif isinstance(rq, dict):
+                    rq_text = rq.get("query") or rq.get("text") or str(rq)
+                    related.append(str(rq_text))
+
+            turns.append(
+                ThreadTurn(
+                    query_str=question,
+                    display_model=model,
+                    created_at=ts,
+                    answer=answer_text.strip(),
+                    sources=sources,
+                    related_queries=related,
+                )
+            )
+
+        return ThreadDetail(slug=real_slug, title=title, created_at=created, turns=turns)
 
     def close(self) -> None:
         """Close the client."""

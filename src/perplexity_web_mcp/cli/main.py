@@ -37,7 +37,10 @@ from perplexity_web_mcp.shared import (
     SourceFocusName,
     ask,
     build_council_model_list,
+    format_thread_list,
     get_limit_cache,
+    get_thread,
+    list_threads,
     resolve_model,
 )
 from perplexity_web_mcp.token_store import load_token
@@ -226,6 +229,176 @@ def _cmd_research_impl(query, source, json_output):
         sys.stdout.buffer.write(b"\n")
     else:
         print(result)
+
+    return 0
+
+
+# ── Thread Library ─────────────────────────────────────────────────────────
+
+
+@cli.command()
+@click.option("-l", "--limit", default=20, help="Max threads to return (default 20, max 100).")
+@click.option("-o", "--offset", default=0, help="Pagination offset — skip this many threads.")
+@click.option("-s", "--search", "search_term", default="", help="Filter threads by keyword.")
+@click.option("--json", "json_output", is_flag=True, help="Output as JSON.")
+def threads(limit, offset, search_term, json_output):
+    """Browse your Perplexity thread library. FREE — no quota consumed.
+
+    Lists your past Perplexity conversations with titles, models, and previews.
+    Use the slug shown for each thread with 'pwm export' or to resume a conversation.
+
+    \b
+    Examples:
+      pwm threads                          # most recent 20 threads
+      pwm threads --limit 50              # get 50 threads
+      pwm threads --search "quantum"      # filter by keyword
+      pwm threads --offset 20             # page 2 (skip first 20)
+      pwm threads --json                  # JSON output (for piping)
+    """
+    code = _cmd_threads_impl(limit, offset, search_term, json_output)
+    raise SystemExit(code)
+
+
+def _cmd_threads_impl(limit, offset, search_term, json_output):
+    """Implementation for threads command."""
+    try:
+        thread_list = list_threads(limit=limit, offset=offset, search_term=search_term)
+    except AuthenticationError as e:
+        print(f"Error: Not authenticated. {e}", file=sys.stderr)
+        print("Re-authenticate with: pwm login", file=sys.stderr)
+        return 1
+    except Exception as e:
+        print(f"Error fetching threads: {e}", file=sys.stderr)
+        return 1
+
+    if json_output:
+        import orjson
+
+        sys.stdout.buffer.write(orjson.dumps([t.model_dump() for t in thread_list], option=orjson.OPT_INDENT_2))
+        sys.stdout.buffer.write(b"\n")
+    else:
+        print(format_thread_list(thread_list))
+
+    return 0
+
+
+@cli.command()
+@click.option(
+    "--output",
+    "-o",
+    default=None,
+    help="Output file path. Defaults to pplx-export-<date>.json in current directory.",
+)
+@click.option("-s", "--search", "search_term", default="", help="Only export threads matching this keyword.")
+@click.option("-l", "--limit", default=100, help="Max threads to export (default 100).")
+def export(output, search_term, limit):
+    """Export your Perplexity thread library to a JSON file. FREE — no quota consumed.
+
+    Fetches your thread list and then retrieves the full conversation history for
+    each thread, saving everything to a timestamped JSON file.
+
+    Inspired by kylebrodeur/perplexity-exporter, but uses the REST API directly
+    (no browser required) making it dramatically faster.
+
+    \b
+    Examples:
+      pwm export                              # export all threads to pplx-export-<date>.json
+      pwm export --output ./my-backup.json   # custom output path
+      pwm export --search "ai"               # only export threads matching "ai"
+      pwm export --limit 50                  # cap at 50 threads
+    """
+    code = _cmd_export_impl(output, search_term, limit)
+    raise SystemExit(code)
+
+
+def _cmd_export_impl(output, search_term, limit):
+    """Implementation for export command."""
+    import datetime
+
+    import orjson
+    from rich.console import Console
+    from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
+
+    console = Console(stderr=True)
+
+    # Determine output path
+    if output is None:
+        date_str = datetime.date.today().isoformat()
+        output = f"pplx-export-{date_str}.json"
+
+    console.print(f"[bold cyan]Perplexity Thread Export[/]\nOutput: {output}\n")
+
+    # Step 1: List threads
+    try:
+        with console.status("[cyan]Fetching thread list...[/]"):
+            thread_list = list_threads(limit=limit, search_term=search_term)
+    except AuthenticationError as e:
+        console.print(f"[red]Error: Not authenticated. {e}[/]")
+        console.print("Re-authenticate with: [bold]pwm login[/]")
+        return 1
+    except Exception as e:
+        console.print(f"[red]Error fetching thread list: {e}[/]")
+        return 1
+
+    if not thread_list:
+        console.print("[yellow]No threads found.[/]")
+        return 0
+
+    console.print(f"Found [bold]{len(thread_list)}[/] thread(s). Fetching full history...\n")
+
+    # Step 2: Fetch full detail for each thread
+    export_data: list[dict] = []
+    errors: list[str] = []
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        console=console,
+    ) as progress:
+        task = progress.add_task("Exporting threads", total=len(thread_list))
+
+        for t in thread_list:
+            slug = t.slug
+            title = t.title or slug
+            progress.update(task, description=f"[cyan]{title[:50]}[/]", advance=0)
+
+            if not slug:
+                errors.append(f"Skipped thread with no slug: {title!r}")
+                progress.advance(task)
+                continue
+
+            try:
+                thread_detail = get_thread(slug)
+                export_data.append(
+                    {
+                        "slug": slug,
+                        "title": title,
+                        "metadata": t.model_dump(),
+                        "thread": thread_detail.model_dump(),
+                    }
+                )
+            except Exception as e:
+                errors.append(f"Failed to fetch thread '{slug}' ({title!r}): {e}")
+
+            progress.advance(task)
+
+    from pathlib import Path
+
+    # Step 3: Write output file
+    try:
+        with Path(output).open("wb") as f:
+            f.write(orjson.dumps(export_data, option=orjson.OPT_INDENT_2))
+    except OSError as e:
+        console.print(f"[red]Error writing file: {e}[/]")
+        return 1
+
+    console.print(f"\n[green]✓[/] Exported [bold]{len(export_data)}[/] threads to [bold]{output}[/]")
+    if errors:
+        console.print(f"[yellow]⚠ {len(errors)} error(s):[/]")
+        for err in errors:
+            console.print(f"  [dim]{err}[/]")
 
     return 0
 

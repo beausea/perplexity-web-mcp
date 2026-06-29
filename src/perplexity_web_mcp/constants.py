@@ -27,6 +27,12 @@ ENDPOINT_RATE_LIMITS: Final[str] = "/rest/rate-limit/all"
 ENDPOINT_USER_SETTINGS: Final[str] = "/rest/user/settings"
 """Endpoint to fetch user settings, subscription info, and connector limits."""
 
+ENDPOINT_LIST_THREADS: Final[str] = "/rest/thread/list_ask_threads"
+"""Endpoint to list the authenticated user's Perplexity thread history (paginated)."""
+
+ENDPOINT_THREAD_DETAIL: Final[str] = "/rest/thread"
+"""Base endpoint for fetching thread detail. Append /{slug} for a specific thread."""
+
 ENDPOINT_CREDITS: Final[str] = "/rest/billing/credits"
 """Endpoint to fetch usage-based credits balance and usage breakdown."""
 

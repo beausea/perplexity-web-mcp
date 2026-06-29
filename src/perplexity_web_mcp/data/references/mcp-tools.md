@@ -6,6 +6,8 @@ Complete parameter reference for all MCP tools in the `pplx_*` namespace.
 
 | Tool                                               | Cost per Call                    |
 | -------------------------------------------------- | -------------------------------- |
+| `pplx_list_threads`                                | **FREE** (read-only)             |
+| `pplx_get_thread`                                  | **FREE** (read-only)             |
 | `pplx_smart_query(intent='quick')`                 | 1 Pro Search (Sonar 2)           |
 | `pplx_smart_query(intent='standard')`              | 1 Pro Search                     |
 | `pplx_smart_query(intent='detailed')`              | 1 Pro Search (premium model)     |
@@ -14,6 +16,75 @@ Complete parameter reference for all MCP tools in the `pplx_*` namespace.
 | `pplx_ask`, `pplx_query`, all model-specific tools | 1 Pro Search                     |
 | `pplx_deep_research`                               | 1 Deep Research (scarce monthly) |
 | `pplx_usage`, auth tools                           | FREE                             |
+
+## Thread Library (FREE — no quota cost)
+
+### pplx_list_threads
+
+Browse your Perplexity conversation history. **Zero quota cost.** Call freely.
+
+Before spending a Pro Search query, search your thread history — you may have
+already researched the topic.
+
+```
+pplx_list_threads(
+    limit: int = 20,       # Max threads to return (default 20, max 100)
+    offset: int = 0,       # Pagination offset (skip this many, e.g. 20 for page 2)
+    search_term: str = "", # Server-side keyword filter (title / content)
+) -> str
+```
+
+Each entry in the response shows: `slug`, `title`, model used, date, turn count,
+and an answer preview.
+
+**Usage patterns:**
+
+```
+pplx_list_threads()                          # recent 20 threads
+pplx_list_threads(limit=50)                  # get 50 threads
+pplx_list_threads(search_term="quantum")     # filter by keyword
+pplx_list_threads(offset=20)                 # page 2
+```
+
+### pplx_get_thread
+
+Fetch the full conversation history for any past thread. **Zero quota cost.**
+
+```
+pplx_get_thread(
+    slug: str,             # Required. Thread UUID. Get from pplx_list_threads.
+) -> str
+```
+
+Returns the complete Markdown-formatted thread: every Q&A turn, sources with
+links, and related queries suggested by Perplexity.
+
+**Resume pattern — continue any past conversation:**
+
+```
+# Step 1: Find the thread and get its slug
+pplx_list_threads(search_term="quantum computing")
+# → 1. [f1f6562c-91be-47e9-9d1f-89ed902fdf8e] Quantum computing overview  (sonar)  · 2026-05-14
+
+# Step 2: Read its history for context (optional)
+pplx_get_thread("f1f6562c-91be-47e9-9d1f-89ed902fdf8e")
+
+# Step 3: Continue the conversation — zero new Pro query for steps 1 & 2
+pplx_smart_query(
+    "What are the latest advances in error correction?",
+    conversation_id="f1f6562c-91be-47e9-9d1f-89ed902fdf8e"
+)
+```
+
+### MCP Resources
+
+If your MCP client supports Resources, the thread library is also available as:
+
+```
+perplexity://library                  # Most recent 50 threads (formatted list)
+perplexity://thread/<slug>            # Full conversation history for a specific thread
+```
+
 
 ## Smart Query (RECOMMENDED DEFAULT)
 

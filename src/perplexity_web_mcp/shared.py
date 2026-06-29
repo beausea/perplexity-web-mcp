@@ -21,6 +21,7 @@ from .rate_limits import RateLimitCache
 from .router import Intent, SmartResponse, SmartRouter
 from .sessions import SessionStore
 from .token_store import get_token_or_raise, load_token
+from .types import ThreadDetail, ThreadListEntry
 
 
 if TYPE_CHECKING:
@@ -501,8 +502,138 @@ def _format_error(error: Exception) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Thread library (read-only, no quota cost)
+# ---------------------------------------------------------------------------
+
+
+def list_threads(
+    limit: int = 20,
+    offset: int = 0,
+    search_term: str = "",
+) -> list[ThreadListEntry]:
+    """Return a list of the user's Perplexity thread history entries.
+
+    Calls ``/rest/thread/list_ask_threads``.  Read-only — zero quota cost.
+
+    Args:
+        limit: Maximum threads to return (capped at 100).
+        offset: Pagination offset (skip this many threads).
+        search_term: Server-side keyword filter (title / content).
+
+    Returns:
+        List of ThreadListEntry domain models.
+
+    Raises:
+        AuthenticationError: If the session token is missing or invalid.
+    """
+    client = get_client()
+    return client.list_threads(limit=limit, offset=offset, search_term=search_term)
+
+
+def get_thread(slug: str) -> ThreadDetail:
+    """Return the full conversation history for a Perplexity thread by slug.
+
+    Calls ``/rest/thread/{slug}``.  Read-only — zero quota cost.
+
+    The slug is the thread UUID, available from:
+
+    * :func:`list_threads` (``slug`` field in each entry)
+    * The ``[Conversation ID: ...]`` footer appended to every query response
+
+    Args:
+        slug: Thread UUID / slug.
+
+    Returns:
+        ThreadDetail domain model representing the conversation history.
+
+    Raises:
+        AuthenticationError: If the session token is missing or invalid.
+    """
+    client = get_client()
+    return client.get_thread(slug)
+
+
+def format_thread_list(threads: list[ThreadListEntry]) -> str:
+    """Format a list of thread models into a readable string for agents/CLI output."""
+    if not threads:
+        return "No threads found."
+
+    lines: list[str] = [f"Found {len(threads)} thread(s):\n"]
+    for i, t in enumerate(threads, 1):
+        line = f"{i}. [{t.slug}] {t.title}"
+        if t.display_model:
+            line += f"  ({t.display_model})"
+        if t.last_query_datetime:
+            line += f"  · {t.last_query_datetime[:10]}"
+        if t.query_count > 1:
+            line += f"  · {t.query_count} turns"
+        lines.append(line)
+
+        preview = t.answer_preview[:120].replace("\n", " ").strip()
+        if preview:
+            if len(t.answer_preview) > 120:
+                preview += "…"
+            lines.append(f"   Preview: {preview}")
+        lines.append("")
+
+    lines.append(
+        "Use pplx_get_thread(slug) to read the full conversation,\n"
+        "or pass the slug as conversation_id to any pplx_* query tool to resume."
+    )
+    return "\n".join(lines)
+
+
+def format_thread_detail(t: ThreadDetail) -> str:
+    """Format a full thread detail model into a readable Markdown string."""
+    lines: list[str] = [f"# {t.title}\n"]
+
+    if t.slug:
+        lines.append(f"**Thread ID (slug):** `{t.slug}`")
+    if t.created_at:
+        lines.append(f"**Created:** {t.created_at[:10]}")
+    lines.append("")
+
+    if not t.turns:
+        lines.append("*(No conversation turns found in this thread.)*")
+        return "\n".join(lines)
+
+    for i, turn in enumerate(t.turns, 1):
+        turn_header = f"## Turn {i}"
+        if turn.display_model:
+            turn_header += f" · {turn.display_model}"
+        if turn.created_at:
+            turn_header += f" · {turn.created_at[:10]}"
+        lines.append(turn_header)
+
+        if turn.query_str:
+            lines.append(f"\n**Q:** {turn.query_str}\n")
+
+        if turn.answer:
+            lines.append(f"**A:**\n\n{turn.answer}\n")
+
+        if turn.sources:
+            lines.append("**Sources:**")
+            for src in turn.sources:
+                lines.append(f"- [{src.title}]({src.url})")
+            lines.append("")
+
+        if turn.related_queries:
+            lines.append("**Related queries:**")
+            for rq in turn.related_queries:
+                lines.append(f"- {rq}")
+            lines.append("")
+
+    slug_for_resume = t.slug or "(use slug from pplx_list_threads)"
+    lines.append(
+        f'---\n*To resume this conversation, pass* `conversation_id="{slug_for_resume}"` *to any pplx_\\* query tool.*'
+    )
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
 # Smart ask (quota-aware routing)
 # ---------------------------------------------------------------------------
+
 
 _router = SmartRouter()
 

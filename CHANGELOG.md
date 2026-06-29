@@ -4,6 +4,17 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.13.0] - 2026-06-29
+
+### Added
+
+- **Thread Library (FREE — no quota cost)** — A complete, natively-implemented feature to browse, retrieve, and resume past Perplexity conversations via CLI and MCP.
+  - **CLI Commands**: `pwm threads` for browsing and `pwm export` for JSON backups of your entire history.
+  - **MCP Tools**: `pplx_list_threads` and `pplx_get_thread`.
+  - **MCP Resources**: `perplexity://library` and `perplexity://thread/{slug}`.
+  - **Resume Conversations**: Any past conversation can now be resumed by passing the thread slug as `conversation_id` to any query tool.
+  - *Special thanks and credit to Kyle Brodeur for the endpoint discovery in [kylebrodeur/perplexity-exporter](https://github.com/kylebrodeur/perplexity-exporter) which inspired this feature! We decided to grab the thread aspect from his repo and implement it directly against the REST API for maximum performance.*
+
 ## [0.12.5] - 2026-06-25
 
 ### Fixed

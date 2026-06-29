@@ -1,6 +1,6 @@
 [project]
 name = "perplexity-web-mcp-cli"
-version = "0.12.5"
+version = "0.13.0"
 description = "CLI, MCP server, and Anthropic/OpenAI API-compatible interface for Perplexity AI."
 authors = [{ name = "Jacob BD" }]
 license = "MIT"
@@ -139,7 +139,7 @@ requires = ["uv_build"]
 build-backend = "uv_build"
 
 [tool.pyright]
-exclude = ["tests/**"]
+exclude = ["tests"]
 
 [tool.mypy]
-exclude = ["tests/**"]
+exclude = ["^tests/"]

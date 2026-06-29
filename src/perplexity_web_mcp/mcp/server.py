@@ -21,7 +21,11 @@ from perplexity_web_mcp.shared import (
     ask,
     build_council_model_list,
     council_ask,
+    format_thread_detail,
+    format_thread_list,
     get_limit_cache,
+    get_thread,
+    list_threads,
     resolve_model,
     smart_ask,
 )
@@ -36,7 +40,8 @@ mcp = FastMCP(
         "- pplx_sonar / pplx_smart_query(intent='quick'): Sonar 2 (in-house). Still uses your "
         "Perplexity session; limits depend on your plan — call pplx_usage() first.\n"
         "- pplx_ask / pplx_query / all model-specific tools: 1 PRO SEARCH each (weekly pool)\n"
-        "- pplx_deep_research: 1 DEEP RESEARCH each (small monthly pool, ~5-10 total)\n\n"
+        "- pplx_deep_research: 1 DEEP RESEARCH each (small monthly pool, ~5-10 total)\n"
+        "- pplx_list_threads / pplx_get_thread: FREE — read-only, zero quota cost\n\n"
         "MANDATORY PROTOCOL:\n"
         "1. On your FIRST query of the session, call pplx_usage() to check remaining quotas.\n"
         "   Read the Subscription line: Pro users must avoid Max-only models.\n"
@@ -54,6 +59,12 @@ mcp = FastMCP(
         "- standard: How-to questions, comparisons, explanations needing web sources\n"
         "- detailed: Complex analysis, multi-source synthesis, technical deep-dives\n"
         "- research: Comprehensive reports (only when user explicitly asks for research)\n\n"
+        "THREAD LIBRARY (quota-free):\n"
+        "- Use pplx_list_threads() to browse past conversations — zero quota cost.\n"
+        '  Search with search_term="keyword" before spending a Pro query on something already researched.\n'
+        "- Use pplx_get_thread(slug) to load the full history of any past thread.\n"
+        "- To resume a past conversation: call pplx_get_thread(slug) to load context,\n"
+        "  then pass conversation_id=slug to any query tool to continue right where it left off.\n\n"
         "All tools support source_focus: none, web, academic, social, finance, all.\n"
         "Use source_focus='none' for model-only queries without web search.\n\n"
         "AUTHENTICATION: If you get a 403 error or 'token expired' message:\n"
@@ -337,6 +348,120 @@ def pplx_council(
         synthesis_model=synthesis_model,
     )
     return result.format_response()
+
+
+# =============================================================================
+# Thread Library Tools (read-only, zero quota cost)
+# =============================================================================
+
+
+@mcp.tool
+def pplx_list_threads(
+    limit: int = 20,
+    offset: int = 0,
+    search_term: str = "",
+) -> str:
+    """Browse your Perplexity thread library. FREE — zero quota cost.
+
+    Returns a paginated list of your past Perplexity conversations with their
+    slugs, titles, models used, and answer previews.
+
+    PRIMARY USE CASES:
+    1. "Did I already research X?" — search before spending a Pro query:
+       pplx_list_threads(search_term="quantum computing")
+    2. Find a conversation to resume — get its slug, then pass it as
+       conversation_id to any pplx_* query tool to continue right where it left off.
+    3. Retrieve full history — call pplx_get_thread(slug) with any slug from this list.
+
+    Args:
+        limit: Max threads to return (default 20, max 100).
+        offset: Skip this many threads — use for pagination (e.g. offset=20 for page 2).
+        search_term: Optional keyword to filter threads by title or content.
+    """
+    from perplexity_web_mcp.exceptions import AuthenticationError
+
+    try:
+        threads = list_threads(limit=limit, offset=offset, search_term=search_term)
+        return format_thread_list(threads)
+    except AuthenticationError as e:
+        return f"Error: Not authenticated. {e}\n\nRe-authenticate with pplx_auth_request_code."
+    except Exception as e:
+        return f"Error fetching thread list: {e}"
+
+
+@mcp.tool
+def pplx_get_thread(slug: str) -> str:
+    """Fetch the full conversation history for a Perplexity thread. FREE — zero quota cost.
+
+    Returns the complete Q&A turns, sources, and related queries for any past thread.
+    Get the slug from pplx_list_threads, or from the [Conversation ID: ...] footer
+    returned by any pplx_* query tool.
+
+    RESUME PATTERN — to continue a past conversation:
+    1. pplx_list_threads(search_term="topic") — find the thread and its slug
+    2. pplx_get_thread(slug) — read the full history for context
+    3. pplx_smart_query("follow-up question", conversation_id=slug) — continue it
+
+    Args:
+        slug: Thread UUID / slug. Obtain from pplx_list_threads or a previous
+              [Conversation ID: ...] response footer.
+    """
+    from perplexity_web_mcp.exceptions import AuthenticationError
+
+    if not slug or not slug.strip():
+        return "Error: slug is required. Get it from pplx_list_threads."
+
+    try:
+        thread_data = get_thread(slug.strip())
+        return format_thread_detail(thread_data)
+    except AuthenticationError as e:
+        return f"Error: Not authenticated. {e}\n\nRe-authenticate with pplx_auth_request_code."
+    except Exception as e:
+        return f"Error fetching thread '{slug}': {e}"
+
+
+# =============================================================================
+# MCP Resources (thread library as addressable resources)
+# =============================================================================
+
+
+@mcp.resource("perplexity://library")
+def library_resource() -> str:
+    """Your Perplexity thread library — most recent 50 threads.
+
+    Returns a formatted list of your recent Perplexity conversations.
+    Use perplexity://thread/{slug} to access a specific thread's full history.
+    """
+    from perplexity_web_mcp.exceptions import AuthenticationError
+
+    try:
+        threads = list_threads(limit=50)
+        return format_thread_list(threads)
+    except AuthenticationError:
+        return "Not authenticated. Run pplx_auth_request_code to authenticate."
+    except Exception as e:
+        return f"Error loading library: {e}"
+
+
+@mcp.resource("perplexity://thread/{slug}")
+def thread_resource(slug: str) -> str:
+    """Full conversation history for a specific Perplexity thread.
+
+    Returns the complete Markdown-formatted Q&A turns, sources, and related
+    queries for the thread identified by {slug}.
+
+    Get slugs from the perplexity://library resource or from any pplx_* query
+    response footer ([Conversation ID: ...]).
+    """
+    from perplexity_web_mcp.exceptions import AuthenticationError
+
+    try:
+        thread_data = get_thread(slug)
+        return format_thread_detail(thread_data)
+    except AuthenticationError:
+        return "Not authenticated. Run pplx_auth_request_code to authenticate."
+    except Exception as e:
+        return f"Error loading thread '{slug}': {e}"
 
 
 # =============================================================================
