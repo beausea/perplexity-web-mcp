@@ -69,6 +69,7 @@ pwm --ai                                       # AI reference doc
 - `claude_sonnet` / `claude_opus` (+ thinking)
 - `gemini_pro` (always thinking)
 - `nemotron` (always thinking)
+- `glm52` (always thinking)
 
 ## Development
 

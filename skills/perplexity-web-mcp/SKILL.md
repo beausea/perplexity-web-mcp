@@ -1,6 +1,6 @@
 ---
 name: perplexity-web-mcp
-description: 'Search the web and query AI models via Perplexity AI using perplexity-web-mcp-cli. Supports CLI commands (pwm ask, pwm research), MCP tools (pplx_*), and Anthropic/OpenAI-compatible API server. Use when the user mentions "perplexity", "pplx", "pwm", "web search with AI", "deep research", "search the internet", or wants to query premium models like GPT-5.4, GPT-5.5, Claude, Gemini, Nemotron through Perplexity''s web interface.'
+description: 'Search the web and query AI models via Perplexity AI using perplexity-web-mcp-cli. Supports CLI commands (pwm ask, pwm research), MCP tools (pplx_*), and Anthropic/OpenAI-compatible API server. Use when the user mentions "perplexity", "pplx", "pwm", "web search with AI", "deep research", "search the internet", or wants to query premium models like GPT-5.4, GPT-5.5, Claude, Gemini, GLM, Nemotron through Perplexity''s web interface.'
 metadata:
   version: "0.12.2"
   author: "Jacob BD"
@@ -89,7 +89,7 @@ Ask yourself: **"Can Sonar 2 answer this?"** If yes, use `quick`. Only escalate 
 - The user needs high-confidence answers validated across multiple AI providers
 - Important decisions, fact-checking, or complex analysis
 - BEFORE calling: ASK the user which models and how many (each = 1 Pro Search)
-- Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+- Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
 - Max-only models: gpt55, claude_opus. Do not use these for Pro subscriptions.
 - Default: 3 Pro-compatible models (GPT-5.4, Claude Sonnet, Gemini Pro) + synthesis = 4 Pro Searches
 
@@ -301,10 +301,11 @@ pwm usage --refresh         # Force-refresh from server
 | `pplx_council`                  | **N+1 Pro** (1 per model + 1 synthesis) | Model Council — **ASK USER which models first!** Check subscription first; exclude Max-only `gpt55`/`claude_opus` on Pro. Supports `thinking=True` and `chairman` for synthesis model. |
 | `pplx_gpt54` / `_thinking`      | 1 Pro                                   | OpenAI GPT-5.4 (versatile)                                                                                                                                                             |
 | `pplx_gpt55` / `_thinking`      | 1 Pro                                   | OpenAI GPT-5.5 (latest, Max tier)                                                                                                                                                      |
-| `pplx_claude_sonnet` / `_think` | 1 Pro                                   | Anthropic Claude 4.6 Sonnet                                                                                                                                                            |
+| `pplx_claude_sonnet` / `_think` | 1 Pro                                   | Anthropic Claude Sonnet 5.0                                                                                                                                                            |
 | `pplx_claude_opus` / `_think`   | 1 Pro                                   | Anthropic Claude 4.8 Opus                                                                                                                                                              |
 | `pplx_gemini_pro_think`         | 1 Pro                                   | Google Gemini 3.1 Pro (thinking always on)                                                                                                                                             |
 | `pplx_nemotron_thinking`        | 1 Pro                                   | NVIDIA Nemotron 3 Ultra (thinking always on)                                                                                                                                           |
+| `pplx_glm52`                    | 1 Pro                                   | Z.ai GLM 5.2 (thinking always on)                                                                                                                                                      |
 | `pplx_kimi_k26` / `_thinking`   | 1 Pro                                   | Moonshot Kimi K2.6                                                                                                                                                                     |
 | `pplx_deep_research`            | 1 Research                              | In-depth reports (**scarce monthly quota**)                                                                                                                                            |
 | `pplx_usage`                    | FREE                                    | Check remaining quotas                                                                                                                                                                 |
@@ -328,10 +329,11 @@ For full MCP tool parameters: See [references/mcp-tools.md](references/mcp-tools
 | deep_research | Perplexity | No       | Monthly quota                                                                      |
 | gpt54         | OpenAI     | Toggle   | GPT-5.4 (versatile)                                                                |
 | gpt55         | OpenAI     | Toggle   | GPT-5.5 (latest, Max tier)                                                         |
-| claude_sonnet | Anthropic  | Toggle   | Claude 4.6 Sonnet                                                                  |
+| claude_sonnet | Anthropic  | Toggle   | Claude Sonnet 5.0                                                                  |
 | claude_opus   | Anthropic  | Toggle   | Claude 4.8 Opus (Max tier)                                                         |
 | gemini_pro    | Google     | Always   | Gemini 3.1 Pro                                                                     |
 | nemotron      | NVIDIA     | Always   | Nemotron 3 Ultra 550B                                                              |
+| glm52         | Z.ai       | Always   | GLM 5.2                                                                            |
 | kimi_k26      | Moonshot   | Toggle   | Kimi K2.6                                                                          |
 
 For full model details: See [references/models.md](references/models.md)

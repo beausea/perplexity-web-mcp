@@ -70,9 +70,9 @@ MODEL_METADATA: dict[str, ModelDefinition] = {
     "gpt54": ModelDefinition(Models.GPT_54, Models.GPT_54_THINKING, "GPT-5.4", "OpenAI"),
     "gpt55": ModelDefinition(Models.GPT_55, Models.GPT_55_THINKING, "GPT-5.5", "OpenAI", minimum_tier="max"),
     "claude_sonnet": ModelDefinition(
-        Models.CLAUDE_46_SONNET,
-        Models.CLAUDE_46_SONNET_THINKING,
-        "Claude Sonnet 4.6",
+        Models.CLAUDE_50_SONNET,
+        Models.CLAUDE_50_SONNET_THINKING,
+        "Claude Sonnet 5.0",
         "Anthropic",
     ),
     "claude_opus": ModelDefinition(
@@ -94,6 +94,12 @@ MODEL_METADATA: dict[str, ModelDefinition] = {
         "Nemotron 3 Ultra",
         "NVIDIA",
     ),
+    "glm52": ModelDefinition(
+        Models.GLM_5_2,
+        Models.GLM_5_2,
+        "GLM 5.2",
+        "Z.ai",
+    ),
     "kimi_k26": ModelDefinition(Models.KIMI_K2_6, Models.KIMI_K2_6_THINKING, "Kimi K2.6", "Moonshot"),
 }
 """User-facing model metadata. Update this table when model names or tier availability changes."""
@@ -113,6 +119,7 @@ ModelName = Literal[
     "claude_opus",
     "gemini_pro",
     "nemotron",
+    "glm52",
     "kimi_k26",
 ]
 

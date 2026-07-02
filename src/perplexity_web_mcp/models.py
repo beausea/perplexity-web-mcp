@@ -43,17 +43,11 @@ class Models:
     GPT_55_THINKING = Model(identifier="gpt55_thinking")
     """GPT-5.5 Thinking - OpenAI's latest model with thinking (Max only)."""
 
-    CLAUDE_46_SONNET = Model(identifier="claude46sonnet")
-    """Claude Sonnet 4.6 - Anthropic's fast model."""
+    CLAUDE_50_SONNET = Model(identifier="claude50sonnet")
+    """Claude Sonnet 5.0 - Anthropic's fast model."""
 
-    CLAUDE_46_SONNET_THINKING = Model(identifier="claude46sonnetthinking")
-    """Claude Sonnet 4.6 Thinking - Anthropic's fast model (thinking)."""
-
-    CLAUDE_47_OPUS = Model(identifier="claude47opus")
-    """Claude Opus 4.7 - Anthropic's most advanced reasoning model."""
-
-    CLAUDE_47_OPUS_THINKING = Model(identifier="claude47opusthinking")
-    """Claude Opus 4.7 Thinking - Anthropic's most advanced reasoning model (thinking)."""
+    CLAUDE_50_SONNET_THINKING = Model(identifier="claude50sonnetthinking")
+    """Claude Sonnet 5.0 Thinking - Anthropic's newest reasoning model."""
 
     CLAUDE_48_OPUS = Model(identifier="claude48opus")
     """Claude Opus 4.8 - Anthropic's most advanced reasoning model."""
@@ -61,11 +55,11 @@ class Models:
     CLAUDE_48_OPUS_THINKING = Model(identifier="claude48opusthinking")
     """Claude Opus 4.8 Thinking - Anthropic's most advanced reasoning model (thinking)."""
 
-    NEMOTRON_3_SUPER = Model(identifier="nv_nemotron_3_super")
-    """Nemotron 3 Super - NVIDIA's Nemotron 3 Super 120B model (thinking)."""
-
     NEMOTRON_3_ULTRA = Model(identifier="nv_nemotron_3_ultra")
     """Nemotron 3 Ultra - NVIDIA's Nemotron 3 Ultra 550B model (thinking)."""
+
+    GLM_5_2 = Model(identifier="glm_5_2")
+    """GLM-5.2 - Z.ai's advanced model (thinking)."""
 
     KIMI_K2_6 = Model(identifier="kimik26instant")
     """Kimi K2.6 - Moonshot AI's latest model."""

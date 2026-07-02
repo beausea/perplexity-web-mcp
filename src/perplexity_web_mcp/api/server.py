@@ -20,10 +20,10 @@ Claude Code Integration:
     export ANTHROPIC_API_KEY=""
 
   Then run Claude Code with any supported model:
-    claude --model claude-sonnet-4-6      # Use Claude 4.6 Sonnet via Perplexity
+    claude --model claude-sonnet-5-0      # Use Claude Sonnet 5.0 via Perplexity
     claude --model gpt-5.4                # Use GPT-5.4 via Perplexity
     claude --model perplexity-auto        # Use Perplexity's auto model selection
-    claude --model claude-3-5-sonnet      # Legacy name, maps to Claude 4.6 Sonnet
+    claude --model claude-3-5-sonnet      # Legacy name, maps to Claude Sonnet 5.0
 """
 
 from __future__ import annotations
@@ -103,7 +103,7 @@ class ServerConfig:
 
 # Map model names to Perplexity models
 # Supports Anthropic, OpenAI, and standard Claude Code model naming conventions
-# Updated Mar 2026 to match Perplexity UI offerings
+# Updated Jul 2026 to match Perplexity UI offerings
 MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     # ==========================================================================
     # Perplexity Native Models
@@ -117,39 +117,45 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     "deep-research": (Models.DEEP_RESEARCH, None),
     # ==========================================================================
     # Anthropic Claude Models (via Perplexity)
-    # Claude Sonnet 4.6 - supports thinking toggle
-    # Claude Opus 4.6 - supports thinking (requires Max subscription)
+    # Claude Sonnet 5.0 - supports thinking toggle
+    # Claude Opus 4.8 - supports thinking (requires Max subscription)
     # ==========================================================================
     # Current model names
-    "claude-sonnet-4-6": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude-4-6-sonnet": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude-sonnet-4-6-20260217": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    # Legacy Sonnet 4.5 aliases (map to 4.6)
-    "claude-sonnet-4-5": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude-4-5-sonnet": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude-opus-4-7": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-4-7-opus": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-opus-4-7-20260401": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    # Legacy Opus 4.6/4.5 aliases (map to 4.7)
-    "claude-opus-4-6": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-4-6-opus": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-opus-4-6-20260203": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-opus-4-5": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-4-5-opus": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-opus-4-5-20251101": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
+    "claude-sonnet-5-0": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-5-0-sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-sonnet-5": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-5-sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    # Legacy Sonnet aliases map to the current Perplexity Sonnet selection.
+    "claude-sonnet-4-6": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-4-6-sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-sonnet-4-6-20260217": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-sonnet-4-5": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-4-5-sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-opus-4-8": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-4-8-opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-opus-4-7": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-4-7-opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-opus-4-7-20260401": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    # Legacy Opus aliases map to the current Perplexity Opus selection.
+    "claude-opus-4-6": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-4-6-opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-opus-4-6-20260203": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-opus-4-5": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-4-5-opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-opus-4-5-20251101": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
     # Claude Code default model aliases (for compatibility)
     # These allow `claude --model claude-3-5-sonnet` to work
-    "claude-3-5-sonnet": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude-3-5-sonnet-20241022": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "claude-3-opus": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-3-opus-20240229": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
-    "claude-3-5-haiku": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),  # Map to Sonnet
-    "claude-haiku-4-5-20251001": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),  # Map Haiku to Sonnet
-    "claude-haiku": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
+    "claude-3-5-sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-3-5-sonnet-20241022": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "claude-3-opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-3-opus-20240229": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
+    "claude-3-5-haiku": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),  # Map to Sonnet
+    "claude-haiku-4-5-20251001": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),  # Map Haiku to Sonnet
+    "claude-haiku": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
     # Generic aliases
-    "claude": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "sonnet": (Models.CLAUDE_46_SONNET, Models.CLAUDE_46_SONNET_THINKING),
-    "opus": (Models.CLAUDE_47_OPUS, Models.CLAUDE_47_OPUS_THINKING),
+    "claude": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
+    "opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
     # ==========================================================================
     # OpenAI GPT Models (via Perplexity) - support thinking toggle
     # ==========================================================================
@@ -176,6 +182,14 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     "nemotron-3": (Models.NEMOTRON_3_ULTRA, Models.NEMOTRON_3_ULTRA),
     "nemotron": (Models.NEMOTRON_3_ULTRA, Models.NEMOTRON_3_ULTRA),
     # ==========================================================================
+    # Z.ai GLM 5.2 (via Perplexity)
+    # Thinking ALWAYS enabled (no toggle in UI) - reasoning only
+    # ==========================================================================
+    "glm-5.2": (Models.GLM_5_2, Models.GLM_5_2),
+    "glm-5-2": (Models.GLM_5_2, Models.GLM_5_2),
+    "glm52": (Models.GLM_5_2, Models.GLM_5_2),
+    "glm": (Models.GLM_5_2, Models.GLM_5_2),
+    # ==========================================================================
     # Moonshot Kimi Models (via Perplexity)
     # Kimi K2.6 - supports thinking toggle
     # ==========================================================================
@@ -185,7 +199,7 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
 }
 
 # Models we expose via /v1/models
-# Ordered to match Perplexity UI (Mar 2026)
+# Ordered to match Perplexity UI search models (Jul 2026)
 AVAILABLE_MODELS = [
     # Perplexity Native
     {"id": "perplexity-auto", "description": "Best - Automatically selects optimal model"},
@@ -197,8 +211,10 @@ AVAILABLE_MODELS = [
     {"id": "gpt-5.4", "description": "GPT-5.4 - OpenAI's versatile model, thinking toggle available"},
     {"id": "gpt-5.5", "description": "GPT-5.5 - OpenAI's latest, Max tier required, thinking toggle available"},
     # Anthropic Claude
-    {"id": "claude-sonnet-4-6", "description": "Claude Sonnet 4.6 - Fast, thinking toggle available"},
+    {"id": "claude-sonnet-5-0", "description": "Claude Sonnet 5.0 - Fast, thinking toggle available"},
     {"id": "claude-opus-4-8", "description": "Claude Opus 4.8 - Advanced reasoning, Max tier required"},
+    # Z.ai
+    {"id": "glm-5.2", "description": "GLM 5.2 - Z.ai advanced model, thinking always on"},
     # NVIDIA
     {"id": "nemotron-3-ultra", "description": "Nemotron 3 Ultra - NVIDIA 120B, thinking always on"},
     # Moonshot
@@ -285,7 +301,7 @@ class MessagesRequest(BaseModel):
     Reference: https://docs.anthropic.com/en/api/messages
     """
 
-    model: str = Field(..., description="Model to use (e.g., 'claude-sonnet-4-6')")
+    model: str = Field(..., description="Model to use (e.g., 'claude-sonnet-5-0')")
     max_tokens: int = Field(..., description="Maximum tokens to generate")
     messages: list[MessageParam] = Field(..., description="Conversation messages")
 

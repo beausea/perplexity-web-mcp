@@ -96,9 +96,9 @@ def pplx_query(
     Args:
         query: The question to ask
         model: Model to use - auto, sonar, deep_research, gpt54, gpt55,
-               claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+               claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
         thinking: Enable extended thinking mode (available for gpt54, gpt55, claude_sonnet,
-                  claude_opus, kimi_k26; always on for gemini_pro and nemotron)
+                  claude_opus, kimi_k26; always on for gemini_pro, nemotron, and glm52)
         source_focus: Source type - none (model only, no search), web, academic,
                       social, finance, all
     """
@@ -210,16 +210,16 @@ def pplx_gpt55_thinking(query: str, source_focus: SourceFocusName = "web", conve
 
 @mcp.tool
 def pplx_claude_sonnet(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """Claude Sonnet 4.6 — Anthropic's fast model. COSTS 1 PRO SEARCH QUERY."""
-    return ask(query, Models.CLAUDE_46_SONNET, source_focus, conversation_id)
+    """Claude Sonnet 5.0 — Anthropic's fast model. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.CLAUDE_50_SONNET, source_focus, conversation_id)
 
 
 @mcp.tool
 def pplx_claude_sonnet_think(
     query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None
 ) -> str:
-    """Claude Sonnet 4.6 Thinking — Anthropic's fast model with extended thinking. COSTS 1 PRO SEARCH QUERY."""
-    return ask(query, Models.CLAUDE_46_SONNET_THINKING, source_focus, conversation_id)
+    """Claude Sonnet 5.0 Thinking — Anthropic's newest reasoning model. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.CLAUDE_50_SONNET_THINKING, source_focus, conversation_id)
 
 
 @mcp.tool
@@ -248,6 +248,12 @@ def pplx_nemotron_thinking(
 ) -> str:
     """Nemotron 3 Ultra — NVIDIA's Nemotron 3 Ultra 550B model with extended thinking. COSTS 1 PRO SEARCH QUERY."""
     return ask(query, Models.NEMOTRON_3_ULTRA, source_focus, conversation_id)
+
+
+@mcp.tool
+def pplx_glm52(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
+    """GLM 5.2 — Z.ai's advanced model with thinking always enabled. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.GLM_5_2, source_focus, conversation_id)
 
 
 @mcp.tool
@@ -308,26 +314,26 @@ def pplx_council(
     """Model Council — query multiple models in parallel, get synthesized consensus.
 
     IMPORTANT — BEFORE calling this tool, you MUST:
-    1. Tell the user the available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+    1. Tell the user the available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
     2. Check pplx_usage() first. If Subscription is Pro, do not include Max-only models: gpt55, claude_opus
     3. Ask the user WHICH models they want in their council and HOW MANY
     4. Inform them of the cost: each council model = 1 Pro Search query, plus synthesis
        (default chairman sonar = Sonar 2 pass — still counts as a normal query toward limits)
     5. Get explicit confirmation before executing
 
-    Default council: GPT-5.4, Claude Sonnet 4.6, Gemini 3.1 Pro (Pro-compatible, 3 diverse providers).
+    Default council: GPT-5.4, Claude Sonnet 5.0, Gemini 3.1 Pro (Pro-compatible, 3 diverse providers).
 
     Args:
         query: The question to ask all council models
         source_focus: Source type for all models (none/web/academic/social/finance/all)
         models: Comma-separated model names to use as council members.
-                Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26.
+                Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
                 Default: "gpt54,claude_sonnet,gemini_pro" (3 models + synthesis = 4 Pro Searches)
                 Max-only: gpt55, claude_opus. Exclude these when pplx_usage shows a Pro subscription.
         synthesize: Whether to synthesize a consensus from all responses.
                     Set false to get only individual responses (saves 1 Sonar 2 call).
         thinking: Enable extended thinking for council models (gpt54, gpt55, claude_sonnet,
-                  claude_opus, kimi_k26 support toggle; gemini_pro and nemotron are always thinking).
+                  claude_opus, kimi_k26 support toggle; gemini_pro, nemotron, and glm52 are always thinking).
         chairman: Model to use for synthesis (default: "sonar" / Sonar 2).
                   Non-sonar chairmen cost 1 extra Pro Search query.
     """

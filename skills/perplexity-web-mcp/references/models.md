@@ -44,9 +44,9 @@ Complete list of models available through Perplexity Web MCP.
 - **MCP:** `pplx_gpt55(query)` or `pplx_gpt55_thinking(query)`
 - **Notes:** OpenAI's latest model. Requires Perplexity **Max** subscription tier ($200/mo).
 
-### claude_sonnet (Anthropic Claude 4.6 Sonnet)
+### claude_sonnet (Anthropic Claude Sonnet 5.0)
 
-- **Identifier:** `claude46sonnet` / `claude46sonnetthinking`
+- **Identifier:** `claude50sonnet` / `claude50sonnetthinking`
 - **Thinking:** Toggle
 - **CLI:** `pwm ask "query" -m claude_sonnet` or `pwm ask "query" -m claude_sonnet -t`
 - **MCP:** `pplx_claude_sonnet(query)` or `pplx_claude_sonnet_think(query)`
@@ -74,6 +74,14 @@ Complete list of models available through Perplexity Web MCP.
 - **CLI:** `pwm ask "query" -m nemotron`
 - **MCP:** `pplx_nemotron_thinking(query)` or `pplx_query(query, model="nemotron")`
 - **Notes:** NVIDIA's Nemotron 3 Ultra 550B model. Thinking is permanently enabled.
+
+### glm52 (Z.ai GLM 5.2)
+
+- **Identifier:** `glm_5_2`
+- **Thinking:** Always on (no non-thinking variant)
+- **CLI:** `pwm ask "query" -m glm52`
+- **MCP:** `pplx_glm52(query)` or `pplx_query(query, model="glm52")`
+- **Notes:** Z.ai's GLM 5.2 model. Thinking is permanently enabled.
 
 ### kimi_k26 (Moonshot Kimi K2.6)
 

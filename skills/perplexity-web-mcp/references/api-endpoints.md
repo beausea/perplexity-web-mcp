@@ -64,14 +64,15 @@ The API server accepts many model name variants:
 | `perplexity-auto`, `auto`, `best`                  | Perplexity Best (auto-select) |
 | `perplexity-sonar`, `sonar`                        | Perplexity Sonar 2            |
 | `perplexity-research`, `deep-research`             | Deep Research                 |
-| `claude-sonnet-4-6`, `claude-4-6-sonnet`, `claude` | Claude 4.6 Sonnet             |
-| `claude-opus-4-7`, `claude-4-7-opus`, `opus`       | Claude 4.7 Opus (Max tier)    |
-| `claude-3-5-sonnet` (legacy)                       | Claude 4.6 Sonnet             |
-| `claude-3-opus` (legacy)                           | Claude 4.7 Opus               |
+| `claude-sonnet-5-0`, `claude-5-0-sonnet`, `claude` | Claude Sonnet 5.0             |
+| `claude-opus-4-8`, `claude-4-8-opus`, `opus`       | Claude 4.8 Opus (Max tier)    |
+| `claude-3-5-sonnet` (legacy)                       | Claude Sonnet 5.0             |
+| `claude-3-opus` (legacy)                           | Claude 4.8 Opus               |
 | `gpt-5.4`, `gpt-54`, `gpt54`                       | GPT-5.4 (versatile)           |
 | `gpt-5.5`, `gpt-5-5`, `gpt-55`, `gpt55`            | GPT-5.5 (latest, Max tier)    |
 | `gemini-3.1-pro`, `gemini-3-pro`, `gemini-pro`     | Gemini 3.1 Pro                |
 | `nemotron-3-ultra`, `nemotron`                     | Nemotron 3 Ultra              |
+| `glm-5.2`, `glm-5-2`, `glm52`, `glm`               | GLM 5.2                       |
 
 Unknown model names fall back to `perplexity-auto`.
 
@@ -87,7 +88,7 @@ export ANTHROPIC_AUTH_TOKEN=perplexity
 
 # 3. Run Claude Code with any model
 claude --model gpt-5.4
-claude --model claude-sonnet-4-6
+claude --model claude-sonnet-5-0
 claude --model gemini-3-pro
 ```
 

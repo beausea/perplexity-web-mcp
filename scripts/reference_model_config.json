@@ -25,6 +25,12 @@
       "mode": "search",
       "provider": "PERPLEXITY"
     },
+    "glm_5_2": {
+      "label": "GLM-5.2",
+      "description": "Z.ai's advanced model",
+      "mode": "search",
+      "provider": "ZAI"
+    },
     "gpt4o": {
       "label": "GPT-4o",
       "description": "OpenAI's versatile model",
@@ -307,6 +313,18 @@
       "mode": "search",
       "provider": "ANTHROPIC"
     },
+    "claude50sonnet": {
+      "label": "Claude Sonnet 5.0",
+      "description": "Anthropic's fast model",
+      "mode": "search",
+      "provider": "ANTHROPIC"
+    },
+    "claude50sonnetthinking": {
+      "label": "Claude Sonnet 5.0 Thinking",
+      "description": "Anthropic's newest reasoning model",
+      "mode": "search",
+      "provider": "ANTHROPIC"
+    },
     "claude45haiku": {
       "label": "Claude Haiku 4.5",
       "description": "Anthropic's compact model",
@@ -433,6 +451,12 @@
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
+    "pplx_asi_glm": {
+      "label": "Preview (GLM 5.2-based)",
+      "description": "Computer powered by GLM 5.2",
+      "mode": "asi",
+      "provider": "PERPLEXITY"
+    },
     "pplx_asi_opus": {
       "label": "Claude Opus 4.8",
       "description": "Computer powered by Claude Opus 4.8",
@@ -476,14 +500,14 @@
       "provider": "FIREWORKS"
     },
     "pplx_asi_sonnet": {
-      "label": "Claude Sonnet 4.6",
-      "description": "Computer powered by Claude Sonnet 4.6",
+      "label": "Claude Sonnet 5",
+      "description": "Computer powered by Claude Sonnet 5",
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
     "pplx_asi_sonnet_thinking": {
-      "label": "Claude Sonnet 4.6 Thinking",
-      "description": "Computer powered by Claude Sonnet 4.6 with thinking",
+      "label": "Claude Sonnet 5 Thinking",
+      "description": "Computer powered by Claude Sonnet 5 with thinking",
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
@@ -581,6 +605,7 @@
       "subscription_tier": "pro",
       "non_reasoning_model": "experimental",
       "reasoning_model": null,
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -593,6 +618,7 @@
       "subscription_tier": "pro",
       "non_reasoning_model": "comet_browser_agent_sonnet",
       "reasoning_model": null,
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -605,6 +631,7 @@
       "subscription_tier": "max",
       "non_reasoning_model": "comet_browser_agent_opus",
       "reasoning_model": null,
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -617,6 +644,7 @@
       "subscription_tier": "pro",
       "non_reasoning_model": "gpt54",
       "reasoning_model": "gpt54_thinking",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -625,10 +653,11 @@
       "label": "GPT-5.5",
       "description": "OpenAI's latest model",
       "subheading": null,
-      "has_new_tag": true,
+      "has_new_tag": false,
       "subscription_tier": "max",
       "non_reasoning_model": "gpt55",
       "reasoning_model": "gpt55_thinking",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -641,18 +670,20 @@
       "subscription_tier": "pro",
       "non_reasoning_model": null,
       "reasoning_model": "gemini31pro_high",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
     },
     {
-      "label": "Claude Sonnet 4.6",
+      "label": "Claude Sonnet 5.0",
       "description": "Anthropic's fast model",
       "subheading": null,
-      "has_new_tag": false,
+      "has_new_tag": true,
       "subscription_tier": "pro",
-      "non_reasoning_model": "claude46sonnet",
-      "reasoning_model": "claude46sonnetthinking",
+      "non_reasoning_model": "claude50sonnet",
+      "reasoning_model": "claude50sonnetthinking",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -661,10 +692,24 @@
       "label": "Claude Opus 4.8",
       "description": "Anthropic's most advanced model",
       "subheading": null,
-      "has_new_tag": true,
+      "has_new_tag": false,
       "subscription_tier": "max",
       "non_reasoning_model": "claude48opus",
       "reasoning_model": "claude48opusthinking",
+      "fast_model": null,
+      "text_only_model": false,
+      "audience": null,
+      "is_default": false
+    },
+    {
+      "label": "GLM 5.2",
+      "description": "Z.ai's most advanced model",
+      "subheading": null,
+      "has_new_tag": true,
+      "subscription_tier": "pro",
+      "non_reasoning_model": null,
+      "reasoning_model": "glm_5_2",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -673,10 +718,11 @@
       "label": "Kimi K2.6",
       "description": "Moonshot AI's latest model",
       "subheading": null,
-      "has_new_tag": true,
+      "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "kimik26instant",
       "reasoning_model": "kimik26thinking",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -685,10 +731,11 @@
       "label": "Nemotron 3 Ultra",
       "description": "NVIDIA's Nemotron 3 Ultra 550B model",
       "subheading": null,
-      "has_new_tag": true,
+      "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": null,
       "reasoning_model": "nv_nemotron_3_ultra",
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -701,6 +748,20 @@
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_gpt_55",
       "reasoning_model": null,
+      "fast_model": null,
+      "text_only_model": false,
+      "audience": null,
+      "is_default": false
+    },
+    {
+      "label": "Claude Fable 5",
+      "description": "Computer powered by Claude Fable 5",
+      "subheading": "Anthropic's most powerful model. Uses additional credits.",
+      "has_new_tag": false,
+      "subscription_tier": "pro",
+      "non_reasoning_model": "pplx_asi_fable_5",
+      "reasoning_model": null,
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -713,18 +774,33 @@
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_opus",
       "reasoning_model": null,
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
     },
     {
-      "label": "Claude Sonnet 4.6",
-      "description": "Computer powered by Claude Sonnet 4.6",
+      "label": "Claude Sonnet 5",
+      "description": "Computer powered by Claude Sonnet 5",
       "subheading": "Great for most everyday tasks. Uses fewer credits.",
       "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_sonnet",
       "reasoning_model": null,
+      "fast_model": null,
+      "text_only_model": false,
+      "audience": null,
+      "is_default": false
+    },
+    {
+      "label": "Preview (GLM 5.2-based)",
+      "description": "Computer powered by GLM 5.2",
+      "subheading": "Great for most tasks. Uses the fewest credits.",
+      "has_new_tag": false,
+      "subscription_tier": "pro",
+      "non_reasoning_model": "pplx_asi_glm",
+      "reasoning_model": null,
+      "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false

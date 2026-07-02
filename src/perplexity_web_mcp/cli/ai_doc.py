@@ -15,7 +15,7 @@ PERPLEXITY WEB MCP - AI REFERENCE
 
 Perplexity Web MCP provides three interfaces to Perplexity AI:
   1. CLI (pwm)         - Direct terminal queries and authentication
-  2. MCP Server        - 17 MCP tools for AI agents (pplx_* namespace)
+  2. MCP Server        - MCP tools for AI agents (pplx_* namespace)
   3. API Server        - Anthropic/OpenAI-compatible HTTP endpoints
 
 All three share the same backend, models, and authentication token stored at
@@ -66,9 +66,9 @@ MODEL COUNCIL
   pwm council "query" --json                  Output as JSON
 
   Each model in the council costs 1 Pro Search, plus 1 for synthesis. Default = 4 Pro Searches.
-  Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26
+  Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
   Thinking toggle: -t / --thinking (gpt54, gpt55, claude_sonnet, claude_opus, kimi_k26 support toggle;
-    gemini_pro and nemotron are always thinking)
+    gemini_pro, nemotron, and glm52 are always thinking)
 
   Chairman: --chairman MODEL (default: sonar / Sonar 2). Non-sonar costs 1 extra Pro Search.
 
@@ -114,10 +114,11 @@ sonar           experimental            No         Sonar 2 (concise search mode 
 deep_research   pplx_alpha              No         In-depth reports (monthly quota)
 gpt54           gpt54                   Yes        OpenAI GPT-5.4 (versatile)
 gpt55           gpt55                   Yes        OpenAI GPT-5.5 (latest, Max tier)
-claude_sonnet   claude46sonnet          Yes        Anthropic Claude 4.6 Sonnet
+claude_sonnet   claude50sonnet          Yes        Anthropic Claude Sonnet 5.0
 claude_opus     claude48opus            Yes        Anthropic Claude 4.8 Opus (Max tier)
 gemini_pro      gemini31pro_high        Always     Google Gemini 3.1 Pro (thinking only)
 nemotron        nv_nemotron_3_ultra     Always     NVIDIA Nemotron 3 Ultra 550B (thinking only)
+glm52           glm_5_2                 Always     Z.ai GLM 5.2 (thinking only)
 kimi_k26        kimi_k26                Yes        Moonshot Kimi K2.6
 
 "Thinking" = extended reasoning mode. Models marked "Always" have thinking
@@ -152,7 +153,7 @@ MCP examples:
   pplx_query(query="Tesla financials", model="gpt54", source_focus="finance")
 
 ================================================================================
-MCP TOOLS (17 total, pplx_* namespace)
+MCP TOOLS (pplx_* namespace)
 ================================================================================
 
 SMART QUERY (RECOMMENDED DEFAULT — use this for every query):
@@ -172,7 +173,7 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
                synthesize=True, thinking=False, chairman="sonar")
       Model Council — N PRO SEARCHES (1 per model selected).
       BEFORE CALLING: You MUST ask the user which models and how many.
-      Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, kimi_k26.
+      Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
       Max-only: gpt55, claude_opus. Exclude these when Subscription is Pro.
       Default: 3 Pro-compatible models (GPT-5.4, Claude Sonnet, Gemini Pro) + synthesis = 4 Pro Searches.
       Synthesis uses Sonar 2 by default. Set chairman to override.
@@ -189,12 +190,13 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   pplx_gpt54_thinking(query, source_focus="web") GPT-5.4 + thinking — 1 Pro
   pplx_gpt55(query, source_focus="web")          GPT-5.5 — 1 Pro (Max tier)
   pplx_gpt55_thinking(query, source_focus="web") GPT-5.5 + thinking — 1 Pro (Max tier)
-  pplx_claude_sonnet(query, source_focus="web")   Claude 4.6 Sonnet — 1 Pro
-  pplx_claude_sonnet_think(query, source_focus)   Claude 4.6 Sonnet + thinking — 1 Pro
+  pplx_claude_sonnet(query, source_focus="web")   Claude Sonnet 5.0 — 1 Pro
+  pplx_claude_sonnet_think(query, source_focus)   Claude Sonnet 5.0 + thinking — 1 Pro
   pplx_claude_opus(query, source_focus="web")     Claude 4.8 Opus — 1 Pro (Max tier)
   pplx_claude_opus_think(query, source_focus)     Claude 4.8 Opus + thinking — 1 Pro (Max tier)
   pplx_gemini_pro_think(query, source_focus)      Gemini 3.1 Pro (thinking) — 1 Pro
   pplx_nemotron_thinking(query, source_focus)     Nemotron 3 Ultra (thinking) — 1 Pro
+  pplx_glm52(query, source_focus="web")           GLM 5.2 (thinking) — 1 Pro
   pplx_kimi_k26(query, source_focus="web")        Kimi K2.6 — 1 Pro
   pplx_kimi_k26_thinking(query, source_focus)     Kimi K2.6 + thinking — 1 Pro
 

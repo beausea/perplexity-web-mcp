@@ -43,6 +43,7 @@ class TestMappings:
             "claude_opus",
             "gemini_pro",
             "nemotron",
+            "glm52",
             "kimi_k26",
         }
         assert set(MODEL_MAP.keys()) == expected
@@ -93,17 +94,18 @@ class TestMappings:
             "claude_opus",
             "gemini_pro",
             "nemotron",
+            "glm52",
             "kimi_k26",
         )
 
     def test_build_council_model_list_uses_metadata_display_names(self) -> None:
         assert hasattr(shared, "build_council_model_list")
         models = shared.build_council_model_list(("sonar", "gpt54", "claude_sonnet"))
-        assert [name for name, _ in models] == ["Sonar 2", "GPT-5.4", "Claude Sonnet 4.6"]
+        assert [name for name, _ in models] == ["Sonar 2", "GPT-5.4", "Claude Sonnet 5.0"]
         assert [model for _, model in models] == [
             Models.SONAR,
             Models.GPT_54,
-            Models.CLAUDE_46_SONNET,
+            Models.CLAUDE_50_SONNET,
         ]
 
 
@@ -129,10 +131,14 @@ class TestResolveModel:
         assert resolve_model("nemotron", thinking=True) is Models.NEMOTRON_3_ULTRA
 
     def test_claude_sonnet_base(self) -> None:
-        assert resolve_model("claude_sonnet") is Models.CLAUDE_46_SONNET
+        assert resolve_model("claude_sonnet") is Models.CLAUDE_50_SONNET
 
     def test_claude_sonnet_thinking(self) -> None:
-        assert resolve_model("claude_sonnet", thinking=True) is Models.CLAUDE_46_SONNET_THINKING
+        assert resolve_model("claude_sonnet", thinking=True) is Models.CLAUDE_50_SONNET_THINKING
+
+    def test_glm52_always_thinking(self) -> None:
+        assert resolve_model("glm52") is Models.GLM_5_2
+        assert resolve_model("glm52", thinking=True) is Models.GLM_5_2
 
     def test_gemini_pro_always_thinking(self) -> None:
         # gemini_pro has no non-thinking variant

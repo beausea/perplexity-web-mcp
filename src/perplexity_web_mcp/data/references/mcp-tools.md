@@ -114,7 +114,7 @@ Prefer `pplx_smart_query` unless you need a specific model.
 pplx_query(
     query: str,                    # Required. The question to ask.
     model: str = "auto",           # auto, sonar, deep_research, gpt54, gpt55, claude_sonnet,
-                                   # claude_opus, gemini_pro, nemotron, kimi_k26
+                                   # claude_opus, gemini_pro, nemotron, glm52, kimi_k26
     thinking: bool = False,        # Enable extended thinking (where supported)
     source_focus: str = "web",     # none, web, academic, social, finance, all
     conversation_id: str = None,   # Optional. Pass ID from previous turn to persist context.
@@ -165,12 +165,13 @@ pplx_<model>(
 | `pplx_gpt54_thinking`      | GPT-5.4 (versatile)        | Yes          | 1 Pro |
 | `pplx_gpt55`               | GPT-5.5 (latest, Max tier) | No           | 1 Pro |
 | `pplx_gpt55_thinking`      | GPT-5.5 (latest, Max tier) | Yes          | 1 Pro |
-| `pplx_claude_sonnet`       | Claude 4.6 Sonnet          | No           | 1 Pro |
-| `pplx_claude_sonnet_think` | Claude 4.6 Sonnet          | Yes          | 1 Pro |
+| `pplx_claude_sonnet`       | Claude Sonnet 5.0          | No           | 1 Pro |
+| `pplx_claude_sonnet_think` | Claude Sonnet 5.0          | Yes          | 1 Pro |
 | `pplx_claude_opus`         | Claude 4.8 Opus (Max tier) | No           | 1 Pro |
 | `pplx_claude_opus_think`   | Claude 4.8 Opus (Max tier) | Yes          | 1 Pro |
 | `pplx_gemini_pro_think`    | Gemini 3.1 Pro             | Yes (always) | 1 Pro |
 | `pplx_nemotron_thinking`   | Nemotron 3 Ultra           | Yes (always) | 1 Pro |
+| `pplx_glm52`               | GLM 5.2                    | Yes (always) | 1 Pro |
 | `pplx_kimi_k26`            | Kimi K2.6                  | No           | 1 Pro |
 | `pplx_kimi_k26_thinking`   | Kimi K2.6                  | Yes          | 1 Pro |
 
