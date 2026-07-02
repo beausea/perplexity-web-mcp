@@ -29,7 +29,7 @@ from .constants import (
     SEND_BACK_TEXT,
     USE_SCHEMATIZED_API,
 )
-from .enums import CitationMode
+from .enums import CitationMode, SourceFocus
 from .exceptions import FileUploadError, FileValidationError, ResearchClarifyingQuestionsError, ResponseParsingError
 from .http import HTTPClient
 from .limits import MAX_FILE_SIZE, MAX_FILES
@@ -499,9 +499,8 @@ class Conversation:
     ) -> dict[str, Any]:
         cfg = self._config
 
-        sources = (
-            [s.value for s in cfg.source_focus] if isinstance(cfg.source_focus, list) else [cfg.source_focus.value]
-        )
+        raw_source_focus = cfg.source_focus if isinstance(cfg.source_focus, list) else [cfg.source_focus]
+        sources = [source.value if isinstance(source, SourceFocus) else source for source in raw_source_focus]
 
         client_coordinates = None
         if cfg.coordinates is not None:
