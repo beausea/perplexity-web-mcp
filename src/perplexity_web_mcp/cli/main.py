@@ -34,6 +34,7 @@ from perplexity_web_mcp.shared import (
     MODEL_NAMES,
     SOURCE_FOCUS_NAMES,
     Models,
+    SourceResolutionError,
     SourceFocusName,
     ask,
     build_council_model_list,
@@ -41,6 +42,7 @@ from perplexity_web_mcp.shared import (
     get_limit_cache,
     get_thread,
     list_threads,
+    resolve_source_focus,
     resolve_model,
 )
 from perplexity_web_mcp.token_store import load_token
@@ -91,6 +93,15 @@ def cli(ctx):
         click.echo(ctx.get_help())
 
 
+def _validate_source_for_cli(source: str) -> bool:
+    try:
+        resolve_source_focus(source)
+    except SourceResolutionError as error:
+        print(str(error), file=sys.stderr)
+        return False
+    return True
+
+
 # ── Ask ────────────────────────────────────────────────────────────────────
 
 
@@ -98,7 +109,13 @@ def cli(ctx):
 @click.argument("query")
 @click.option("-m", "--model", "model_name", default="auto", help=f"Model to use ({', '.join(MODEL_NAMES)}).")
 @click.option("-t", "--thinking", is_flag=True, help="Enable extended thinking mode.")
-@click.option("-s", "--source", "source", default="web", help=f"Source focus ({', '.join(SOURCE_FOCUS_NAMES)}).")
+@click.option(
+    "-s",
+    "--source",
+    "source",
+    default="web",
+    help=f"Source focus ({', '.join(SOURCE_FOCUS_NAMES)}) or connector source ID.",
+)
 @click.option("--json", "json_output", is_flag=True, help="Output as JSON.")
 @click.option("--no-citations", is_flag=True, help="Suppress citation URLs.")
 @click.option("--intent", default="standard", help="Routing intent: quick, standard, detailed, research.")
@@ -117,8 +134,7 @@ def ask_cmd(query, model_name, thinking, source, json_output, no_citations, inte
 
 def _cmd_ask_impl(query, model_name, thinking, source, json_output, no_citations, intent):
     """Implementation for ask command (kept separate for testability)."""
-    if source not in SOURCE_FOCUS_NAMES:
-        print(f"Error: Unknown source '{source}'. Available: {', '.join(SOURCE_FOCUS_NAMES)}", file=sys.stderr)
+    if not _validate_source_for_cli(source):
         return 1
 
     try:
@@ -176,7 +192,13 @@ def _cmd_ask_impl(query, model_name, thinking, source, json_output, no_citations
 
 @cli.command()
 @click.argument("query")
-@click.option("-s", "--source", "source", default="web", help=f"Source focus ({', '.join(SOURCE_FOCUS_NAMES)}).")
+@click.option(
+    "-s",
+    "--source",
+    "source",
+    default="web",
+    help=f"Source focus ({', '.join(SOURCE_FOCUS_NAMES)}) or connector source ID.",
+)
 @click.option("--json", "json_output", is_flag=True, help="Output as JSON.")
 def research(query, source, json_output):
     """Deep research on a topic.
@@ -194,6 +216,9 @@ def research(query, source, json_output):
 
 def _cmd_research_impl(query, source, json_output):
     """Implementation for research command."""
+    if not _validate_source_for_cli(source):
+        return 1
+
     model = Models.DEEP_RESEARCH
 
     try:
@@ -418,7 +443,13 @@ COUNCIL_MODEL_NAMES = COUNCIL_ELIGIBLE_MODEL_NAMES
     help=f"Comma-separated models ({', '.join(COUNCIL_MODEL_NAMES)}).",
 )
 @click.option("-t", "--thinking", is_flag=True, help="Enable extended thinking mode.")
-@click.option("-s", "--source", "source", default="web", help=f"Source focus ({', '.join(SOURCE_FOCUS_NAMES)}).")
+@click.option(
+    "-s",
+    "--source",
+    "source",
+    default="web",
+    help=f"Source focus ({', '.join(SOURCE_FOCUS_NAMES)}) or connector source ID.",
+)
 @click.option("--no-synthesis", is_flag=True, help="Skip consensus synthesis.")
 @click.option(
     "--chairman",
@@ -446,8 +477,7 @@ def council(query, models_str, thinking, source, no_synthesis, chairman, json_ou
 
 def _cmd_council_impl(query, models_str, source, synthesize, json_output, thinking=False, chairman="sonar"):
     """Implementation for council command."""
-    if source not in SOURCE_FOCUS_NAMES:
-        print(f"Error: Unknown source '{source}'. Available: {', '.join(SOURCE_FOCUS_NAMES)}", file=sys.stderr)
+    if not _validate_source_for_cli(source):
         return 1
 
     # Validate model names
@@ -618,6 +648,20 @@ def _cmd_usage_impl(refresh):
         table.add_row("Browser Agent", _color(limits.remaining_agentic_research))
 
         console.print(table)
+
+        source_rows = [source for source in limits.source_limits if source.monthly_limit is not None]
+        if source_rows:
+            source_table = Table(title="Source Limits", show_header=True, header_style="bold cyan")
+            source_table.add_column("Source ID", style="bold")
+            source_table.add_column("Remaining", justify="right")
+            source_table.add_column("Monthly Limit", justify="right")
+            for source in source_rows:
+                source_table.add_row(
+                    source.source_id,
+                    "unlimited" if source.remaining is None else str(source.remaining),
+                    "unlimited" if source.monthly_limit is None else str(source.monthly_limit),
+                )
+            console.print(source_table)
     else:
         console.print("[yellow]WARNING:[/] Could not fetch rate limits (network error or token issue).")
 
@@ -699,6 +743,66 @@ def _cmd_usage_impl(refresh):
 
         console.print(table)
 
+    return 0
+
+
+# ── Connectors ─────────────────────────────────────────────────────────────
+
+
+@cli.group()
+def connectors():
+    """List account connector source IDs."""
+
+
+@connectors.command(name="list")
+@click.option("--refresh", is_flag=True, help="Refresh limits before listing connectors.")
+def connectors_list(refresh):
+    """List source IDs visible in the account rate-limit API."""
+    code = _cmd_connectors_list(refresh=refresh)
+    raise SystemExit(code)
+
+
+def _cmd_connectors_list(refresh: bool = False) -> int:
+    """Implementation for connectors list command."""
+    from rich.console import Console
+    from rich.table import Table
+
+    console = Console()
+    token = load_token()
+    if not token:
+        print("Not authenticated. Run `pwm login` first.", file=sys.stderr)
+        return 1
+
+    cache = get_limit_cache()
+    if cache is None:
+        print("Could not initialize limit cache.", file=sys.stderr)
+        return 1
+
+    limits = cache.get_rate_limits(force_refresh=refresh)
+    if limits is None:
+        print("Could not fetch connector source IDs.", file=sys.stderr)
+        return 1
+
+    connector_sources = [
+        source for source in limits.source_limits if "_mcp_" in source.source_id or source.monthly_limit is not None
+    ]
+    if not connector_sources:
+        console.print("[yellow]No connector source IDs were reported by this account.[/]")
+        return 0
+
+    table = Table(title="Connector Sources", show_header=True, header_style="bold cyan")
+    table.add_column("Source ID", style="bold")
+    table.add_column("Remaining", justify="right")
+    table.add_column("Monthly Limit", justify="right")
+
+    for source in connector_sources:
+        table.add_row(
+            source.source_id,
+            "unlimited" if source.remaining is None else str(source.remaining),
+            "unlimited" if source.monthly_limit is None else str(source.monthly_limit),
+        )
+
+    console.print(table)
     return 0
 
 

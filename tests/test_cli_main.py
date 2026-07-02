@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from perplexity_web_mcp.cli.main import _cmd_ask, _cmd_council, _cmd_research, _cmd_usage, main
+from perplexity_web_mcp.cli.main import _cmd_ask, _cmd_connectors_list, _cmd_council, _cmd_research, _cmd_usage, main
 from perplexity_web_mcp.exceptions import AuthenticationError, RateLimitError
 
 
@@ -96,7 +96,9 @@ class TestCmdAsk:
     def test_unknown_source_returns_1(self, capsys: pytest.CaptureFixture) -> None:
         code = _cmd_ask(["query", "--source", "badvalue"])
         assert code == 1
-        assert "Unknown source" in capsys.readouterr().err
+        err = capsys.readouterr().err
+        assert "Unknown source" in err
+        assert "pwm connectors list" in err
 
     def test_unknown_option_returns_1(self, capsys: pytest.CaptureFixture) -> None:
         code = _cmd_ask(["query", "--badopt"])
@@ -134,6 +136,15 @@ class TestCmdAsk:
         _cmd_ask(["query", "-m", "sonar", "-s", "academic"])
         call_args = mock_ask.call_args
         assert call_args[0][2] == "academic"
+
+    @patch("perplexity_web_mcp.cli.main.ask", return_value="response")
+    @patch("perplexity_web_mcp.shared.get_limit_cache", return_value=None)
+    def test_connector_source_flag(self, mock_cache: MagicMock, mock_ask: MagicMock) -> None:
+        code = _cmd_ask(["query", "-m", "sonar", "-s", "pitchbook_mcp_cashmere"])
+
+        assert code == 0
+        call_args = mock_ask.call_args
+        assert call_args[0][2] == "pitchbook_mcp_cashmere"
 
 
 # ============================================================================
@@ -237,6 +248,45 @@ class TestCmdUsage:
         assert "yearly" in out
 
 
+class TestCmdConnectors:
+    """Test connector source discovery output."""
+
+    @patch("perplexity_web_mcp.cli.main.load_token", return_value=None)
+    def test_no_token_returns_1(self, mock_token: MagicMock, capsys: pytest.CaptureFixture) -> None:
+        code = _cmd_connectors_list(refresh=False)
+
+        assert code == 1
+        assert "Not authenticated" in capsys.readouterr().err
+
+    @patch("perplexity_web_mcp.cli.main.get_limit_cache")
+    @patch("perplexity_web_mcp.cli.main.load_token", return_value="valid-token")
+    def test_lists_connector_source_ids(
+        self,
+        mock_token: MagicMock,
+        mock_cache_fn: MagicMock,
+        capsys: pytest.CaptureFixture,
+    ) -> None:
+        from perplexity_web_mcp.rate_limits import RateLimits, SourceLimit
+
+        mock_cache = MagicMock()
+        mock_cache.get_rate_limits.return_value = RateLimits(
+            source_limits=[
+                SourceLimit(source_id="web", monthly_limit=None, remaining=None),
+                SourceLimit(source_id="pitchbook_mcp_cashmere", monthly_limit=5, remaining=3),
+            ]
+        )
+        mock_cache_fn.return_value = mock_cache
+
+        code = _cmd_connectors_list(refresh=True)
+
+        assert code == 0
+        out = capsys.readouterr().out
+        assert "pitchbook_mcp_cashmere" in out
+        assert "3" in out
+        assert "5" in out
+        mock_cache.get_rate_limits.assert_called_once_with(force_refresh=True)
+
+
 # ============================================================================
 # 5. CLI error handling for AuthenticationError / RateLimitError
 # ============================================================================
@@ -330,7 +380,9 @@ class TestCmdCouncil:
     def test_unknown_source_returns_1(self, capsys: pytest.CaptureFixture) -> None:
         code = _cmd_council(["query", "--source", "badvalue"])
         assert code == 1
-        assert "Unknown source" in capsys.readouterr().err
+        err = capsys.readouterr().err
+        assert "Unknown source" in err
+        assert "pwm connectors list" in err
 
     def test_unknown_option_returns_1(self, capsys: pytest.CaptureFixture) -> None:
         code = _cmd_council(["query", "--badopt"])
