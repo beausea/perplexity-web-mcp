@@ -101,7 +101,7 @@ def pplx_query(
         thinking: Enable extended thinking mode (available for gpt54, gpt55, claude_sonnet,
                   claude_opus, kimi_k26; always on for gemini_pro, nemotron, and glm52)
         source_focus: Source type - none (model only, no search), web, academic,
-                      social, finance, all
+                      social, finance, all, or connector source ID from pplx_connectors()
     """
     selected_model = resolve_model(model, thinking=thinking)
     return ask(query, selected_model, source_focus, conversation_id)
@@ -297,7 +297,7 @@ def pplx_smart_query(
         query: The question to ask
         intent: Query complexity — quick (default for most), standard, detailed, research
         source_focus: Source type — none (model only, no search), web, academic,
-                      social, finance, all
+                      social, finance, all, or connector source ID from pplx_connectors()
     """
     result = smart_ask(query, intent=intent, source_focus=source_focus)
     return result.format_response()
@@ -326,7 +326,7 @@ def pplx_council(
 
     Args:
         query: The question to ask all council models
-        source_focus: Source type for all models (none/web/academic/social/finance/all)
+        source_focus: Source type for all models (none/web/academic/social/finance/all or connector source ID)
         models: Comma-separated model names to use as council members.
                 Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
                 Default: "gpt54,claude_sonnet,gemini_pro" (3 models + synthesis = 4 Pro Searches)

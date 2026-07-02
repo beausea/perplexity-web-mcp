@@ -248,7 +248,16 @@ pwm ask "transformer improvements 2025" -s academic   # Scholarly papers
 pwm ask "best mechanical keyboard" -s social           # Reddit/Twitter
 pwm ask "Apple revenue Q4 2025" -s finance             # SEC EDGAR filings
 pwm ask "latest AI news" -s all                        # All sources
+pwm connectors list                                    # List connector source IDs
+pwm ask "private company funding" -s pitchbook_mcp_cashmere
 ```
+
+Connector source IDs:
+- CLI: run `pwm connectors list`, then pass the source ID with `-s`.
+- MCP: call `pplx_connectors()`, then pass the source ID as `source_focus`.
+- Do not guess connector IDs. If no connector is listed, use normal source focus values.
+- Connector access depends on the authenticated Perplexity account; free accounts may show none.
+- Unknown source values fail instead of falling back to web search.
 
 Output options:
 
@@ -347,11 +356,12 @@ pwm usage --refresh         # Force-refresh from server
 | `pplx_kimi_k26` / `_thinking`   | 1 Pro                                   | Moonshot Kimi K2.6                                                                                                                                                                     |
 | `pplx_deep_research`            | 1 Research                              | In-depth reports (**scarce monthly quota**)                                                                                                                                            |
 | `pplx_usage`                    | FREE                                    | Check remaining quotas                                                                                                                                                                 |
+| `pplx_connectors`               | FREE                                    | List account connector source IDs for `source_focus`                                                                                                                                   |
 | `pplx_auth_status`              | FREE                                    | Check auth status                                                                                                                                                                      |
 | `pplx_auth_request_code`        | FREE                                    | Send verification code                                                                                                                                                                 |
 | `pplx_auth_complete`            | FREE                                    | Complete auth with code                                                                                                                                                                |
 
-All query tools accept `source_focus`: `"none"`, `"web"`, `"academic"`, `"social"`, `"finance"`, `"all"`.
+All query tools accept `source_focus`: `"none"`, `"web"`, `"academic"`, `"social"`, `"finance"`, `"all"`, or a connector source ID from `pplx_connectors()`.
 Use `source_focus="none"` for model-only queries without web search.
 
 **Multi-Turn Conversations**: All query tools accept an optional `conversation_id` parameter. The server returns `[Conversation ID: <uuid>]` at the end of each response. Extract this UUID and pass it to the next query to maintain context across multiple turns.

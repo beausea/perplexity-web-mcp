@@ -164,6 +164,10 @@ pwm ask "Apple revenue Q4 2025" -s finance
 
 # Search all source types at once
 pwm ask "latest AI news" -s all
+
+# Search an account connector source, when your Perplexity account exposes one
+pwm connectors list
+pwm ask "recent funding for Stripe" -s pitchbook_mcp_cashmere
 ```
 
 **Output options:**
@@ -316,6 +320,19 @@ Control where Perplexity searches using `-s` (CLI) or `source_focus` (MCP):
 | `finance`  | SEC EDGAR filings                | Company financials, regulatory filings         |
 | `all`      | Web + Academic + Social combined | Broad coverage across all sources              |
 
+### Account Connector Sources
+
+Accounts with Perplexity connectors may expose additional source IDs such as `pitchbook_mcp_cashmere` or `cbinsights_mcp_cashmere`. List IDs before using them:
+
+```bash
+pwm connectors list
+pwm ask "recent funding for Stripe" -s pitchbook_mcp_cashmere
+```
+
+MCP clients should call `pplx_connectors()` first, then pass the returned ID as `source_focus`.
+
+Connector access depends on the authenticated Perplexity account. Free accounts may show no connector IDs. Unknown source values fail instead of falling back to web search. See [Account Connector Sources](docs/connectors.md) for details.
+
 ---
 
 ## MCP Server
@@ -391,16 +408,17 @@ claude mcp add perplexity pwm-mcp
 | -------------- | --------------------------------------------------------- |
 | `pplx_council` | Query multiple models in parallel with optional synthesis |
 
-**Usage & auth tools (4):**
+**Usage, connectors & auth tools (5):**
 
 | Tool                     | Description                     |
 | ------------------------ | ------------------------------- |
 | `pplx_usage`             | Check remaining quotas          |
+| `pplx_connectors`        | List connector source IDs       |
 | `pplx_auth_status`       | Check authentication status     |
 | `pplx_auth_request_code` | Send verification code to email |
 | `pplx_auth_complete`     | Complete auth with 6-digit code |
 
-All query tools support `source_focus`: `none`, `web`, `academic`, `social`, `finance`, `all`.
+All query tools support `source_focus`: `none`, `web`, `academic`, `social`, `finance`, `all`, or a connector source ID returned by `pplx_connectors()`.
 
 ---
 
