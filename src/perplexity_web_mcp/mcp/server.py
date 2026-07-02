@@ -65,7 +65,8 @@ mcp = FastMCP(
         "- Use pplx_get_thread(slug) to load the full history of any past thread.\n"
         "- To resume a past conversation: call pplx_get_thread(slug) to load context,\n"
         "  then pass conversation_id=slug to any query tool to continue right where it left off.\n\n"
-        "All tools support source_focus: none, web, academic, social, finance, all.\n"
+        "All query tools support source_focus: none, web, academic, social, finance, all, "
+        "or an account connector source ID from pplx_connectors().\n"
         "Use source_focus='none' for model-only queries without web search.\n\n"
         "AUTHENTICATION: If you get a 403 error or 'token expired' message:\n"
         "1. pplx_auth_status — check current authentication status\n"
@@ -533,6 +534,34 @@ def pplx_usage(refresh: bool = False) -> str:
         parts.append(credits.format_summary())
 
     return "\n".join(parts)
+
+
+@mcp.tool
+def pplx_connectors(refresh: bool = False) -> str:
+    """List account connector source IDs that can be passed as source_focus.
+
+    Returns source IDs from the Perplexity rate-limit API. Use these IDs as
+    source_focus values, for example source_focus="pitchbook_mcp_cashmere".
+    """
+    cache = get_limit_cache()
+    if cache is None:
+        return "NOT AUTHENTICATED\n\nNo session token found. Authenticate first with pplx_auth_request_code."
+
+    limits = cache.get_rate_limits(force_refresh=refresh)
+    if limits is None:
+        return "Could not fetch source limits."
+
+    connector_sources = [
+        source for source in limits.source_limits if "_mcp_" in source.source_id or source.monthly_limit is not None
+    ]
+    if not connector_sources:
+        return "No connector source IDs were reported by this account."
+
+    lines = ["Connector source IDs:"]
+    for source in connector_sources:
+        quota = "unlimited" if source.monthly_limit is None else f"{source.remaining}/{source.monthly_limit}"
+        lines.append(f"- {source.source_id}: {quota}")
+    return "\n".join(lines)
 
 
 # =============================================================================
