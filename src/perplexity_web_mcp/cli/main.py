@@ -34,16 +34,16 @@ from perplexity_web_mcp.shared import (
     MODEL_NAMES,
     SOURCE_FOCUS_NAMES,
     Models,
-    SourceResolutionError,
     SourceFocusName,
+    SourceResolutionError,
     ask,
     build_council_model_list,
     format_thread_list,
     get_limit_cache,
     get_thread,
     list_threads,
-    resolve_source_focus,
     resolve_model,
+    resolve_source_focus,
 )
 from perplexity_web_mcp.token_store import load_token
 
