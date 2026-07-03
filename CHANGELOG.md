@@ -4,6 +4,24 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.14.0] - 2026-07-02
+
+### Added
+
+- **Account Connector Source Routing** — Added support for routing CLI, MCP, smart-query, research, and Model Council requests through Perplexity account connector source IDs such as `pitchbook_mcp_cashmere` and `cbinsights_mcp_cashmere`.
+  - **CLI Discovery**: Added `pwm connectors list` to show connector source IDs and remaining monthly source quota from the authenticated account.
+  - **MCP Discovery**: Added `pplx_connectors()` so AI agents can discover connector IDs before passing them as `source_focus`.
+  - **Connector Docs**: Added `docs/connectors.md` and updated README, `pwm --ai`, bundled skill docs, and MCP references with connector usage rules.
+  - **Safety**: Unknown source values now fail loudly instead of silently falling back to normal web search.
+
+### Changed
+
+- **Perplexity Model Roster** — Aligned search model definitions and docs with the current Perplexity model set, including Claude Sonnet 5.0, GLM 5.2, and current premium model metadata.
+- **Source Focus Internals** — Source focus handling now resolves built-in aliases and raw source IDs through one shared path, so CLI, MCP, smart routing, and council behavior stay consistent.
+- **Version Bump** — Bumped package, bundled skill, project skill, and desktop extension metadata to `0.14.0`.
+
+---
+
 ## [0.13.0] - 2026-06-29
 
 ### Added

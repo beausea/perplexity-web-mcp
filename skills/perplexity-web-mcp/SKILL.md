@@ -2,7 +2,7 @@
 name: perplexity-web-mcp
 description: 'Search the web and query AI models via Perplexity AI using perplexity-web-mcp-cli. Supports CLI commands (pwm ask, pwm research), MCP tools (pplx_*), and Anthropic/OpenAI-compatible API server. Use when the user mentions "perplexity", "pplx", "pwm", "web search with AI", "deep research", "search the internet", or wants to query premium models like GPT-5.4, GPT-5.5, Claude, Gemini, GLM, Nemotron through Perplexity''s web interface.'
 metadata:
-  version: "0.12.2"
+  version: "0.14.0"
   author: "Jacob BD"
 ---
 
@@ -175,6 +175,21 @@ User wants to...
 |   +-- MCP:  pplx_smart_query(query)            # smart routing (default)
 |   +-- Explicit model: pwm ask "query" -m gpt54  or  pplx_query(query, model="gpt54")
 |
++-- Browse past conversations (FREE, no quota)
+|   +-- CLI:  pwm threads                        # list recent threads
+|   +-- CLI:  pwm threads --search "topic"       # search threads
+|   +-- MCP:  pplx_list_threads()               # list threads
+|   +-- MCP:  pplx_list_threads(search_term="X") # search threads
+|
++-- Read or resume a past conversation (FREE, no quota)
+|   +-- CLI:  pwm threads --search "topic"       # find slug
+|   +-- MCP:  pplx_get_thread(slug)             # read full history
+|   +-- MCP:  pplx_smart_query(query, conversation_id=slug) # resume
+|
++-- Export full library to JSON (FREE, no quota)
+|   +-- CLI:  pwm export                        # all threads → pplx-export-<date>.json
+|   +-- CLI:  pwm export --search "ai"          # filtered export
+|
 +-- Query multiple models at once (Model Council)
 |   +-- CLI:  pwm council "query"                         # default 3 models
 |   +-- CLI:  pwm council "query" -m gpt54,claude_sonnet  # custom models
@@ -233,7 +248,16 @@ pwm ask "transformer improvements 2025" -s academic   # Scholarly papers
 pwm ask "best mechanical keyboard" -s social           # Reddit/Twitter
 pwm ask "Apple revenue Q4 2025" -s finance             # SEC EDGAR filings
 pwm ask "latest AI news" -s all                        # All sources
+pwm connectors list                                    # List connector source IDs
+pwm ask "private company funding" -s pitchbook_mcp_cashmere
 ```
+
+Connector source IDs:
+- CLI: run `pwm connectors list`, then pass the source ID with `-s`.
+- MCP: call `pplx_connectors()`, then pass the source ID as `source_focus`.
+- Do not guess connector IDs. If no connector is listed, use normal source focus values.
+- Connector access depends on the authenticated Perplexity account; free accounts may show none.
+- Unknown source values fail instead of falling back to web search.
 
 Output options:
 
@@ -262,6 +286,27 @@ pwm council "Prove the Pythagorean theorem" --thinking                # extended
 pwm council "AI trends 2026" --chairman claude_sonnet                 # premium synthesis (+1 Pro)
 pwm council "Is React or Vue better?" --no-synthesis                  # skip synthesis
 pwm council "AI trends 2026" --json                                   # JSON output
+```
+
+### Thread Library (FREE — no quota)
+
+Browse and export past Perplexity conversations:
+
+```bash
+pwm threads                          # list most recent 20 threads
+pwm threads --limit 50              # get 50 threads
+pwm threads --search "quantum"      # filter threads by keyword
+pwm threads --offset 20             # page 2 (skip first 20)
+pwm threads --json                  # JSON output (for piping)
+```
+
+Export full library to a JSON file (no browser required):
+
+```bash
+pwm export                              # all threads → pplx-export-<date>.json
+pwm export --output ./my-backup.json   # custom path
+pwm export --search "ai"               # filtered export
+pwm export --limit 50                  # cap at 50 threads
 ```
 
 ### Deep Research
@@ -295,6 +340,8 @@ pwm usage --refresh         # Force-refresh from server
 | Tool                            | Cost                                    | Purpose                                                                                                                                                                                |
 | ------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pplx_smart_query`              | **Varies by intent**                    | **USE THIS BY DEFAULT** — quota-aware auto routing                                                                                                                                     |
+| `pplx_list_threads`             | **FREE**                                | Browse past conversations — paginated, searchable. Use before spending quota.                                                                                                          |
+| `pplx_get_thread`               | **FREE**                                | Full history for any past thread. Also enables conversation resumption via conversation_id.                                                                                             |
 | `pplx_sonar`                    | 1 Pro Search                            | Perplexity Sonar 2                                                                                                                                                                     |
 | `pplx_query`                    | 1 Pro                                   | Explicit model selection with thinking toggle                                                                                                                                          |
 | `pplx_ask`                      | 1 Pro                                   | Quick Q&A (auto model)                                                                                                                                                                 |
@@ -309,11 +356,12 @@ pwm usage --refresh         # Force-refresh from server
 | `pplx_kimi_k26` / `_thinking`   | 1 Pro                                   | Moonshot Kimi K2.6                                                                                                                                                                     |
 | `pplx_deep_research`            | 1 Research                              | In-depth reports (**scarce monthly quota**)                                                                                                                                            |
 | `pplx_usage`                    | FREE                                    | Check remaining quotas                                                                                                                                                                 |
+| `pplx_connectors`               | FREE                                    | List account connector source IDs for `source_focus`                                                                                                                                   |
 | `pplx_auth_status`              | FREE                                    | Check auth status                                                                                                                                                                      |
 | `pplx_auth_request_code`        | FREE                                    | Send verification code                                                                                                                                                                 |
 | `pplx_auth_complete`            | FREE                                    | Complete auth with code                                                                                                                                                                |
 
-All query tools accept `source_focus`: `"none"`, `"web"`, `"academic"`, `"social"`, `"finance"`, `"all"`.
+All query tools accept `source_focus`: `"none"`, `"web"`, `"academic"`, `"social"`, `"finance"`, `"all"`, or a connector source ID from `pplx_connectors()`.
 Use `source_focus="none"` for model-only queries without web search.
 
 **Multi-Turn Conversations**: All query tools accept an optional `conversation_id` parameter. The server returns `[Conversation ID: <uuid>]` at the end of each response. Extract this UUID and pass it to the next query to maintain context across multiple turns.
@@ -359,6 +407,48 @@ For full model details: See [references/models.md](references/models.md)
 | "LIMIT REACHED"  | Quota at zero     | Wait for reset or upgrade |
 
 ## Common Patterns
+
+### Thread Library & Conversation Resumption
+
+```bash
+# List recent threads
+pwm threads
+
+# Search before spending quota
+pwm threads --search "python packaging"
+
+# Export full library to JSON (no browser needed)
+pwm export
+```
+
+MCP — quota-free thread browsing:
+
+```
+pplx_list_threads()                        # recent 20 threads
+pplx_list_threads(search_term="topic")     # search first
+pplx_get_thread("<slug>")                  # read full history
+```
+
+Resume pattern — continue any past conversation:
+
+```
+# 1. Find the thread
+pplx_list_threads(search_term="quantum")
+# → returns slug: "f1f6562c-91be-47e9-..."
+
+# 2. Read it for context (optional)
+pplx_get_thread("f1f6562c-91be-47e9-...")
+
+# 3. Continue right where it left off
+pplx_smart_query("follow-up question", conversation_id="f1f6562c-91be-47e9-...")
+```
+
+MCP Resources (if your MCP client supports resources):
+
+```
+perplexity://library                        # your thread library
+perplexity://thread/<slug>                  # a specific thread
+```
 
 ### Quick web search
 
