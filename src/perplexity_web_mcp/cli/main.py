@@ -39,6 +39,7 @@ from perplexity_web_mcp.shared import (
     ask,
     build_council_model_list,
     format_thread_list,
+    get_connector_sources,
     get_limit_cache,
     get_thread,
     list_threads,
@@ -783,9 +784,7 @@ def _cmd_connectors_list(refresh: bool = False) -> int:
         print("Could not fetch connector source IDs.", file=sys.stderr)
         return 1
 
-    connector_sources = [
-        source for source in limits.source_limits if "_mcp_" in source.source_id or source.monthly_limit is not None
-    ]
+    connector_sources = get_connector_sources(limits.source_limits)
     if not connector_sources:
         console.print("[yellow]No connector source IDs were reported by this account.[/]")
         return 0

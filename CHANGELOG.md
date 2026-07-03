@@ -20,6 +20,16 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 - **Source Focus Internals** — Source focus handling now resolves built-in aliases and raw source IDs through one shared path, so CLI, MCP, smart routing, and council behavior stay consistent.
 - **Version Bump** — Bumped package, bundled skill, project skill, and desktop extension metadata to `0.14.0`.
 
+### Fixed
+
+- **`pplx_council` error handling** — `SourceResolutionError` from an invalid `source_focus` now returns a formatted error string instead of propagating as a raw exception through FastMCP.
+- **`pplx_deep_research_start` source validation** — Source focus is now validated before the background thread is spawned. An invalid source returns an error immediately instead of reporting `status: "completed"` with an error message in the body on poll.
+- **Connector listing excludes builtin sources** — `pplx_connectors()` and `pwm connectors list` no longer show builtin sources (e.g. `box`, `edgar`) that happen to have a monthly quota, preventing them from being mistaken for account connector IDs.
+- **Connector filter deduplication** — The logic for classifying connector sources is now shared between CLI and MCP via `get_connector_sources()` in `shared.py`.
+- **Whitespace `source_focus` default** — A whitespace-only `source_focus` value now correctly falls back to `"web"` instead of raising `SourceResolutionError("Unknown source ''")`.
+- **Connector ID regex rejects trailing underscores** — `pitchbook_mcp_` (trailing `_`) no longer passes the connector ID pattern and reaches the Perplexity API with an opaque error.
+- **Source resolution performance** — Cheap `_BUILTIN_SOURCE_IDS` set-lookup and regex check now run before the blocking rate-limit API call in `resolve_source_focus`.
+
 ---
 
 ## [0.13.0] - 2026-06-29

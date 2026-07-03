@@ -18,7 +18,7 @@ from .config import ClientConfig, ConversationConfig
 from .core import Perplexity
 from .enums import CitationMode, LogLevel, SearchFocus, SourceFocus
 from .models import Model, Models
-from .rate_limits import RateLimitCache
+from .rate_limits import RateLimitCache, SourceLimit
 from .router import Intent, SmartResponse, SmartRouter
 from .sessions import SessionStore
 from .token_store import get_token_or_raise, load_token
@@ -59,7 +59,7 @@ SOURCE_FOCUS_ALIASES: dict[str, list[str]] = {
 }
 SOURCE_FOCUS_MAP = SOURCE_FOCUS_ALIASES
 
-_CONNECTOR_ID_RE = re.compile(r"^[a-z][a-z0-9_]*_mcp_[a-z0-9_]+$")
+_CONNECTOR_ID_RE = re.compile(r"^[a-z][a-z0-9_]*_mcp_[a-z0-9_]*[a-z0-9]$")
 _BUILTIN_SOURCE_IDS = {
     SourceFocus.WEB.value,
     SourceFocus.ACADEMIC.value,
@@ -204,13 +204,16 @@ def _source_ids_from_limits() -> set[str]:
 
 def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
     """Resolve a built-in source alias or account connector source ID."""
-    source = (source_focus or "web").strip()
+    source = (source_focus or "").strip() or "web"
     if source in SOURCE_FOCUS_ALIASES:
         search_focus = SearchFocus.WRITING if source == "none" else SearchFocus.WEB
         return SOURCE_FOCUS_ALIASES[source], search_focus
 
-    known_source_ids = _source_ids_from_limits()
-    if source in known_source_ids or source in _BUILTIN_SOURCE_IDS or _CONNECTOR_ID_RE.fullmatch(source):
+    # Check cheap lookups before making a network call.
+    if source in _BUILTIN_SOURCE_IDS or _CONNECTOR_ID_RE.fullmatch(source):
+        return [source], SearchFocus.WEB
+
+    if source in _source_ids_from_limits():
         return [source], SearchFocus.WEB
 
     available = ", ".join(SOURCE_FOCUS_NAMES)
@@ -218,6 +221,15 @@ def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
         f"Unknown source '{source}'. Available aliases: {available}. "
         "Run `pwm connectors list` or `pwm usage` to find account connector source IDs."
     )
+
+
+def get_connector_sources(source_limits: list[SourceLimit]) -> list[SourceLimit]:
+    """Return source limits that are account connectors, excluding builtin sources."""
+    return [
+        source for source in source_limits
+        if ("_mcp_" in source.source_id or source.monthly_limit is not None)
+        and source.source_id not in _BUILTIN_SOURCE_IDS
+    ]
 
 
 # ---------------------------------------------------------------------------

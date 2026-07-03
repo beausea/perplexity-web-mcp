@@ -18,15 +18,18 @@ from perplexity_web_mcp.shared import (
     COUNCIL_DEFAULT_MODELS_STR,
     ModelName,
     SourceFocusName,
+    SourceResolutionError,
     ask,
     build_council_model_list,
     council_ask,
     format_thread_detail,
     format_thread_list,
+    get_connector_sources,
     get_limit_cache,
     get_thread,
     list_threads,
     resolve_model,
+    resolve_source_focus,
     smart_ask,
 )
 from perplexity_web_mcp.token_store import load_token, save_token
@@ -140,6 +143,11 @@ def pplx_deep_research_start(query: str, source_focus: SourceFocusName = "web") 
     Use this instead of pplx_deep_research for complex queries to avoid connection timeouts.
     Returns a task_id immediately. Poll pplx_research_status with the task_id to get the result.
     """
+    try:
+        resolve_source_focus(source_focus)
+    except SourceResolutionError as e:
+        return str(e)
+
     task_id = str(uuid.uuid4())
     with _research_lock:
         _research_tasks[task_id] = {"status": "in_progress"}
@@ -346,14 +354,17 @@ def pplx_council(
 
     synthesis_model = resolve_model(chairman) if chairman != "sonar" else None
 
-    result = council_ask(
-        query=query,
-        models=model_list,
-        source_focus=source_focus,
-        synthesize=synthesize,
-        thinking=thinking,
-        synthesis_model=synthesis_model,
-    )
+    try:
+        result = council_ask(
+            query=query,
+            models=model_list,
+            source_focus=source_focus,
+            synthesize=synthesize,
+            thinking=thinking,
+            synthesis_model=synthesis_model,
+        )
+    except SourceResolutionError as e:
+        return str(e)
     return result.format_response()
 
 
@@ -551,9 +562,7 @@ def pplx_connectors(refresh: bool = False) -> str:
     if limits is None:
         return "Could not fetch source limits."
 
-    connector_sources = [
-        source for source in limits.source_limits if "_mcp_" in source.source_id or source.monthly_limit is not None
-    ]
+    connector_sources = get_connector_sources(limits.source_limits)
     if not connector_sources:
         return "No connector source IDs were reported by this account."
 
