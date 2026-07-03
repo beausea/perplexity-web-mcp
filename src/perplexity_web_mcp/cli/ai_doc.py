@@ -37,6 +37,7 @@ QUERYING
   pwm ask "query" -m MODEL            Ask using a specific model
   pwm ask "query" -m MODEL -t         Ask with extended thinking enabled
   pwm ask "query" -s SOURCE           Ask with specific source focus
+  pwm connectors list                 List account connector source IDs
   pwm ask "query" --json              Output as JSON (answer + citations)
   pwm ask "query" --no-citations      Suppress citation URLs
 
@@ -52,6 +53,7 @@ QUERYING
     pwm ask "best mechanical keyboard" -s social           # Reddit/Twitter
     pwm ask "Apple revenue Q4 2025" -s finance             # SEC EDGAR filings
     pwm ask "latest AI news" -s all                        # All sources combined
+    pwm ask "private company funding" -s pitchbook_mcp_cashmere  # Account connector
 
   Combined:
     pwm ask "protein folding advances" -m gemini_pro -s academic --json
@@ -140,6 +142,16 @@ social      Social media (Reddit, Twitter, etc.) Opinions, recommendations, comm
 finance     SEC EDGAR filings                    Company financials, regulatory filings
 all         Web + Academic + Social combined      Broad coverage across all sources
 
+Account connectors:
+  pwm connectors list                              # List connector source IDs
+  pwm ask "private company funding" -s pitchbook_mcp_cashmere
+
+Connector rules:
+  - Connector IDs come from the authenticated Perplexity account.
+  - Free accounts may show no connector IDs.
+  - Do not guess connector IDs. Run `pwm connectors list` or call `pplx_connectors()`.
+  - Unknown source values fail instead of falling back to web search.
+
 CLI examples:
   pwm ask "explain this algorithm" -s none                 # No web search
   pwm ask "transformer architecture" -s academic
@@ -151,6 +163,8 @@ MCP examples:
   pplx_ask(query="review this code", source_focus="none")
   pplx_ask(query="transformer architecture", source_focus="academic")
   pplx_query(query="Tesla financials", model="gpt54", source_focus="finance")
+  pplx_connectors(refresh=False)
+  pplx_smart_query(query="private company funding", source_focus="pitchbook_mcp_cashmere")
 
 ================================================================================
 MCP TOOLS (pplx_* namespace)
@@ -201,7 +215,10 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   pplx_kimi_k26_thinking(query, source_focus)     Kimi K2.6 + thinking — 1 Pro
 
   All query tools accept source_focus: "none", "web", "academic", "social",
-  "finance", "all". Use "none" for model-only queries without web search.
+  "finance", "all", or a connector source ID from pplx_connectors().
+  Use "none" for model-only queries without web search.
+
+  pplx_connectors(refresh=False)                   List connector source IDs
 
   All query tools also accept an optional `conversation_id` (str) parameter.
   The server returns `[Conversation ID: <uuid>]` at the end of each response.

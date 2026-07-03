@@ -252,6 +252,32 @@ class TestCouncilAsk:
     @patch("perplexity_web_mcp.shared.check_limits_before_query", return_value=None)
     @patch("perplexity_web_mcp.shared.get_limit_cache", return_value=None)
     @patch("perplexity_web_mcp.shared.get_client")
+    def test_connector_source_id_is_passed_to_models(
+        self,
+        mock_client_fn: MagicMock,
+        mock_cache: MagicMock,
+        mock_limits: MagicMock,
+    ) -> None:
+        mock_conv = MagicMock()
+        mock_conv.answer = "Connector answer"
+        mock_conv.search_results = []
+        mock_client = MagicMock()
+        mock_client.create_conversation.return_value = mock_conv
+        mock_client_fn.return_value = mock_client
+
+        council_ask(
+            "company funding",
+            models=[("Sonar 2", Models.SONAR)],
+            source_focus="pitchbook_mcp_cashmere",
+            synthesize=False,
+        )
+
+        config = mock_client.create_conversation.call_args.args[0]
+        assert config.source_focus == ["pitchbook_mcp_cashmere"]
+
+    @patch("perplexity_web_mcp.shared.check_limits_before_query", return_value=None)
+    @patch("perplexity_web_mcp.shared.get_limit_cache", return_value=None)
+    @patch("perplexity_web_mcp.shared.get_client")
     def test_synthesis_runs_when_enabled(
         self,
         mock_client_fn: MagicMock,

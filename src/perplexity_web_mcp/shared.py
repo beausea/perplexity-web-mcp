@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from os import environ
+import re
 from threading import Lock
 from typing import TYPE_CHECKING, Literal
 from uuid import uuid4
@@ -48,14 +49,29 @@ class ModelDefinition:
     council_eligible: bool = True
 
 
-SOURCE_FOCUS_MAP: dict[str, list[SourceFocus]] = {
+SOURCE_FOCUS_ALIASES: dict[str, list[str]] = {
     "none": [],
-    "web": [SourceFocus.WEB],
-    "academic": [SourceFocus.ACADEMIC],
-    "social": [SourceFocus.SOCIAL],
-    "finance": [SourceFocus.FINANCE],
-    "all": [SourceFocus.WEB, SourceFocus.ACADEMIC, SourceFocus.SOCIAL],
+    "web": [SourceFocus.WEB.value],
+    "academic": [SourceFocus.ACADEMIC.value],
+    "social": [SourceFocus.SOCIAL.value],
+    "finance": [SourceFocus.FINANCE.value],
+    "all": [SourceFocus.WEB.value, SourceFocus.ACADEMIC.value, SourceFocus.SOCIAL.value],
 }
+SOURCE_FOCUS_MAP = SOURCE_FOCUS_ALIASES
+
+_CONNECTOR_ID_RE = re.compile(r"^[a-z][a-z0-9_]*_mcp_[a-z0-9_]+$")
+_BUILTIN_SOURCE_IDS = {
+    SourceFocus.WEB.value,
+    SourceFocus.ACADEMIC.value,
+    SourceFocus.SOCIAL.value,
+    SourceFocus.FINANCE.value,
+    "google_drive",
+    "box",
+}
+
+
+class SourceResolutionError(ValueError):
+    """Raised when a source alias or connector source ID cannot be resolved."""
 
 MODEL_METADATA: dict[str, ModelDefinition] = {
     "auto": ModelDefinition(Models.BEST, None, "Auto (Best)", "Perplexity", council_eligible=False),
@@ -108,7 +124,7 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     name: (definition.base_model, definition.thinking_model) for name, definition in MODEL_METADATA.items()
 }
 
-SourceFocusName = Literal["none", "web", "academic", "social", "finance", "all"]
+SourceFocusName = str
 ModelName = Literal[
     "auto",
     "sonar",
@@ -172,6 +188,36 @@ def resolve_model(name: str, thinking: bool = False) -> Model:
     model_tuple = MODEL_MAP.get(name, (Models.BEST, None))
     base_model, thinking_model = model_tuple
     return thinking_model if thinking and thinking_model else base_model
+
+
+def _source_ids_from_limits() -> set[str]:
+    cache = get_limit_cache()
+    if cache is None:
+        return set()
+
+    limits = cache.get_rate_limits()
+    if limits is None:
+        return set()
+
+    return {source.source_id for source in limits.source_limits}
+
+
+def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
+    """Resolve a built-in source alias or account connector source ID."""
+    source = (source_focus or "web").strip()
+    if source in SOURCE_FOCUS_ALIASES:
+        search_focus = SearchFocus.WRITING if source == "none" else SearchFocus.WEB
+        return SOURCE_FOCUS_ALIASES[source], search_focus
+
+    known_source_ids = _source_ids_from_limits()
+    if source in known_source_ids or source in _BUILTIN_SOURCE_IDS or _CONNECTOR_ID_RE.fullmatch(source):
+        return [source], SearchFocus.WEB
+
+    available = ", ".join(SOURCE_FOCUS_NAMES)
+    raise SourceResolutionError(
+        f"Unknown source '{source}'. Available aliases: {available}. "
+        "Run `pwm connectors list` or `pwm usage` to find account connector source IDs."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -302,7 +348,7 @@ _session_store = SessionStore()
 def _execute_query(
     query: str,
     model: Model,
-    sources: list[SourceFocus],
+    sources: list[str],
     search_focus: SearchFocus = SearchFocus.WEB,
     conversation_id: str | None = None,
 ) -> tuple[str, list[SearchResultItem], str | None]:
@@ -403,8 +449,7 @@ def _execute_with_retry(
     """Execute a query with automatic token retry on authentication failure."""
     from .exceptions import AuthenticationError, RateLimitError
 
-    sources = SOURCE_FOCUS_MAP.get(source_focus, [SourceFocus.WEB])
-    search_mode = SearchFocus.WRITING if source_focus == "none" else SearchFocus.WEB
+    sources, search_mode = resolve_source_focus(source_focus)
 
     try:
         return _execute_query(query, model, sources, search_mode, conversation_id)

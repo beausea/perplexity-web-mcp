@@ -15,7 +15,7 @@ Complete parameter reference for all MCP tools in the `pplx_*` namespace.
 | `pplx_sonar`                                       | 1 Pro Search                     |
 | `pplx_ask`, `pplx_query`, all model-specific tools | 1 Pro Search                     |
 | `pplx_deep_research`                               | 1 Deep Research (scarce monthly) |
-| `pplx_usage`, auth tools                           | FREE                             |
+| `pplx_usage`, `pplx_connectors`, auth tools         | FREE                             |
 
 ## Thread Library (FREE — no quota cost)
 
@@ -88,6 +88,14 @@ perplexity://thread/<slug>            # Full conversation history for a specific
 
 ## Smart Query (RECOMMENDED DEFAULT)
 
+## Source Focus and Connectors
+
+All query tools accept built-in source focus values: `none`, `web`, `academic`, `social`, `finance`, and `all`.
+
+Accounts with Perplexity connectors may also expose connector source IDs such as `pitchbook_mcp_cashmere` or `cbinsights_mcp_cashmere`. Call `pplx_connectors()` first, then pass the returned ID as `source_focus`.
+
+Do not guess connector IDs. Unknown source values fail instead of falling back to web search.
+
 ### pplx_smart_query
 
 Quota-aware routing — checks limits and picks the best model automatically.
@@ -98,7 +106,7 @@ and only escalate when the query genuinely needs a premium model or Research.
 pplx_smart_query(
     query: str,                    # Required. The question to ask.
     intent: str = "standard",      # quick (1 Pro, Sonar 2), standard (1 Pro), detailed (1 Pro), research (1 Research)
-    source_focus: str = "web",     # none, web, academic, social, finance, all
+    source_focus: str = "web",     # none, web, academic, social, finance, all, or connector ID from pplx_connectors()
     conversation_id: str = None,   # Optional. Pass ID from previous turn to persist context.
 ) -> str
 ```
@@ -116,7 +124,7 @@ pplx_query(
     model: str = "auto",           # auto, sonar, deep_research, gpt54, gpt55, claude_sonnet,
                                    # claude_opus, gemini_pro, nemotron, glm52, kimi_k26
     thinking: bool = False,        # Enable extended thinking (where supported)
-    source_focus: str = "web",     # none, web, academic, social, finance, all
+    source_focus: str = "web",     # none, web, academic, social, finance, all, or connector ID from pplx_connectors()
     conversation_id: str = None,   # Optional. Pass ID from previous turn to persist context.
 ) -> str
 ```
@@ -129,7 +137,7 @@ For simple lookups, prefer `pplx_smart_query(intent='quick')` instead.
 ```
 pplx_ask(
     query: str,                    # Required. The question to ask.
-    source_focus: str = "web",     # none, web, academic, social, finance, all
+    source_focus: str = "web",     # none, web, academic, social, finance, all, or connector ID from pplx_connectors()
     conversation_id: str = None,   # Optional. Pass ID from previous turn to persist context.
 ) -> str
 ```
@@ -142,7 +150,7 @@ typically 5-10 total). Only use when the user explicitly requests deep research.
 ```
 pplx_deep_research(
     query: str,                    # Required. The research topic.
-    source_focus: str = "web",     # none, web, academic, social, finance, all
+    source_focus: str = "web",     # none, web, academic, social, finance, all, or connector ID from pplx_connectors()
 ) -> str
 ```
 
@@ -153,7 +161,7 @@ All have the same signature and **each costs 1 Pro Search query**:
 ```
 pplx_<model>(
     query: str,                    # Required. The question to ask.
-    source_focus: str = "web",     # none, web, academic, social, finance, all
+    source_focus: str = "web",     # none, web, academic, social, finance, all, or connector ID from pplx_connectors()
     conversation_id: str = None,   # Optional. Pass ID from previous turn to persist context.
 ) -> str
 ```
@@ -194,6 +202,29 @@ Returns a summary including:
 - Create Files & Apps remaining (monthly)
 - Browser Agent remaining (monthly)
 - Subscription tier, billing detail, and account info
+
+### pplx_connectors
+
+List account connector source IDs that can be passed to `source_focus`.
+
+```
+pplx_connectors(
+    refresh: bool = False,         # Force-refresh source limits before listing
+) -> str
+```
+
+Use this before connector-backed queries:
+
+```
+pplx_connectors()
+pplx_smart_query(
+    query="recent funding for Stripe",
+    intent="standard",
+    source_focus="pitchbook_mcp_cashmere",
+)
+```
+
+Connector access depends on the authenticated Perplexity account. Free accounts may show no connector IDs.
 
 ## Authentication Tools
 

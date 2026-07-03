@@ -217,6 +217,13 @@ class TestBuildPayload:
 
         assert payload["params"]["sources"] == ["web", "scholar"]
 
+    def test_source_focus_accepts_connector_string(self) -> None:
+        config = ConversationConfig(source_focus=["pitchbook_mcp_cashmere"])
+        conv = self._conv(config)
+        payload = conv._build_payload("q", Models.BEST, [])
+
+        assert payload["params"]["sources"] == ["pitchbook_mcp_cashmere"]
+
     def test_followup_includes_uuid_and_token(self) -> None:
         conv = self._conv()
         conv._backend_uuid = "uuid-123"

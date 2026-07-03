@@ -10,7 +10,7 @@ from perplexity_web_mcp import shared
 from perplexity_web_mcp.enums import LogLevel
 from perplexity_web_mcp.exceptions import AuthenticationError, RateLimitError
 from perplexity_web_mcp.models import Model, Models
-from perplexity_web_mcp.rate_limits import RateLimits
+from perplexity_web_mcp.rate_limits import RateLimits, SourceLimit
 from perplexity_web_mcp.router import SmartResponse
 from perplexity_web_mcp.shared import (
     MODEL_MAP,
@@ -107,6 +107,43 @@ class TestMappings:
             Models.GPT_54,
             Models.CLAUDE_50_SONNET,
         ]
+
+
+class TestResolveSourceFocus:
+    """Verify source aliases and connector source IDs resolve safely."""
+
+    def test_builtin_aliases_resolve_to_payload_source_ids(self) -> None:
+        assert shared.resolve_source_focus("none") == ([], shared.SearchFocus.WRITING)
+        assert shared.resolve_source_focus("web") == (["web"], shared.SearchFocus.WEB)
+        assert shared.resolve_source_focus("academic") == (["scholar"], shared.SearchFocus.WEB)
+        assert shared.resolve_source_focus("social") == (["social"], shared.SearchFocus.WEB)
+        assert shared.resolve_source_focus("finance") == (["edgar"], shared.SearchFocus.WEB)
+        assert shared.resolve_source_focus("all") == (["web", "scholar", "social"], shared.SearchFocus.WEB)
+
+    def test_connector_id_from_rate_limits_is_accepted(self) -> None:
+        cache = MagicMock()
+        cache.get_rate_limits.return_value = RateLimits(
+            source_limits=[
+                SourceLimit(source_id="pitchbook_mcp_cashmere", monthly_limit=5, remaining=3),
+            ]
+        )
+        with patch("perplexity_web_mcp.shared.get_limit_cache", return_value=cache):
+            sources, search_focus = shared.resolve_source_focus("pitchbook_mcp_cashmere")
+
+        assert sources == ["pitchbook_mcp_cashmere"]
+        assert search_focus is shared.SearchFocus.WEB
+
+    def test_connector_like_id_is_accepted_when_limits_unavailable(self) -> None:
+        with patch("perplexity_web_mcp.shared.get_limit_cache", return_value=None):
+            sources, search_focus = shared.resolve_source_focus("crunchbase_mcp_cashmere")
+
+        assert sources == ["crunchbase_mcp_cashmere"]
+        assert search_focus is shared.SearchFocus.WEB
+
+    def test_unknown_source_raises_instead_of_falling_back_to_web(self) -> None:
+        with patch("perplexity_web_mcp.shared.get_limit_cache", return_value=None):
+            with pytest.raises(shared.SourceResolutionError, match="Unknown source"):
+                shared.resolve_source_focus("badvalue")
 
 
 # ============================================================================

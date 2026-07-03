@@ -414,6 +414,29 @@ class TestMcpUsageFormatting:
         assert "Billing: yearly (active)" in summary
 
 
+class TestMcpConnectorsFormatting:
+    """Test pplx_connectors source ID output."""
+
+    @patch("perplexity_web_mcp.mcp.server.get_limit_cache")
+    def test_pplx_connectors_lists_source_ids(self, mock_cache_fn: MagicMock) -> None:
+        from perplexity_web_mcp.mcp.server import pplx_connectors
+
+        mock_cache = MagicMock()
+        mock_cache.get_rate_limits.return_value = RateLimits(
+            source_limits=[
+                SourceLimit(source_id="web", monthly_limit=None, remaining=None),
+                SourceLimit(source_id="pitchbook_mcp_cashmere", monthly_limit=5, remaining=3),
+            ]
+        )
+        mock_cache_fn.return_value = mock_cache
+
+        summary = pplx_connectors.fn(refresh=False)
+
+        assert "pitchbook_mcp_cashmere" in summary
+        assert "3/5" in summary
+        mock_cache.get_rate_limits.assert_called_once_with(force_refresh=False)
+
+
 # ============================================================================
 # 5. ConnectorLimits
 # ============================================================================
