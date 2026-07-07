@@ -50,10 +50,7 @@ from perplexity_web_mcp import ConversationConfig, Models, Perplexity
 
 # Tool calling disabled for now - models don't reliably follow format instructions
 # from perplexity_web_mcp.api.tool_calling import (...)
-from perplexity_web_mcp.api.session_manager import (
-    ConversationManager,
-    distill_system_prompt,
-)
+from perplexity_web_mcp.api.session_manager import ConversationManager
 from perplexity_web_mcp.enums import CitationMode
 from perplexity_web_mcp.models import Model
 from perplexity_web_mcp.token_store import load_token
@@ -528,6 +525,7 @@ perplexity_semaphore: asyncio.Semaphore
 # Track last request time for rate limiting
 last_request_time: float = 0.0
 MIN_REQUEST_INTERVAL: float = 5.0  # Minimum seconds between Perplexity requests (Perplexity rate limits)
+API_CONTEXT_MAX_CHARS: int = int(os.getenv("PWM_API_CONTEXT_MAX_CHARS", "60000"))
 
 
 # =============================================================================
@@ -633,29 +631,85 @@ def messages_to_query(messages: list[MessageParam]) -> str:
     return "\n\n".join(parts)
 
 
+def bound_context_text(text: str | None, max_chars: int = API_CONTEXT_MAX_CHARS) -> str:
+    """Preserve prompt context within a bounded character budget."""
+    if not text:
+        return ""
+
+    stripped = text.strip()
+    if len(stripped) <= max_chars:
+        return stripped
+    if max_chars <= 0:
+        return ""
+
+    marker = f"\n\n[... {len(stripped)} characters of API context truncated to fit budget ...]\n\n"
+    available = max_chars - len(marker)
+    if available <= 0:
+        return stripped[:max_chars]
+
+    head_chars = available // 2
+    tail_chars = available - head_chars
+    return f"{stripped[:head_chars].rstrip()}{marker}{stripped[-tail_chars:].lstrip()}"
+
+
+def build_query_with_system_context(query: str, system_text: str | None) -> str:
+    """Prefix a user/conversation query with preserved system/workspace context."""
+    context = bound_context_text(system_text)
+    if not context:
+        return query
+
+    return f"[System instructions and workspace context]\n{context}\n\n[Conversation]\n{query}"
+
+
+def openai_messages_to_search_query(messages: list[OpenAIChatMessage]) -> str:
+    """Return the latest user text for Perplexity search initialization."""
+    for msg in reversed(messages):
+        if msg.role == "user":
+            text = msg.get_text().strip()
+            if text:
+                return text
+
+    return openai_messages_to_query(messages)[:500]
+
+
 def openai_messages_to_query(messages: list[OpenAIChatMessage]) -> str:
     """Convert OpenAI chat messages to Perplexity query.
 
-    Note: System messages are intentionally NOT included to avoid URL length
-    limits with Perplexity.
+    System and developer messages are preserved because agent runtimes use them
+    for workspace bootstrap context. URL length is handled separately by passing
+    a short init_query to Perplexity's search initialization endpoint.
     """
-    # Filter out system messages and get user/assistant messages only
-    conversation_msgs = [m for m in messages if m.role in ("user", "assistant")]
+    supported_msgs = [m for m in messages if m.role in ("system", "developer", "user", "assistant", "tool")]
 
     # For single user message, just return it directly
-    user_msgs = [m for m in conversation_msgs if m.role == "user"]
-    if len(user_msgs) == 1 and len(conversation_msgs) == 1:
+    user_msgs = [m for m in supported_msgs if m.role == "user"]
+    if len(user_msgs) == 1 and len(supported_msgs) == 1:
         return user_msgs[0].get_text()
 
     # Multi-turn: format as conversation
-    parts = []
-    for msg in conversation_msgs:
-        text = msg.get_text()
-        if msg.role == "user":
-            parts.append(f"User: {text}")
-        elif msg.role == "assistant":
-            parts.append(f"Assistant: {text}")
+    context_parts = []
+    conversation_parts = []
+    role_labels = {
+        "system": "System",
+        "developer": "Developer",
+        "user": "User",
+        "assistant": "Assistant",
+        "tool": "Tool",
+    }
 
+    for msg in supported_msgs:
+        text = msg.get_text()
+        if not text:
+            continue
+        label = role_labels[msg.role]
+        formatted = f"{label}: {text}"
+        if msg.role in ("system", "developer"):
+            context_parts.append(formatted)
+        else:
+            conversation_parts.append(formatted)
+
+    context = bound_context_text("\n\n".join(context_parts))
+    parts = [part for part in (context, "\n\n".join(conversation_parts)) if part]
     return "\n\n".join(parts)
 
 
@@ -813,7 +867,8 @@ async def create_message(request: Request, body: MessagesRequest):
 
     # Convert messages to query (tool calling not supported via web UI)
     query = messages_to_query(body.messages)
-    input_tokens = estimate_tokens(query)
+    full_query = build_query_with_system_context(query, system_text)
+    input_tokens = estimate_tokens(full_query)
 
     # Generate response ID
     response_id = f"msg_{uuid.uuid4().hex[:24]}"
@@ -822,7 +877,7 @@ async def create_message(request: Request, body: MessagesRequest):
 
     if body.stream:
         return StreamingResponse(
-            stream_response(response_id, body.model, model, query, input_tokens, system_text),
+            stream_response(response_id, body.model, model, full_query, input_tokens, init_query=query),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
@@ -846,18 +901,12 @@ async def create_message(request: Request, body: MessagesRequest):
                 await asyncio.sleep(wait_needed)
             last_request_time = time_module.time()
 
-            # Prepend distilled system prompt to query (single ask)
-            full_query = query
-            if system_text:
-                distilled = distill_system_prompt(system_text)
-                full_query = f"[Instructions: {distilled}]\n\n{query}"
-
             fresh_client = Perplexity(session_token=config.session_token)
             conversation = fresh_client.create_conversation(
                 ConversationConfig(model=model, citation_mode=CitationMode.DEFAULT)
             )
             # Single ask with prepended system context
-            await asyncio.to_thread(conversation.ask, full_query)
+            await asyncio.to_thread(conversation.ask, full_query, init_query=query)
             fresh_client.close()
         answer = conversation.answer or ""
 
@@ -890,7 +939,7 @@ async def stream_response(
     model: Model,
     query: str,
     input_tokens: int,
-    system_text: str | None = None,
+    init_query: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Stream Anthropic-format SSE response.
 
@@ -960,13 +1009,6 @@ async def stream_response(
         last = ""
         max_retries = 3
 
-        # Prepend distilled system prompt to query (single ask instead of priming)
-        full_query = query
-        if system_text:
-            distilled = distill_system_prompt(system_text)
-            full_query = f"[Instructions: {distilled}]\n\n{query}"
-            logging.debug(f"Query with system context ({len(distilled)} chars)")
-
         for attempt in range(max_retries):
             try:
                 # Create fresh client for each request to avoid curl_cffi Session issues
@@ -976,7 +1018,7 @@ async def stream_response(
                 )
 
                 # Single ask with prepended system context
-                for resp in conversation.ask(full_query, stream=True):
+                for resp in conversation.ask(query, stream=True, init_query=init_query):
                     current = resp.answer or ""
                     if len(current) > len(last):
                         delta = current[len(last) :]
@@ -1112,6 +1154,7 @@ async def create_chat_completion(request: Request, body: OpenAIChatRequest):
 
     # Convert messages to query
     query = openai_messages_to_query(body.messages)
+    init_query = openai_messages_to_search_query(body.messages)
     input_tokens = estimate_tokens(query)
 
     # Generate response ID
@@ -1122,7 +1165,7 @@ async def create_chat_completion(request: Request, body: OpenAIChatRequest):
 
     if body.stream:
         return StreamingResponse(
-            stream_openai_response(response_id, body.model, model, query, created),
+            stream_openai_response(response_id, body.model, model, query, created, init_query),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
@@ -1141,7 +1184,7 @@ async def create_chat_completion(request: Request, body: OpenAIChatRequest):
         )
 
         # Run in thread to not block
-        await asyncio.to_thread(conversation.ask, query)
+        await asyncio.to_thread(conversation.ask, query, init_query=init_query)
         answer = conversation.answer or ""
 
         # Append citations if available
@@ -1178,6 +1221,7 @@ async def stream_openai_response(
     model: Model,
     query: str,
     created: int,
+    init_query: str | None = None,
 ) -> AsyncGenerator[str, None]:
     """Stream OpenAI-format SSE response.
 
@@ -1217,7 +1261,7 @@ async def stream_openai_response(
             conversation = client.create_conversation(
                 ConversationConfig(model=model, citation_mode=CitationMode.DEFAULT)
             )
-            for resp in conversation.ask(query, stream=True):
+            for resp in conversation.ask(query, stream=True, init_query=init_query):
                 current = resp.answer or ""
                 if len(current) > len(last):
                     delta = current[len(last) :]

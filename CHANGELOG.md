@@ -4,6 +4,21 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.14.1] - 2026-07-07
+
+### Fixed
+
+- **API context preservation** — OpenAI-compatible Chat requests now preserve `system` and `developer` messages instead of dropping them, so workspace/bootstrap context reaches Perplexity.
+- **Anthropic API system prompts** — Anthropic-compatible Messages requests now preserve bounded raw system/workspace context instead of aggressively distilling it and losing later instructions.
+- **Large context search initialization** — API requests now use the latest user message as the short Perplexity search-init query while sending the full bounded context in the ask payload, avoiding URL-length issues without stripping prompt context.
+- **Regression coverage** — Added API context preservation tests for OpenAI and Anthropic compatibility paths, including `init_query` behavior.
+
+### Changed
+
+- **Version Bump** — Bumped package, bundled skill, project skill, desktop extension metadata, and lockfile to `0.14.1`.
+
+---
+
 ## [0.14.0] - 2026-07-02
 
 ### Added

@@ -73,6 +73,7 @@ _BUILTIN_SOURCE_IDS = {
 class SourceResolutionError(ValueError):
     """Raised when a source alias or connector source ID cannot be resolved."""
 
+
 MODEL_METADATA: dict[str, ModelDefinition] = {
     "auto": ModelDefinition(Models.BEST, None, "Auto (Best)", "Perplexity", council_eligible=False),
     "sonar": ModelDefinition(Models.SONAR, None, "Sonar 2", "Perplexity"),
@@ -226,7 +227,8 @@ def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
 def get_connector_sources(source_limits: list[SourceLimit]) -> list[SourceLimit]:
     """Return source limits that are account connectors, excluding builtin sources."""
     return [
-        source for source in source_limits
+        source
+        for source in source_limits
         if ("_mcp_" in source.source_id or source.monthly_limit is not None)
         and source.source_id not in _BUILTIN_SOURCE_IDS
     ]
