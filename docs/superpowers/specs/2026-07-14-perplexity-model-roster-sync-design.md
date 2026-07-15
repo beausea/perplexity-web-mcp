@@ -51,7 +51,7 @@ gpt56_terra,claude_sonnet,gemini_pro
 
 GPT-5.6 Sol and Claude Opus 4.8 remain excluded from the default council because they require Max. All three new models are eligible for explicitly requested councils.
 
-Smart routing's detailed intent uses GPT-5.6 Terra wherever it currently uses GPT-5.4. Existing quota protection continues to derive Max-only restrictions from centralized model metadata.
+Smart routing remains unchanged because its detailed intent already uses Claude Sonnet rather than GPT-5.4. Existing quota protection continues to derive Max-only restrictions from centralized model metadata.
 
 ## Documentation and Snapshot
 
