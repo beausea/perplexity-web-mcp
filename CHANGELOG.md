@@ -4,6 +4,15 @@ All notable changes to **perplexity-web-mcp-cli** are documented in this file.
 
 ---
 
+## [0.14.2] - 2026-07-14
+
+### Changed
+
+- **Perplexity model roster** — Replaced GPT-5.4 and GPT-5.5 with GPT-5.6 Terra, GPT-5.6 Sol, and Grok 4.5 across the CLI, MCP tools, API-compatible server, Model Council, bundled skill, and documentation. Claude Sonnet's display name now matches Perplexity's `Claude Sonnet 5` label.
+- **Version bump** — Bumped package, bundled skill, project skill, desktop extension metadata, and lockfile to `0.14.2`.
+
+---
+
 ## [0.14.1] - 2026-07-07
 
 ### Fixed

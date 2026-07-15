@@ -55,7 +55,7 @@ mcp = FastMCP(
         "4. Reserve pplx_deep_research for user-requested deep dives only — NEVER use it "
         "autonomously without asking the user first. For complex research that might timeout, "
         "use pplx_deep_research_start and poll with pplx_research_status instead.\n"
-        "5. Avoid model-specific tools (pplx_gpt54, pplx_claude_sonnet, etc.) unless the "
+        "5. Avoid model-specific tools (pplx_gpt56_terra, pplx_claude_sonnet, etc.) unless the "
         "user explicitly requests a specific model. Each call costs 1 Pro Search query.\n\n"
         "WHEN TO USE EACH INTENT:\n"
         "- quick: Facts, definitions, 'what is X', current date/weather, simple lookups\n"
@@ -99,9 +99,9 @@ def pplx_query(
 
     Args:
         query: The question to ask
-        model: Model to use - auto, sonar, deep_research, gpt54, gpt55,
+        model: Model to use - auto, sonar, deep_research, gpt56_terra, gpt56_sol, grok45,
                claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
-        thinking: Enable extended thinking mode (available for gpt54, gpt55, claude_sonnet,
+        thinking: Enable extended thinking mode (available for gpt56_terra, gpt56_sol, grok45, claude_sonnet,
                   claude_opus, kimi_k26; always on for gemini_pro, nemotron, and glm52)
         source_focus: Source type - none (model only, no search), web, academic,
                       social, finance, all, or connector source ID from pplx_connectors()
@@ -194,32 +194,48 @@ def pplx_sonar(query: str, source_focus: SourceFocusName = "web", conversation_i
 
 
 @mcp.tool
-def pplx_gpt54(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """GPT-5.4 — OpenAI's versatile model. COSTS 1 PRO SEARCH QUERY."""
-    return ask(query, Models.GPT_54, source_focus, conversation_id)
+def pplx_gpt56_terra(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
+    """GPT-5.6 Terra — OpenAI's versatile model. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.GPT_56_TERRA, source_focus, conversation_id)
 
 
 @mcp.tool
-def pplx_gpt54_thinking(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """GPT-5.4 Thinking — OpenAI's versatile model with extended thinking. COSTS 1 PRO SEARCH QUERY."""
-    return ask(query, Models.GPT_54_THINKING, source_focus, conversation_id)
+def pplx_gpt56_terra_thinking(
+    query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None
+) -> str:
+    """GPT-5.6 Terra Thinking — OpenAI's versatile model with thinking. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.GPT_56_TERRA_THINKING, source_focus, conversation_id)
 
 
 @mcp.tool
-def pplx_gpt55(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """GPT-5.5 — OpenAI's latest model. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
-    return ask(query, Models.GPT_55, source_focus, conversation_id)
+def pplx_gpt56_sol(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
+    """GPT-5.6 Sol — OpenAI's most powerful model. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
+    return ask(query, Models.GPT_56_SOL, source_focus, conversation_id)
 
 
 @mcp.tool
-def pplx_gpt55_thinking(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """GPT-5.5 Thinking — OpenAI's latest model with extended thinking. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
-    return ask(query, Models.GPT_55_THINKING, source_focus, conversation_id)
+def pplx_gpt56_sol_thinking(
+    query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None
+) -> str:
+    """GPT-5.6 Sol Thinking — OpenAI's most powerful model with thinking. COSTS 1 PRO SEARCH QUERY. Requires Max subscription."""
+    return ask(query, Models.GPT_56_SOL_THINKING, source_focus, conversation_id)
+
+
+@mcp.tool
+def pplx_grok45(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
+    """Grok 4.5 — xAI's most advanced model. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.GROK_45, source_focus, conversation_id)
+
+
+@mcp.tool
+def pplx_grok45_thinking(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
+    """Grok 4.5 Thinking — xAI's most advanced model with thinking. COSTS 1 PRO SEARCH QUERY."""
+    return ask(query, Models.GROK_45_THINKING, source_focus, conversation_id)
 
 
 @mcp.tool
 def pplx_claude_sonnet(query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None) -> str:
-    """Claude Sonnet 5.0 — Anthropic's fast model. COSTS 1 PRO SEARCH QUERY."""
+    """Claude Sonnet 5 — Anthropic's fast model. COSTS 1 PRO SEARCH QUERY."""
     return ask(query, Models.CLAUDE_50_SONNET, source_focus, conversation_id)
 
 
@@ -227,7 +243,7 @@ def pplx_claude_sonnet(query: str, source_focus: SourceFocusName = "web", conver
 def pplx_claude_sonnet_think(
     query: str, source_focus: SourceFocusName = "web", conversation_id: str | None = None
 ) -> str:
-    """Claude Sonnet 5.0 Thinking — Anthropic's newest reasoning model. COSTS 1 PRO SEARCH QUERY."""
+    """Claude Sonnet 5 Thinking — Anthropic's newest reasoning model. COSTS 1 PRO SEARCH QUERY."""
     return ask(query, Models.CLAUDE_50_SONNET_THINKING, source_focus, conversation_id)
 
 
@@ -323,25 +339,25 @@ def pplx_council(
     """Model Council — query multiple models in parallel, get synthesized consensus.
 
     IMPORTANT — BEFORE calling this tool, you MUST:
-    1. Tell the user the available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
-    2. Check pplx_usage() first. If Subscription is Pro, do not include Max-only models: gpt55, claude_opus
+    1. Tell the user the available models: sonar, gpt56_terra, gpt56_sol, grok45, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
+    2. Check pplx_usage() first. If Subscription is Pro, do not include Max-only models: gpt56_sol, claude_opus
     3. Ask the user WHICH models they want in their council and HOW MANY
     4. Inform them of the cost: each council model = 1 Pro Search query, plus synthesis
        (default chairman sonar = Sonar 2 pass — still counts as a normal query toward limits)
     5. Get explicit confirmation before executing
 
-    Default council: GPT-5.4, Claude Sonnet 5.0, Gemini 3.1 Pro (Pro-compatible, 3 diverse providers).
+    Default council: GPT-5.6 Terra, Claude Sonnet 5, Gemini 3.1 Pro (Pro-compatible, 3 diverse providers).
 
     Args:
         query: The question to ask all council models
         source_focus: Source type for all models (none/web/academic/social/finance/all or connector source ID)
         models: Comma-separated model names to use as council members.
-                Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
-                Default: "gpt54,claude_sonnet,gemini_pro" (3 models + synthesis = 4 Pro Searches)
-                Max-only: gpt55, claude_opus. Exclude these when pplx_usage shows a Pro subscription.
+                Available: sonar, gpt56_terra, gpt56_sol, grok45, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
+                Default: "gpt56_terra,claude_sonnet,gemini_pro" (3 models + synthesis = 4 Pro Searches)
+                Max-only: gpt56_sol, claude_opus. Exclude these when pplx_usage shows a Pro subscription.
         synthesize: Whether to synthesize a consensus from all responses.
                     Set false to get only individual responses (saves 1 Sonar 2 call).
-        thinking: Enable extended thinking for council models (gpt54, gpt55, claude_sonnet,
+        thinking: Enable extended thinking for council models (gpt56_terra, gpt56_sol, grok45, claude_sonnet,
                   claude_opus, kimi_k26 support toggle; gemini_pro, nemotron, and glm52 are always thinking).
         chairman: Model to use for synthesis (default: "sonar" / Sonar 2).
                   Non-sonar chairmen cost 1 extra Pro Search query.

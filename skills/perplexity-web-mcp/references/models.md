@@ -28,23 +28,31 @@ Complete list of models available through Perplexity Web MCP.
 - **MCP:** `pplx_deep_research(query)` or `pplx_query(query, model="deep_research")`
 - **Notes:** Produces in-depth reports with charts and extensive sources. Uses a separate **monthly** quota (not the weekly Pro Search pool). Use sparingly.
 
-### gpt54 (OpenAI GPT-5.4)
+### gpt56_terra (OpenAI GPT-5.6 Terra)
 
-- **Identifier:** `gpt54` / `gpt54_thinking`
+- **Identifier:** `gpt56_terra` / `gpt56_terra_thinking`
 - **Thinking:** Toggle (use `-t` flag or `thinking=True`)
-- **CLI:** `pwm ask "query" -m gpt54` or `pwm ask "query" -m gpt54 -t`
-- **MCP:** `pplx_gpt54(query)` or `pplx_gpt54_thinking(query)`
+- **CLI:** `pwm ask "query" -m gpt56_terra` or `pwm ask "query" -m gpt56_terra -t`
+- **MCP:** `pplx_gpt56_terra(query)` or `pplx_gpt56_terra_thinking(query)`
 - **Notes:** OpenAI's versatile model.
 
-### gpt55 (OpenAI GPT-5.5)
+### gpt56_sol (OpenAI GPT-5.6 Sol)
 
-- **Identifier:** `gpt55` / `gpt55_thinking`
+- **Identifier:** `gpt56_sol` / `gpt56_sol_thinking`
 - **Thinking:** Toggle (use `-t` flag or `thinking=True`)
-- **CLI:** `pwm ask "query" -m gpt55` or `pwm ask "query" -m gpt55 -t`
-- **MCP:** `pplx_gpt55(query)` or `pplx_gpt55_thinking(query)`
-- **Notes:** OpenAI's latest model. Requires Perplexity **Max** subscription tier ($200/mo).
+- **CLI:** `pwm ask "query" -m gpt56_sol` or `pwm ask "query" -m gpt56_sol -t`
+- **MCP:** `pplx_gpt56_sol(query)` or `pplx_gpt56_sol_thinking(query)`
+- **Notes:** OpenAI's most powerful model. Requires Perplexity **Max** subscription tier ($200/mo).
 
-### claude_sonnet (Anthropic Claude Sonnet 5.0)
+### grok45 (xAI Grok 4.5)
+
+- **Identifier:** `grok45low` / `grok45medium`
+- **Thinking:** Toggle (use `-t` flag or `thinking=True`)
+- **CLI:** `pwm ask "query" -m grok45` or `pwm ask "query" -m grok45 -t`
+- **MCP:** `pplx_grok45(query)` or `pplx_grok45_thinking(query)`
+- **Notes:** xAI's most advanced model.
+
+### claude_sonnet (Anthropic Claude Sonnet 5)
 
 - **Identifier:** `claude50sonnet` / `claude50sonnetthinking`
 - **Thinking:** Toggle
@@ -93,7 +101,7 @@ Complete list of models available through Perplexity Web MCP.
 
 ## Subscription Tiers
 
-| Tier | Cost    | Pro Search  | Deep Research | Claude Opus | GPT-5.5 |
+| Tier | Cost    | Pro Search  | Deep Research | Claude Opus | GPT-5.6 Sol |
 | ---- | ------- | ----------- | ------------- | ----------- | ------- |
 | Free | $0      | 3/day       | 1/month       | No          | No      |
 | Pro  | $20/mo  | Weekly pool | Monthly pool  | No          | No      |

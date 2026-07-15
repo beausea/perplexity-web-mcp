@@ -64,12 +64,13 @@ The API server accepts many model name variants:
 | `perplexity-auto`, `auto`, `best`                  | Perplexity Best (auto-select) |
 | `perplexity-sonar`, `sonar`                        | Perplexity Sonar 2            |
 | `perplexity-research`, `deep-research`             | Deep Research                 |
-| `claude-sonnet-5-0`, `claude-5-0-sonnet`, `claude` | Claude Sonnet 5.0             |
+| `claude-sonnet-5-0`, `claude-5-0-sonnet`, `claude` | Claude Sonnet 5             |
 | `claude-opus-4-8`, `claude-4-8-opus`, `opus`       | Claude 4.8 Opus (Max tier)    |
-| `claude-3-5-sonnet` (legacy)                       | Claude Sonnet 5.0             |
+| `claude-3-5-sonnet` (legacy)                       | Claude Sonnet 5             |
 | `claude-3-opus` (legacy)                           | Claude 4.8 Opus               |
-| `gpt-5.4`, `gpt-54`, `gpt54`                       | GPT-5.4 (versatile)           |
-| `gpt-5.5`, `gpt-5-5`, `gpt-55`, `gpt55`            | GPT-5.5 (latest, Max tier)    |
+| `gpt-5.6-terra`, `gpt-5-6-terra`, `gpt56_terra`          | GPT-5.6 Terra (versatile)        |
+| `gpt-5.6-sol`, `gpt-5-6-sol`, `gpt56_sol`                | GPT-5.6 Sol (Max tier)           |
+| `grok-4.5`, `grok-4-5`, `grok45`                         | Grok 4.5                         |
 | `gemini-3.1-pro`, `gemini-3-pro`, `gemini-pro`     | Gemini 3.1 Pro                |
 | `nemotron-3-ultra`, `nemotron`                     | Nemotron 3 Ultra              |
 | `glm-5.2`, `glm-5-2`, `glm52`, `glm`               | GLM 5.2                       |
@@ -87,7 +88,7 @@ export ANTHROPIC_BASE_URL=http://localhost:8080
 export ANTHROPIC_AUTH_TOKEN=perplexity
 
 # 3. Run Claude Code with any model
-claude --model gpt-5.4
+claude --model gpt-5.6-terra
 claude --model claude-sonnet-5-0
 claude --model gemini-3-pro
 ```
@@ -108,7 +109,7 @@ from openai import OpenAI
 
 client = OpenAI()
 response = client.chat.completions.create(
-    model="gpt-5.4",
+    model="gpt-5.6-terra",
     messages=[{"role": "user", "content": "Hello!"}],
 )
 print(response.choices[0].message.content)

@@ -139,6 +139,30 @@
       "mode": "search",
       "provider": "OPENAI"
     },
+    "gpt56_sol": {
+      "label": "GPT-5.6 Sol",
+      "description": "OpenAI's most powerful model",
+      "mode": "search",
+      "provider": "OPENAI"
+    },
+    "gpt56_sol_thinking": {
+      "label": "GPT-5.6 Sol Thinking",
+      "description": "OpenAI's most powerful model with thinking",
+      "mode": "search",
+      "provider": "OPENAI"
+    },
+    "gpt56_terra": {
+      "label": "GPT-5.6 Terra",
+      "description": "OpenAI's versatile model",
+      "mode": "search",
+      "provider": "OPENAI"
+    },
+    "gpt56_terra_thinking": {
+      "label": "GPT-5.6 Terra Thinking",
+      "description": "OpenAI's versatile model with thinking",
+      "mode": "search",
+      "provider": "OPENAI"
+    },
     "claude2": {
       "label": "Claude Sonnet 4.0",
       "description": "Anthropic's advanced model",
@@ -314,13 +338,13 @@
       "provider": "ANTHROPIC"
     },
     "claude50sonnet": {
-      "label": "Claude Sonnet 5.0",
+      "label": "Claude Sonnet 5",
       "description": "Anthropic's fast model",
       "mode": "search",
       "provider": "ANTHROPIC"
     },
     "claude50sonnetthinking": {
-      "label": "Claude Sonnet 5.0 Thinking",
+      "label": "Claude Sonnet 5 Thinking",
       "description": "Anthropic's newest reasoning model",
       "mode": "search",
       "provider": "ANTHROPIC"
@@ -382,6 +406,18 @@
     "grok41nonreasoning": {
       "label": "Grok 4.1",
       "description": "xAI's latest model",
+      "mode": "search",
+      "provider": "XAI"
+    },
+    "grok45low": {
+      "label": "Grok 4.5",
+      "description": "xAI's most advanced model",
+      "mode": "search",
+      "provider": "XAI"
+    },
+    "grok45medium": {
+      "label": "Grok 4.5 Thinking",
+      "description": "xAI's most advanced model",
       "mode": "search",
       "provider": "XAI"
     },
@@ -463,6 +499,12 @@
       "mode": "asi",
       "provider": "ANTHROPIC"
     },
+    "pplx_asi_opus_fast": {
+      "label": "Claude Opus 4.8 Fast",
+      "description": "Computer powered by Claude Opus 4.8 in fast mode",
+      "mode": "asi",
+      "provider": "ANTHROPIC"
+    },
     "pplx_asi_fable_5": {
       "label": "Claude Fable 5",
       "description": "Computer powered by Claude Fable 5",
@@ -486,6 +528,18 @@
       "description": "Computer powered by GPT-5.5",
       "mode": "asi",
       "provider": "OPENAI"
+    },
+    "pplx_asi_gpt_56_sol": {
+      "label": "GPT-5.6 Sol",
+      "description": "Computer powered by GPT-5.6 Sol",
+      "mode": "asi",
+      "provider": "OPENAI"
+    },
+    "pplx_asi_grok_45": {
+      "label": "Grok 4.5",
+      "description": "Computer powered by Grok 4.5",
+      "mode": "asi",
+      "provider": "XAI"
     },
     "pplx_asi_kimi": {
       "label": "Kimi K2.5",
@@ -637,26 +691,26 @@
       "is_default": false
     },
     {
-      "label": "GPT-5.4",
+      "label": "GPT-5.6 Terra",
       "description": "OpenAI's versatile model",
       "subheading": null,
-      "has_new_tag": false,
+      "has_new_tag": true,
       "subscription_tier": "pro",
-      "non_reasoning_model": "gpt54",
-      "reasoning_model": "gpt54_thinking",
+      "non_reasoning_model": "gpt56_terra",
+      "reasoning_model": "gpt56_terra_thinking",
       "fast_model": null,
       "text_only_model": false,
       "audience": null,
       "is_default": false
     },
     {
-      "label": "GPT-5.5",
-      "description": "OpenAI's latest model",
+      "label": "GPT-5.6 Sol",
+      "description": "OpenAI's most powerful model",
       "subheading": null,
-      "has_new_tag": false,
+      "has_new_tag": true,
       "subscription_tier": "max",
-      "non_reasoning_model": "gpt55",
-      "reasoning_model": "gpt55_thinking",
+      "non_reasoning_model": "gpt56_sol",
+      "reasoning_model": "gpt56_sol_thinking",
       "fast_model": null,
       "text_only_model": false,
       "audience": null,
@@ -676,10 +730,10 @@
       "is_default": false
     },
     {
-      "label": "Claude Sonnet 5.0",
+      "label": "Claude Sonnet 5",
       "description": "Anthropic's fast model",
       "subheading": null,
-      "has_new_tag": true,
+      "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "claude50sonnet",
       "reasoning_model": "claude50sonnetthinking",
@@ -705,7 +759,7 @@
       "label": "GLM 5.2",
       "description": "Z.ai's most advanced model",
       "subheading": null,
-      "has_new_tag": true,
+      "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": null,
       "reasoning_model": "glm_5_2",
@@ -728,6 +782,19 @@
       "is_default": false
     },
     {
+      "label": "Grok 4.5",
+      "description": "xAI's most advanced model",
+      "subheading": null,
+      "has_new_tag": true,
+      "subscription_tier": "pro",
+      "non_reasoning_model": "grok45low",
+      "reasoning_model": "grok45medium",
+      "fast_model": null,
+      "text_only_model": false,
+      "audience": null,
+      "is_default": false
+    },
+    {
       "label": "Nemotron 3 Ultra",
       "description": "NVIDIA's Nemotron 3 Ultra 550B model",
       "subheading": null,
@@ -741,12 +808,12 @@
       "is_default": false
     },
     {
-      "label": "GPT-5.5",
-      "description": "Computer powered by GPT-5.5",
+      "label": "GPT-5.6 Sol",
+      "description": "Computer powered by GPT-5.6 Sol",
       "subheading": "OpenAI's newest model for complex tasks.",
       "has_new_tag": false,
       "subscription_tier": "pro",
-      "non_reasoning_model": "pplx_asi_gpt_55",
+      "non_reasoning_model": "pplx_asi_gpt_56_sol",
       "reasoning_model": null,
       "fast_model": null,
       "text_only_model": false,
@@ -774,7 +841,7 @@
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_opus",
       "reasoning_model": null,
-      "fast_model": null,
+      "fast_model": "pplx_asi_opus_fast",
       "text_only_model": false,
       "audience": null,
       "is_default": false
@@ -799,6 +866,19 @@
       "has_new_tag": false,
       "subscription_tier": "pro",
       "non_reasoning_model": "pplx_asi_glm",
+      "reasoning_model": null,
+      "fast_model": null,
+      "text_only_model": false,
+      "audience": null,
+      "is_default": false
+    },
+    {
+      "label": "Grok 4.5",
+      "description": "Computer powered by Grok 4.5",
+      "subheading": "xAI's newest model for complex tasks.",
+      "has_new_tag": false,
+      "subscription_tier": "pro",
+      "non_reasoning_model": "pplx_asi_grok_45",
       "reasoning_model": null,
       "fast_model": null,
       "text_only_model": false,

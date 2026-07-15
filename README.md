@@ -24,14 +24,14 @@
 
 MCP server, CLI, and API-compatible interface for Perplexity AI's web interface.
 
-Use your Perplexity Pro/Max subscription to access premium models (Sonar 2, GPT-5.4, GPT-5.5, Claude Sonnet 5.0, Claude Opus 4.8, Gemini 3.1 Pro, GLM 5.2, Kimi K2.6, Nemotron 3 Ultra) from the terminal, through MCP tools, or as an API endpoint.
+Use your Perplexity Pro/Max subscription to access premium models (Sonar 2, GPT-5.6 Terra, GPT-5.6 Sol, Gemini 3.1 Pro, Claude Sonnet 5, Claude Opus 4.8, GLM 5.2, Kimi K2.6, Grok 4.5, and Nemotron 3 Ultra) from the terminal, through MCP tools, or as an API endpoint.
 
 ## Features
 
 - **CLI**: Query Perplexity models directly from the terminal (`pwm ask`, `pwm council`, `pwm research`, `pwm chat`)
 - **MCP Server**: MCP tools for AI agents with citations, rate limit checking, and multi-turn context
 - **API Server**: Drop-in Anthropic Messages API and OpenAI Chat Completions API
-- **9 Models**: Sonar 2, GPT-5.4, GPT-5.5, Claude Sonnet 5.0, Claude Opus 4.8, Gemini 3.1 Pro, GLM 5.2, Kimi K2.6, Nemotron 3 Ultra
+- **10 Models**: Sonar 2, GPT-5.6 Terra, GPT-5.6 Sol, Gemini 3.1 Pro, Claude Sonnet 5, Claude Opus 4.8, GLM 5.2, Kimi K2.6, Grok 4.5, and Nemotron 3 Ultra
 - **Thinking Mode**: Extended thinking support for all compatible models
 - **Deep Research**: Full support for Perplexity's Deep Research mode
 - **Multi-Turn Conversations**: State-preserved threaded conversations for both MCP and CLI REPL
@@ -136,7 +136,7 @@ pwm ask "What is quantum computing?"
 **Choose a specific model** with `-m` (see [Models](#models) for the full list):
 
 ```bash
-pwm ask "Compare React and Vue" -m gpt54
+pwm ask "Compare React and Vue" -m gpt56_terra
 ```
 
 ```bash
@@ -206,13 +206,13 @@ pwm research "NVIDIA competitive landscape" -s finance --json
 Query multiple models in parallel and get a synthesized consensus. Each model costs 1 Pro Search. Default synthesis uses Sonar 2 (also 1 Pro Search).
 
 ```bash
-# Default: GPT-5.4, Claude Sonnet, Gemini Pro + Sonar 2 synthesis (4 Pro Searches)
+# Default: GPT-5.6 Terra, Claude Sonnet, Gemini Pro + Sonar 2 synthesis (4 Pro Searches)
 pwm council "What are best practices for microservices?"
 ```
 
 ```bash
 # Custom model selection
-pwm council "Compare Rust and Go" -m gpt54,claude_sonnet
+pwm council "Compare Rust and Go" -m gpt56_terra,claude_sonnet
 ```
 
 ```bash
@@ -247,7 +247,7 @@ Seamlessly launch external AI tools connected to the Perplexity API server. This
 
 ```bash
 pwm hack claude            # Launch Claude Code
-pwm hack claude -m gpt54   # Launch Claude Code with a specific model
+pwm hack claude -m gpt56_terra   # Launch Claude Code with a specific model
 ```
 
 ### MCP Setup
@@ -299,8 +299,10 @@ pwm --ai                   # Print comprehensive AI-optimized reference
 | `auto`          | Perplexity | No       | Auto-selects best model                          |
 | `sonar`         | Perplexity | No       | Sonar 2 (latest in-house; API id `experimental`) |
 | `deep_research` | Perplexity | No       | Monthly quota, in-depth reports                  |
-| `gpt54`         | OpenAI     | Toggle   | GPT-5.4                                          |
-| `claude_sonnet` | Anthropic  | Toggle   | Claude Sonnet 5.0                                |
+| `gpt56_terra`   | OpenAI     | Toggle   | GPT-5.6 Terra                                    |
+| `gpt56_sol`     | OpenAI     | Toggle   | GPT-5.6 Sol (Max tier required)                  |
+| `grok45`        | xAI        | Toggle   | Grok 4.5                                         |
+| `claude_sonnet` | Anthropic  | Toggle   | Claude Sonnet 5                                |
 | `claude_opus`   | Anthropic  | Toggle   | Claude Opus 4.8 (Max tier required)              |
 | `gemini_pro`    | Google     | Always   | Gemini 3.1 Pro                                   |
 | `nemotron`      | NVIDIA     | Always   | Nemotron 3 Ultra 550B                            |
@@ -386,9 +388,10 @@ claude mcp add perplexity pwm-mcp
 | `pplx_ask`                                        | Quick Q&A (auto-selects best model)         |
 | `pplx_deep_research`                              | In-depth reports with sources               |
 | `pplx_sonar`                                      | Perplexity Sonar 2 (1 Pro Search)           |
-| `pplx_gpt54` / `pplx_gpt54_thinking`              | GPT-5.4                                     |
-| `pplx_gpt55` / `pplx_gpt55_thinking`              | GPT-5.5 (Max tier)                          |
-| `pplx_claude_sonnet` / `pplx_claude_sonnet_think` | Claude Sonnet 5.0                           |
+| `pplx_gpt56_terra` / `pplx_gpt56_terra_thinking`              | GPT-5.6 Terra                                     |
+| `pplx_gpt56_sol` / `pplx_gpt56_sol_thinking`              | GPT-5.6 Sol (Max tier)                          |
+| `pplx_grok45` / `pplx_grok45_thinking`                    | Grok 4.5                                        |
+| `pplx_claude_sonnet` / `pplx_claude_sonnet_think` | Claude Sonnet 5                           |
 | `pplx_claude_opus` / `pplx_claude_opus_think`     | Claude Opus 4.8 (Max tier)                  |
 | `pplx_gemini_pro_think`                           | Gemini 3.1 Pro (thinking always on)         |
 | `pplx_nemotron_thinking`                          | Nemotron 3 Ultra (thinking always on)       |
@@ -436,7 +439,7 @@ pwm api
 ```bash
 export ANTHROPIC_BASE_URL=http://localhost:8080
 export ANTHROPIC_API_KEY=perplexity
-claude --model gpt-5.4
+claude --model gpt-5.6-terra
 ```
 
 Alternatively, launch Claude Code seamlessly using the `hack` command, which automatically starts the API server and configures the environment for you:
@@ -465,15 +468,17 @@ export OPENAI_API_KEY=dummy
 codex -m sonar --local-provider lmstudio
 ```
 
-Our server's `MODEL_MAP` will seamlessly intercept `sonar` (or any other mapped names like `gemini-pro`, `nemotron`, `glm-5.2`, `claude-sonnet-5-0`) and correctly route it to Perplexity's API. You can also create an alias in your shell to make this easier: `alias codex-pplx="codex --local-provider lmstudio"`.
+Our server's `MODEL_MAP` will seamlessly intercept `sonar` (or any other mapped names like `gemini-pro`, `nemotron`, `glm-5.2`, `claude-sonnet-5`) and correctly route it to Perplexity's API. You can also create an alias in your shell to make this easier: `alias codex-pplx="codex --local-provider lmstudio"`.
 
 ### API Model Names
 
 | API Name                        | Perplexity Model   | Thinking |
 | ------------------------------- | ------------------ | -------- |
 | `perplexity-auto`               | Best (auto-select) | No       |
-| `gpt-5.4`                       | GPT-5.4            | Toggle   |
-| `claude-sonnet-5-0`             | Claude Sonnet 5.0  | Toggle   |
+| `gpt-5.6-terra`                 | GPT-5.6 Terra      | Toggle   |
+| `gpt-5.6-sol`                   | GPT-5.6 Sol        | Toggle   |
+| `grok-4.5`                      | Grok 4.5           | Toggle   |
+| `claude-sonnet-5`               | Claude Sonnet 5    | Toggle   |
 | `claude-opus-4-8`               | Claude Opus 4.8    | Toggle   |
 | `gemini-3.1-pro`                | Gemini 3.1 Pro     | Always   |
 | `glm-5.2` / `glm52`             | GLM 5.2            | Always   |

@@ -107,7 +107,7 @@ def test_openai_endpoint_uses_user_message_as_init_query_when_context_is_present
     monkeypatch.setattr(server, "client", DummyClient(), raising=False)
 
     body = OpenAIChatRequest(
-        model="gpt-5.4",
+        model="gpt-5.6-terra",
         messages=[
             OpenAIChatMessage(role="system", content="SOUL.md: Passphrase WORKSPACE_CONTEXT_PRESENT."),
             OpenAIChatMessage(role="developer", content="AGENTS.md: Preserve workspace identity."),

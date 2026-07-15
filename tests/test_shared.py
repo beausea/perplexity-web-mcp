@@ -37,8 +37,9 @@ class TestMappings:
             "auto",
             "sonar",
             "deep_research",
-            "gpt54",
-            "gpt55",
+            "gpt56_terra",
+            "gpt56_sol",
+            "grok45",
             "claude_sonnet",
             "claude_opus",
             "gemini_pro",
@@ -77,19 +78,24 @@ class TestMappings:
         assert set(shared.MODEL_METADATA) == set(MODEL_MAP)
 
     def test_default_council_is_pro_compatible(self) -> None:
-        assert getattr(shared, "COUNCIL_DEFAULT_MODEL_NAMES", None) == ("gpt54", "claude_sonnet", "gemini_pro")
-        assert getattr(shared, "COUNCIL_DEFAULT_MODELS_STR", None) == "gpt54,claude_sonnet,gemini_pro"
+        assert getattr(shared, "COUNCIL_DEFAULT_MODEL_NAMES", None) == (
+            "gpt56_terra",
+            "claude_sonnet",
+            "gemini_pro",
+        )
+        assert getattr(shared, "COUNCIL_DEFAULT_MODELS_STR", None) == "gpt56_terra,claude_sonnet,gemini_pro"
         assert not set(shared.COUNCIL_DEFAULT_MODEL_NAMES) & shared.MAX_ONLY_MODEL_NAMES
 
     def test_max_only_model_names_come_from_metadata(self) -> None:
-        assert getattr(shared, "MAX_ONLY_MODEL_NAMES", None) == {"gpt55", "claude_opus"}
+        assert getattr(shared, "MAX_ONLY_MODEL_NAMES", None) == {"gpt56_sol", "claude_opus"}
         assert all(shared.MODEL_METADATA[name].minimum_tier == "max" for name in shared.MAX_ONLY_MODEL_NAMES)
 
     def test_council_eligible_models_are_derived_from_metadata(self) -> None:
         assert getattr(shared, "COUNCIL_ELIGIBLE_MODEL_NAMES", None) == (
             "sonar",
-            "gpt54",
-            "gpt55",
+            "gpt56_terra",
+            "gpt56_sol",
+            "grok45",
             "claude_sonnet",
             "claude_opus",
             "gemini_pro",
@@ -100,11 +106,11 @@ class TestMappings:
 
     def test_build_council_model_list_uses_metadata_display_names(self) -> None:
         assert hasattr(shared, "build_council_model_list")
-        models = shared.build_council_model_list(("sonar", "gpt54", "claude_sonnet"))
-        assert [name for name, _ in models] == ["Sonar 2", "GPT-5.4", "Claude Sonnet 5.0"]
+        models = shared.build_council_model_list(("sonar", "gpt56_terra", "claude_sonnet"))
+        assert [name for name, _ in models] == ["Sonar 2", "GPT-5.6 Terra", "Claude Sonnet 5"]
         assert [model for _, model in models] == [
             Models.SONAR,
-            Models.GPT_54,
+            Models.GPT_56_TERRA,
             Models.CLAUDE_50_SONNET,
         ]
 

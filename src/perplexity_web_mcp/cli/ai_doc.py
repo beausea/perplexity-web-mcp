@@ -42,7 +42,7 @@ QUERYING
   pwm ask "query" --no-citations      Suppress citation URLs
 
   Model selection examples (-m):
-    pwm ask "Compare React and Vue" -m gpt54
+    pwm ask "Compare React and Vue" -m gpt56_terra
     pwm ask "Explain attention mechanism" -m claude_sonnet
     pwm ask "Prove sqrt(2) is irrational" -m claude_sonnet --thinking
     pwm ask "Summarize this paper" -m gemini_pro
@@ -68,15 +68,15 @@ MODEL COUNCIL
   pwm council "query" --json                  Output as JSON
 
   Each model in the council costs 1 Pro Search, plus 1 for synthesis. Default = 4 Pro Searches.
-  Available models: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
-  Thinking toggle: -t / --thinking (gpt54, gpt55, claude_sonnet, claude_opus, kimi_k26 support toggle;
+  Available models: sonar, gpt56_terra, gpt56_sol, grok45, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26
+  Thinking toggle: -t / --thinking (gpt56_terra, gpt56_sol, grok45, claude_sonnet, claude_opus, kimi_k26 support toggle;
     gemini_pro, nemotron, and glm52 are always thinking)
 
   Chairman: --chairman MODEL (default: sonar / Sonar 2). Non-sonar costs 1 extra Pro Search.
 
   Examples:
     pwm council "Best practices for microservices?"
-    pwm council "Compare Rust vs Go" -m gpt54,claude_sonnet
+    pwm council "Compare Rust vs Go" -m gpt56_terra,claude_sonnet
     pwm council "Quantum computing" -s academic --thinking
     pwm council "React vs Vue" --chairman claude_sonnet
     pwm council "React vs Vue" --no-synthesis --json
@@ -97,7 +97,7 @@ USAGE & LIMITS
 
 HACK (INTEGRATION)
   pwm hack claude                     Launch Claude Code using Perplexity models
-  pwm hack claude -m gpt54            Launch Claude Code with a specific model
+  pwm hack claude -m gpt56_terra            Launch Claude Code with a specific model
   pwm hack claude --help              List all available models for Claude Code
 
 OTHER
@@ -114,9 +114,10 @@ Name            Identifier              Thinking   Notes
 auto            pplx_pro                No         Auto-selects best model
 sonar           experimental            No         Sonar 2 (concise search mode for grounded responses)
 deep_research   pplx_alpha              No         In-depth reports (monthly quota)
-gpt54           gpt54                   Yes        OpenAI GPT-5.4 (versatile)
-gpt55           gpt55                   Yes        OpenAI GPT-5.5 (latest, Max tier)
-claude_sonnet   claude50sonnet          Yes        Anthropic Claude Sonnet 5.0
+gpt56_terra           gpt56_terra                   Yes        OpenAI GPT-5.6 Terra (versatile)
+gpt56_sol           gpt56_sol                   Yes        OpenAI GPT-5.6 Sol (latest, Max tier)
+grok45          grok45low                  Yes        xAI Grok 4.5
+claude_sonnet   claude50sonnet          Yes        Anthropic Claude Sonnet 5
 claude_opus     claude48opus            Yes        Anthropic Claude 4.8 Opus (Max tier)
 gemini_pro      gemini31pro_high        Always     Google Gemini 3.1 Pro (thinking only)
 nemotron        nv_nemotron_3_ultra     Always     NVIDIA Nemotron 3 Ultra 550B (thinking only)
@@ -126,8 +127,8 @@ kimi_k26        kimi_k26                Yes        Moonshot Kimi K2.6
 "Thinking" = extended reasoning mode. Models marked "Always" have thinking
 permanently enabled with no non-thinking variant.
 
-Use with CLI: pwm ask "query" -m gpt54 -t
-Use with MCP: pplx_query(query="...", model="gpt54", thinking=True)
+Use with CLI: pwm ask "query" -m gpt56_terra -t
+Use with MCP: pplx_query(query="...", model="gpt56_terra", thinking=True)
 
 ================================================================================
 SOURCE FOCUS OPTIONS
@@ -162,7 +163,7 @@ CLI examples:
 MCP examples:
   pplx_ask(query="review this code", source_focus="none")
   pplx_ask(query="transformer architecture", source_focus="academic")
-  pplx_query(query="Tesla financials", model="gpt54", source_focus="finance")
+  pplx_query(query="Tesla financials", model="gpt56_terra", source_focus="finance")
   pplx_connectors(refresh=False)
   pplx_smart_query(query="private company funding", source_focus="pitchbook_mcp_cashmere")
 
@@ -183,13 +184,13 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
   pplx_ask(query, source_focus="web")
       Auto-selects best model. 1 PRO SEARCH per call.
 
-  pplx_council(query, source_focus="web", models="gpt54,claude_sonnet,gemini_pro",
+  pplx_council(query, source_focus="web", models="gpt56_terra,claude_sonnet,gemini_pro",
                synthesize=True, thinking=False, chairman="sonar")
       Model Council — N PRO SEARCHES (1 per model selected).
       BEFORE CALLING: You MUST ask the user which models and how many.
-      Available: sonar, gpt54, gpt55, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
-      Max-only: gpt55, claude_opus. Exclude these when Subscription is Pro.
-      Default: 3 Pro-compatible models (GPT-5.4, Claude Sonnet, Gemini Pro) + synthesis = 4 Pro Searches.
+      Available: sonar, gpt56_terra, gpt56_sol, grok45, claude_sonnet, claude_opus, gemini_pro, nemotron, glm52, kimi_k26.
+      Max-only: gpt56_sol, claude_opus. Exclude these when Subscription is Pro.
+      Default: 3 Pro-compatible models (GPT-5.6 Terra, Claude Sonnet, Gemini Pro) + synthesis = 4 Pro Searches.
       Synthesis uses Sonar 2 by default. Set chairman to override.
       Non-sonar chairman costs 1 extra Pro Search.
       Set synthesize=False to skip synthesis entirely.
@@ -200,12 +201,14 @@ QUERY TOOLS (each call costs 1 Pro Search query unless noted):
       ONLY use when user explicitly requests deep research.
 
   pplx_sonar(query, source_focus="web")          Perplexity Sonar 2 (plan limits apply)
-  pplx_gpt54(query, source_focus="web")          GPT-5.4 — 1 Pro
-  pplx_gpt54_thinking(query, source_focus="web") GPT-5.4 + thinking — 1 Pro
-  pplx_gpt55(query, source_focus="web")          GPT-5.5 — 1 Pro (Max tier)
-  pplx_gpt55_thinking(query, source_focus="web") GPT-5.5 + thinking — 1 Pro (Max tier)
-  pplx_claude_sonnet(query, source_focus="web")   Claude Sonnet 5.0 — 1 Pro
-  pplx_claude_sonnet_think(query, source_focus)   Claude Sonnet 5.0 + thinking — 1 Pro
+  pplx_gpt56_terra(query, source_focus="web")          GPT-5.6 Terra — 1 Pro
+  pplx_gpt56_terra_thinking(query, source_focus="web") GPT-5.6 Terra + thinking — 1 Pro
+  pplx_gpt56_sol(query, source_focus="web")          GPT-5.6 Sol — 1 Pro (Max tier)
+  pplx_gpt56_sol_thinking(query, source_focus="web") GPT-5.6 Sol + thinking — 1 Pro (Max tier)
+  pplx_grok45(query, source_focus="web")            Grok 4.5 — 1 Pro
+  pplx_grok45_thinking(query, source_focus="web")   Grok 4.5 + thinking — 1 Pro
+  pplx_claude_sonnet(query, source_focus="web")   Claude Sonnet 5 — 1 Pro
+  pplx_claude_sonnet_think(query, source_focus)   Claude Sonnet 5 + thinking — 1 Pro
   pplx_claude_opus(query, source_focus="web")     Claude 4.8 Opus — 1 Pro (Max tier)
   pplx_claude_opus_think(query, source_focus)     Claude 4.8 Opus + thinking — 1 Pro (Max tier)
   pplx_gemini_pro_think(query, source_focus)      Gemini 3.1 Pro (thinking) — 1 Pro
@@ -276,7 +279,7 @@ Endpoints:
 Claude Code setup:
   export ANTHROPIC_BASE_URL=http://localhost:8080
   export ANTHROPIC_API_KEY=perplexity
-  claude --model gpt-5.4
+  claude --model gpt-5.6-terra
 
 MCP SERVER (pwm-mcp)
   Start: pwm-mcp
@@ -309,7 +312,7 @@ MANDATORY PROTOCOL:
      'detailed' for complex analysis, 'research' only when user requests it.
   4. NEVER USE DEEP RESEARCH AUTONOMOUSLY — always ask the user first.
   5. SUBSCRIPTION-AWARE MODELS: Read the Subscription line from pplx_usage().
-     If it is Pro, exclude Max-only models: gpt55 and claude_opus.
+     If it is Pro, exclude Max-only models: gpt56_sol and claude_opus.
   6. COUNCIL: Before calling pplx_council, ASK the user which models and how
      many. Each model = 1 Pro Search. List available models for them to choose.
 
@@ -361,7 +364,7 @@ Model-only query (no web search):
   pwm ask "Write a retry decorator" -m claude_sonnet -s none
 
 Specific model:
-  pwm ask "Compare React and Vue" -m gpt54
+  pwm ask "Compare React and Vue" -m gpt56_terra
 
 Model with thinking:
   pwm ask "Prove sqrt(2) is irrational" -m claude_sonnet -t
@@ -376,7 +379,7 @@ Model council (3 models, synthesized):
   pwm council "What are the best practices for microservices?"
 
 Model council (custom 2 models):
-  pwm council "Compare Rust vs Go" -m gpt54,claude_sonnet
+  pwm council "Compare Rust vs Go" -m gpt56_terra,claude_sonnet
 
 Model council with thinking:
   pwm council "Prove the Pythagorean theorem" --thinking

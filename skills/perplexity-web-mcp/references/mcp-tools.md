@@ -42,7 +42,7 @@ Prefer `pplx_smart_query` unless you need a specific model.
 ```
 pplx_query(
     query: str,                    # Required. The question to ask.
-    model: str = "auto",           # auto, sonar, deep_research, gpt54, gpt55, claude_sonnet,
+    model: str = "auto",           # auto, sonar, deep_research, gpt56_terra, gpt56_sol, grok45, claude_sonnet,
                                    # claude_opus, gemini_pro, nemotron, glm52, kimi_k26
     thinking: bool = False,        # Enable extended thinking (where supported)
     source_focus: str = "web",     # none, web, academic, social, finance, all
@@ -90,12 +90,14 @@ pplx_<model>(
 | Tool                       | Model                      | Thinking     | Cost  |
 | -------------------------- | -------------------------- | ------------ | ----- |
 | `pplx_sonar`               | Perplexity Sonar 2         | No           | 1 Pro |
-| `pplx_gpt54`               | GPT-5.4 (versatile)        | No           | 1 Pro |
-| `pplx_gpt54_thinking`      | GPT-5.4 (versatile)        | Yes          | 1 Pro |
-| `pplx_gpt55`               | GPT-5.5 (latest, Max tier) | No           | 1 Pro |
-| `pplx_gpt55_thinking`      | GPT-5.5 (latest, Max tier) | Yes          | 1 Pro |
-| `pplx_claude_sonnet`       | Claude Sonnet 5.0          | No           | 1 Pro |
-| `pplx_claude_sonnet_think` | Claude Sonnet 5.0          | Yes          | 1 Pro |
+| `pplx_gpt56_terra`               | GPT-5.6 Terra (versatile)        | No           | 1 Pro |
+| `pplx_gpt56_terra_thinking`      | GPT-5.6 Terra (versatile)        | Yes          | 1 Pro |
+| `pplx_gpt56_sol`               | GPT-5.6 Sol (latest, Max tier) | No           | 1 Pro |
+| `pplx_gpt56_sol_thinking`      | GPT-5.6 Sol (latest, Max tier) | Yes          | 1 Pro |
+| `pplx_grok45`                  | Grok 4.5                      | No           | 1 Pro |
+| `pplx_grok45_thinking`         | Grok 4.5                      | Yes          | 1 Pro |
+| `pplx_claude_sonnet`       | Claude Sonnet 5          | No           | 1 Pro |
+| `pplx_claude_sonnet_think` | Claude Sonnet 5          | Yes          | 1 Pro |
 | `pplx_claude_opus`         | Claude 4.8 Opus (Max tier) | No           | 1 Pro |
 | `pplx_claude_opus_think`   | Claude 4.8 Opus (Max tier) | Yes          | 1 Pro |
 | `pplx_gemini_pro_think`    | Gemini 3.1 Pro             | Yes (always) | 1 Pro |

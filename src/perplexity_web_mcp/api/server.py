@@ -20,10 +20,10 @@ Claude Code Integration:
     export ANTHROPIC_API_KEY=""
 
   Then run Claude Code with any supported model:
-    claude --model claude-sonnet-5-0      # Use Claude Sonnet 5.0 via Perplexity
-    claude --model gpt-5.4                # Use GPT-5.4 via Perplexity
+    claude --model claude-sonnet-5-0      # Use Claude Sonnet 5 via Perplexity
+    claude --model gpt-5.6-terra          # Use GPT-5.6 Terra via Perplexity
     claude --model perplexity-auto        # Use Perplexity's auto model selection
-    claude --model claude-3-5-sonnet      # Legacy name, maps to Claude Sonnet 5.0
+    claude --model claude-3-5-sonnet      # Legacy name, maps to Claude Sonnet 5
 """
 
 from __future__ import annotations
@@ -114,7 +114,7 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     "deep-research": (Models.DEEP_RESEARCH, None),
     # ==========================================================================
     # Anthropic Claude Models (via Perplexity)
-    # Claude Sonnet 5.0 - supports thinking toggle
+    # Claude Sonnet 5 - supports thinking toggle
     # Claude Opus 4.8 - supports thinking (requires Max subscription)
     # ==========================================================================
     # Current model names
@@ -154,16 +154,17 @@ MODEL_MAP: dict[str, tuple[Model, Model | None]] = {
     "sonnet": (Models.CLAUDE_50_SONNET, Models.CLAUDE_50_SONNET_THINKING),
     "opus": (Models.CLAUDE_48_OPUS, Models.CLAUDE_48_OPUS_THINKING),
     # ==========================================================================
-    # OpenAI GPT Models (via Perplexity) - support thinking toggle
+    # OpenAI GPT and xAI Grok Models (via Perplexity) - support thinking toggle
     # ==========================================================================
-    "gpt-5.4": (Models.GPT_54, Models.GPT_54_THINKING),
-    "gpt-5-4": (Models.GPT_54, Models.GPT_54_THINKING),
-    "gpt-54": (Models.GPT_54, Models.GPT_54_THINKING),
-    "gpt54": (Models.GPT_54, Models.GPT_54_THINKING),
-    "gpt-5.5": (Models.GPT_55, Models.GPT_55_THINKING),
-    "gpt-5-5": (Models.GPT_55, Models.GPT_55_THINKING),
-    "gpt-55": (Models.GPT_55, Models.GPT_55_THINKING),
-    "gpt55": (Models.GPT_55, Models.GPT_55_THINKING),
+    "gpt-5.6-terra": (Models.GPT_56_TERRA, Models.GPT_56_TERRA_THINKING),
+    "gpt-5-6-terra": (Models.GPT_56_TERRA, Models.GPT_56_TERRA_THINKING),
+    "gpt56_terra": (Models.GPT_56_TERRA, Models.GPT_56_TERRA_THINKING),
+    "gpt-5.6-sol": (Models.GPT_56_SOL, Models.GPT_56_SOL_THINKING),
+    "gpt-5-6-sol": (Models.GPT_56_SOL, Models.GPT_56_SOL_THINKING),
+    "gpt56_sol": (Models.GPT_56_SOL, Models.GPT_56_SOL_THINKING),
+    "grok-4.5": (Models.GROK_45, Models.GROK_45_THINKING),
+    "grok-4-5": (Models.GROK_45, Models.GROK_45_THINKING),
+    "grok45": (Models.GROK_45, Models.GROK_45_THINKING),
     # ==========================================================================
     # Google Gemini Models (via Perplexity)
     # Gemini 3.1 Pro: thinking ALWAYS enabled (no toggle in UI)
@@ -202,20 +203,22 @@ AVAILABLE_MODELS = [
     {"id": "perplexity-auto", "description": "Best - Automatically selects optimal model"},
     {"id": "perplexity-sonar", "description": "Sonar 2 - Perplexity's latest in-house model"},
     {"id": "perplexity-research", "description": "Deep Research - In-depth reports with sources"},
+    # OpenAI
+    {"id": "gpt-5.6-terra", "description": "GPT-5.6 Terra - OpenAI's versatile model, thinking toggle available"},
+    {"id": "gpt-5.6-sol", "description": "GPT-5.6 Sol - OpenAI's most powerful model, Max tier required"},
     # Google Gemini
     {"id": "gemini-3.1-pro", "description": "Gemini 3.1 Pro - Advanced, thinking always on"},
-    # OpenAI
-    {"id": "gpt-5.4", "description": "GPT-5.4 - OpenAI's versatile model, thinking toggle available"},
-    {"id": "gpt-5.5", "description": "GPT-5.5 - OpenAI's latest, Max tier required, thinking toggle available"},
     # Anthropic Claude
-    {"id": "claude-sonnet-5-0", "description": "Claude Sonnet 5.0 - Fast, thinking toggle available"},
+    {"id": "claude-sonnet-5", "description": "Claude Sonnet 5 - Fast, thinking toggle available"},
     {"id": "claude-opus-4-8", "description": "Claude Opus 4.8 - Advanced reasoning, Max tier required"},
     # Z.ai
     {"id": "glm-5.2", "description": "GLM 5.2 - Z.ai advanced model, thinking always on"},
-    # NVIDIA
-    {"id": "nemotron-3-ultra", "description": "Nemotron 3 Ultra - NVIDIA 120B, thinking always on"},
     # Moonshot
     {"id": "kimi-k2.6", "description": "Kimi K2.6 - Advanced, thinking toggle available"},
+    # xAI
+    {"id": "grok-4.5", "description": "Grok 4.5 - xAI's most advanced model, thinking toggle available"},
+    # NVIDIA
+    {"id": "nemotron-3-ultra", "description": "Nemotron 3 Ultra - NVIDIA 550B, thinking always on"},
 ]
 
 

@@ -84,12 +84,24 @@ MODEL_METADATA: dict[str, ModelDefinition] = {
         "Perplexity",
         council_eligible=False,
     ),
-    "gpt54": ModelDefinition(Models.GPT_54, Models.GPT_54_THINKING, "GPT-5.4", "OpenAI"),
-    "gpt55": ModelDefinition(Models.GPT_55, Models.GPT_55_THINKING, "GPT-5.5", "OpenAI", minimum_tier="max"),
+    "gpt56_terra": ModelDefinition(
+        Models.GPT_56_TERRA,
+        Models.GPT_56_TERRA_THINKING,
+        "GPT-5.6 Terra",
+        "OpenAI",
+    ),
+    "gpt56_sol": ModelDefinition(
+        Models.GPT_56_SOL,
+        Models.GPT_56_SOL_THINKING,
+        "GPT-5.6 Sol",
+        "OpenAI",
+        minimum_tier="max",
+    ),
+    "grok45": ModelDefinition(Models.GROK_45, Models.GROK_45_THINKING, "Grok 4.5", "xAI"),
     "claude_sonnet": ModelDefinition(
         Models.CLAUDE_50_SONNET,
         Models.CLAUDE_50_SONNET_THINKING,
-        "Claude Sonnet 5.0",
+        "Claude Sonnet 5",
         "Anthropic",
     ),
     "claude_opus": ModelDefinition(
@@ -130,8 +142,9 @@ ModelName = Literal[
     "auto",
     "sonar",
     "deep_research",
-    "gpt54",
-    "gpt55",
+    "gpt56_terra",
+    "gpt56_sol",
+    "grok45",
     "claude_sonnet",
     "claude_opus",
     "gemini_pro",
@@ -157,7 +170,7 @@ COUNCIL_ELIGIBLE_MODEL_NAMES: tuple[str, ...] = tuple(
     name for name, definition in MODEL_METADATA.items() if definition.council_eligible
 )
 
-COUNCIL_DEFAULT_MODEL_NAMES: tuple[str, ...] = ("gpt54", "claude_sonnet", "gemini_pro")
+COUNCIL_DEFAULT_MODEL_NAMES: tuple[str, ...] = ("gpt56_terra", "claude_sonnet", "gemini_pro")
 COUNCIL_DEFAULT_MODELS_STR = ",".join(COUNCIL_DEFAULT_MODEL_NAMES)
 
 
@@ -758,7 +771,7 @@ def council_ask(
     Args:
         query: The question to ask all models.
         models: List of (display_name, Model) tuples. Defaults to
-                GPT-5.4, Claude Opus 4.8, and Gemini 3.1 Pro.
+                GPT-5.6 Terra, Claude Opus 4.8, and Gemini 3.1 Pro.
         source_focus: Source focus for all queries.
         synthesize: Whether to run Sonar 2 synthesis (default chairman; still a web query).
         thinking: Use thinking model variants for default council members.

@@ -658,7 +658,7 @@ class TestMCPServerHelpers:
 
         assert is_research_model(Models.DEEP_RESEARCH) is True
         assert is_research_model(Models.BEST) is False
-        assert is_research_model(Models.GPT_54) is False
+        assert is_research_model(Models.GPT_56_TERRA) is False
         assert is_research_model(Models.CLAUDE_50_SONNET) is False
         assert is_research_model(Models.GLM_5_2) is False
         assert is_research_model(Models.SONAR) is False

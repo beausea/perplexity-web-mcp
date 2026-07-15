@@ -23,5 +23,20 @@ def test_glm_aliases_route_to_glm_5_2() -> None:
 
 def test_available_models_include_current_sonnet_and_glm() -> None:
     ids = {model["id"] for model in AVAILABLE_MODELS}
-    assert "claude-sonnet-5-0" in ids
+    assert "claude-sonnet-5" in ids
     assert "glm-5.2" in ids
+
+
+def test_new_openai_and_xai_aliases_route_to_current_models() -> None:
+    assert get_model("gpt-5.6-terra") is Models.GPT_56_TERRA
+    assert get_model("gpt56_terra", thinking=True) is Models.GPT_56_TERRA_THINKING
+    assert get_model("gpt-5.6-sol") is Models.GPT_56_SOL
+    assert get_model("gpt56_sol", thinking=True) is Models.GPT_56_SOL_THINKING
+    assert get_model("grok-4.5") is Models.GROK_45
+    assert get_model("grok45", thinking=True) is Models.GROK_45_THINKING
+
+
+def test_available_models_match_current_gpt_and_grok_roster() -> None:
+    ids = {model["id"] for model in AVAILABLE_MODELS}
+    assert {"gpt-5.6-terra", "gpt-5.6-sol", "grok-4.5"} <= ids
+    assert {"gpt-5.4", "gpt-5.5"}.isdisjoint(ids)
