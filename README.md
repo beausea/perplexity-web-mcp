@@ -9,7 +9,6 @@
 [![Total downloads](https://static.pepy.tech/badge/perplexity-web-mcp-cli)](https://pepy.tech/projects/perplexity-web-mcp-cli)
 [![Python](https://img.shields.io/pypi/pyversions/perplexity-web-mcp-cli)](https://pypi.org/project/perplexity-web-mcp-cli/)
 [![License](https://img.shields.io/pypi/l/perplexity-web-mcp-cli)](https://github.com/jacob-bd/perplexity-web-mcp/blob/main/LICENSE)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat-square&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/jacobbd)
 
 <p align="center">
   <a href="https://youtu.be/9xyClDvmoZ0">
@@ -584,6 +583,12 @@ The skill follows Anthropic's Agent Skills open standard and works across any co
 ## Credits
 
 Originally forked from [perplexity-webui-scraper](https://github.com/henrique-coder/perplexity-webui-scraper) by [henrique-coder](https://github.com/henrique-coder).
+
+## Support
+
+If Perplexity Web MCP saves you time or money, you can help cover the AI bills that go into building and testing it. Any support is hugely appreciated. 🙏
+
+<a href="https://buymeacoffee.com/jacobbd"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="42"></a>
 
 ## License
 
