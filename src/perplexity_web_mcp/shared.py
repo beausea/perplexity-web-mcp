@@ -60,14 +60,14 @@ SOURCE_FOCUS_ALIASES: dict[str, list[str]] = {
 SOURCE_FOCUS_MAP = SOURCE_FOCUS_ALIASES
 
 _CONNECTOR_ID_RE = re.compile(r"^[a-z][a-z0-9_]*_mcp_[a-z0-9_]*[a-z0-9]$")
+_KNOWN_CONNECTOR_IDS = {"google_drive", "box"}
 _BUILTIN_SOURCE_IDS = {
     SourceFocus.WEB.value,
     SourceFocus.ACADEMIC.value,
     SourceFocus.SOCIAL.value,
     SourceFocus.FINANCE.value,
-    "google_drive",
-    "box",
 }
+_FALSE_ENV_VALUES = {"0", "false", "no", "off"}
 
 
 class SourceResolutionError(ValueError):
@@ -216,6 +216,30 @@ def _source_limits_from_rate_limits() -> list[SourceLimit]:
     return limits.source_limits
 
 
+def _connector_policy_allows(source_id: str) -> bool:
+    """Apply optional local connector controls without changing legacy defaults."""
+    enabled = environ.get("PWM_CONNECTORS_ENABLED", "true").strip().lower()
+    if enabled in _FALSE_ENV_VALUES:
+        return False
+
+    if "PWM_CONNECTOR_ALLOWLIST" not in environ:
+        return True
+    allowed = {item.strip() for item in environ["PWM_CONNECTOR_ALLOWLIST"].split(",") if item.strip()}
+    return source_id in allowed
+
+
+def _connector_policy_error(source_id: str) -> SourceResolutionError:
+    if environ.get("PWM_CONNECTORS_ENABLED", "true").strip().lower() in _FALSE_ENV_VALUES:
+        return SourceResolutionError(
+            f"Connector '{source_id}' is disabled by PWM_CONNECTORS_ENABLED. "
+            "Use a built-in source or explicitly enable connector access."
+        )
+    return SourceResolutionError(
+        f"Connector '{source_id}' is not in PWM_CONNECTOR_ALLOWLIST. "
+        "Add the exact reported connector ID before retrying."
+    )
+
+
 def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
     """Resolve a built-in source alias or account connector source ID."""
     source = (source_focus or "").strip() or "web"
@@ -229,11 +253,13 @@ def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
     source_limits = _source_limits_from_rate_limits()
     source_limit = next((limit for limit in source_limits if limit.source_id == source), None)
     if source_limit is not None:
+        if not _connector_policy_allows(source):
+            raise _connector_policy_error(source)
         if source_limit.is_exhausted:
             raise SourceResolutionError(f"Connector '{source}' is exhausted. Refresh connector limits before retrying.")
         return [source], SearchFocus.WEB
 
-    if _CONNECTOR_ID_RE.fullmatch(source):
+    if _CONNECTOR_ID_RE.fullmatch(source) or source in _KNOWN_CONNECTOR_IDS:
         raise SourceResolutionError(
             f"Could not verify connector '{source}'. Run `pwm connectors list --refresh` and use a reported ID."
         )
@@ -250,7 +276,7 @@ def get_connector_sources(source_limits: list[SourceLimit]) -> list[SourceLimit]
     return [
         source
         for source in source_limits
-        if ("_mcp_" in source.source_id or source.monthly_limit is not None)
+        if (source.source_id in _KNOWN_CONNECTOR_IDS or "_mcp_" in source.source_id or source.monthly_limit is not None)
         and source.source_id not in _BUILTIN_SOURCE_IDS
     ]
 
