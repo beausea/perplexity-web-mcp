@@ -631,10 +631,27 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+def cors_allowed_origins() -> list[str]:
+    """Return the allowed CORS origins.
+
+    Defaults to all origins. Set PWM_API_CORS_ORIGINS to a comma-separated
+    list of exact origins (e.g. "https://app.example.com,http://localhost:3000")
+    to restrict cross-origin access.
+    """
+    raw = os.getenv("PWM_API_CORS_ORIGINS", "").strip()
+    if not raw:
+        return ["*"]
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_allowed_origins(),
+    # The API authenticates exclusively via headers (x-api-key / Authorization),
+    # never cookies. Keeping allow_credentials=True with a wildcard origin list
+    # would let any website issue credentialed cross-origin requests to a local
+    # (default, unauthenticated) server, so it is disabled.
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -661,7 +678,9 @@ def verify_auth(request: Request) -> None:
         scheme, separator, credentials = auth.partition(" ")
         auth = credentials.strip() if separator and scheme.lower() == "bearer" else ""
 
-    if not hmac.compare_digest(auth, config.api_key):
+    # Compare as bytes: compare_digest raises TypeError on non-ASCII str input,
+    # which would turn a malformed header into a 500 instead of a 401.
+    if not hmac.compare_digest(auth.encode("utf-8"), config.api_key.encode("utf-8")):
         raise HTTPException(status_code=401, detail={"type": "authentication_error", "message": "Invalid API key"})
 
 

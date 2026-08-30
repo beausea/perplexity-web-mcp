@@ -5,6 +5,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from fastapi import HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import pytest
 
 from perplexity_web_mcp.api import server
@@ -65,6 +66,59 @@ def test_verify_auth_rejects_missing_or_invalid_credentials(
     headers: dict[str, str], accepted: bool, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(server, "config", SimpleNamespace(api_key="server-secret"), raising=False)
+    request = SimpleNamespace(headers=headers)
+
+    if accepted:
+        server.verify_auth(request)
+    else:
+        with pytest.raises(HTTPException) as exc_info:
+            server.verify_auth(request)
+        assert exc_info.value.status_code == 401
+
+
+def test_cors_middleware_never_allows_credentials() -> None:
+    """Credentialed CORS would let any website use a local unauthenticated server."""
+    cors = [m for m in server.app.user_middleware if m.cls is CORSMiddleware]
+
+    assert len(cors) == 1
+    assert cors[0].kwargs["allow_credentials"] is False
+
+
+def test_cors_origins_default_to_wildcard(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("PWM_API_CORS_ORIGINS", raising=False)
+
+    assert server.cors_allowed_origins() == ["*"]
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("https://app.example.com", ["https://app.example.com"]),
+        ("https://a.example, https://b.example", ["https://a.example", "https://b.example"]),
+        (" , ,", []),
+    ],
+)
+def test_cors_origins_can_be_configured(
+    raw: str, expected: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PWM_API_CORS_ORIGINS", raw)
+
+    assert server.cors_allowed_origins() == expected
+
+
+@pytest.mark.parametrize(
+    ("headers", "accepted"),
+    [
+        ({"x-api-key": "비밀-ключ-secret"}, True),
+        ({"Authorization": "Bearer 비밀-ключ-secret"}, True),
+        ({"x-api-key": "다른-값"}, False),
+    ],
+)
+def test_verify_auth_handles_non_ascii_credentials(
+    headers: dict[str, str], accepted: bool, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Non-ASCII keys must compare as bytes, raising 401 instead of TypeError."""
+    monkeypatch.setattr(server, "config", SimpleNamespace(api_key="비밀-ключ-secret"), raising=False)
     request = SimpleNamespace(headers=headers)
 
     if accepted:
