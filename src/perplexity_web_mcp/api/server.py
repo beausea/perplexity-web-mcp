@@ -42,7 +42,7 @@ import time
 from typing import Any
 import uuid
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
@@ -645,7 +645,7 @@ app.add_middleware(
 # =============================================================================
 
 
-def verify_auth(request: Request) -> None:
+def verify_auth(request: Request | WebSocket) -> None:
     """Verify the configured API key.
 
     Supports both:

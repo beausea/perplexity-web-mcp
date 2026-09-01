@@ -101,6 +101,31 @@ def get_system_ca_bundle_path() -> str | None:
     return None
 
 
+def _set_session_cookie(session: Session, session_token: str) -> None:
+    """Install a host-only, HTTPS-only Perplexity session cookie."""
+    session.cookies.jar.set_cookie(
+        Cookie(
+            version=0,
+            name=SESSION_COOKIE_NAME,
+            value=session_token,
+            port=None,
+            port_specified=False,
+            domain=_PERPLEXITY_HOST,
+            domain_specified=False,
+            domain_initial_dot=False,
+            path="/",
+            path_specified=True,
+            secure=True,
+            expires=None,
+            discard=True,
+            comment=None,
+            comment_url=None,
+            rest={"HttpOnly": ""},
+            rfc2109=False,
+        )
+    )
+
+
 def _authenticated_url(endpoint: str) -> str:
     """Resolve an endpoint and restrict authenticated traffic to Perplexity HTTPS."""
     url = f"{API_BASE_URL}{endpoint}" if endpoint.startswith("/") else endpoint
@@ -190,27 +215,7 @@ class HTTPClient:
             session_kwargs["verify"] = verify_bundle
 
         session = Session(**session_kwargs)
-        session.cookies.jar.set_cookie(
-            Cookie(
-                version=0,
-                name=SESSION_COOKIE_NAME,
-                value=self._session_token,
-                port=None,
-                port_specified=False,
-                domain=_PERPLEXITY_HOST,
-                domain_specified=False,
-                domain_initial_dot=False,
-                path="/",
-                path_specified=True,
-                secure=True,
-                expires=None,
-                discard=True,
-                comment=None,
-                comment_url=None,
-                rest={"HttpOnly": ""},
-                rfc2109=False,
-            )
-        )
+        _set_session_cookie(session, self._session_token)
         return session
 
     def _rotate_session(self) -> None:

@@ -15,6 +15,11 @@ from typing import TYPE_CHECKING, Literal
 from uuid import uuid4
 
 from .config import ClientConfig, ConversationConfig
+from .connector_policy import (
+    BUILTIN_SOURCE_IDS,
+    connector_policy_allows,
+    connector_policy_error,
+)
 from .core import Perplexity
 from .enums import CitationMode, LogLevel, SearchFocus, SourceFocus
 from .models import Model, Models
@@ -61,13 +66,7 @@ SOURCE_FOCUS_MAP = SOURCE_FOCUS_ALIASES
 
 _CONNECTOR_ID_RE = re.compile(r"^[a-z][a-z0-9_]*_mcp_[a-z0-9_]*[a-z0-9]$")
 _KNOWN_CONNECTOR_IDS = {"google_drive", "box"}
-_BUILTIN_SOURCE_IDS = {
-    SourceFocus.WEB.value,
-    SourceFocus.ACADEMIC.value,
-    SourceFocus.SOCIAL.value,
-    SourceFocus.FINANCE.value,
-}
-_FALSE_ENV_VALUES = {"0", "false", "no", "off"}
+_BUILTIN_SOURCE_IDS = set(BUILTIN_SOURCE_IDS)
 
 
 class SourceResolutionError(ValueError):
@@ -218,26 +217,11 @@ def _source_limits_from_rate_limits() -> list[SourceLimit]:
 
 def _connector_policy_allows(source_id: str) -> bool:
     """Apply optional local connector controls without changing legacy defaults."""
-    enabled = environ.get("PWM_CONNECTORS_ENABLED", "true").strip().lower()
-    if enabled in _FALSE_ENV_VALUES:
-        return False
-
-    if "PWM_CONNECTOR_ALLOWLIST" not in environ:
-        return True
-    allowed = {item.strip() for item in environ["PWM_CONNECTOR_ALLOWLIST"].split(",") if item.strip()}
-    return source_id in allowed
+    return connector_policy_allows(source_id)
 
 
 def _connector_policy_error(source_id: str) -> SourceResolutionError:
-    if environ.get("PWM_CONNECTORS_ENABLED", "true").strip().lower() in _FALSE_ENV_VALUES:
-        return SourceResolutionError(
-            f"Connector '{source_id}' is disabled by PWM_CONNECTORS_ENABLED. "
-            "Use a built-in source or explicitly enable connector access."
-        )
-    return SourceResolutionError(
-        f"Connector '{source_id}' is not in PWM_CONNECTOR_ALLOWLIST. "
-        "Add the exact reported connector ID before retrying."
-    )
+    return SourceResolutionError(str(connector_policy_error(source_id)))
 
 
 def resolve_source_focus(source_focus: str) -> tuple[list[str], SearchFocus]:
